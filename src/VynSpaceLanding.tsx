@@ -1,0 +1,2920 @@
+import React, { useRef, useEffect, useState, useMemo, useCallback, Suspense } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { motion, AnimatePresence } from 'framer-motion';
+import * as THREE from 'three';
+
+// ─── BRAND TOKENS ──────────────────────────────────────────────────────────────
+const C = {
+  bg: '#00060F',
+  bgVec: new THREE.Color('#00060F'),
+  cyan: '#4DFFEF',
+  cyanHex: 0x4dffef,
+  cyanDim: '#1A9E96',
+  green: '#00FFB2',
+  greenHex: 0x00ffb2,
+  violet: '#8B5CF6',
+  violetHex: 0x8b5cf6,
+  coral: '#FF6B5F',
+  coralHex: 0xff6b5f,
+  amber: '#FFCF5A',
+  amberHex: 0xffcf5a,
+  gold: '#FFB800',
+  goldHex: 0xffb800,
+  text: '#E8F4FF',
+  muted: '#6B8099',
+  dim: '#1C2D40',
+  border: 'rgba(77,255,239,0.10)'
+} as const;
+
+// ─── STATIC DATA ───────────────────────────────────────────────────────────────
+const NAV_ITEMS = [{
+  label: 'HOME',
+  href: '#hero'
+}, {
+  label: 'SPACES',
+  href: '#spaces'
+}, {
+  label: 'CAMPUS',
+  href: '#campus'
+}, {
+  label: 'APT',
+  href: '#apt'
+}, {
+  label: 'JOBS',
+  href: '#jobs'
+}, {
+  label: 'FINANCE',
+  href: '#finance'
+}, {
+  label: 'REGISTER',
+  href: '#register'
+}, {
+  label: 'ABOUT',
+  href: '#about'
+}, {
+  label: 'CONTACT',
+  href: '#contact'
+}, {
+  label: 'FAQ',
+  href: '#faq'
+}];
+type SpaceItem = {
+  id: string;
+  code: string;
+  label: string;
+  tagline: string;
+  desc: string;
+  detail: string;
+  bullets: string[];
+  color: string;
+  colorHex: number;
+  icon: string;
+  zPos: number;
+};
+const SPACES: SpaceItem[] = [{
+  id: 'spaces',
+  code: 'HUB-00',
+  label: 'Spaces',
+  tagline: 'Preview hub',
+  desc: 'The public map of Campus, APT, Jobs, and Finance. Full access unlocks only after registration, verification, and login.',
+  detail: 'Spaces is the bridge between the public website and the protected app. It explains the platform clearly while preparing a future subdomain flow such as spaces.vyn-space.io.',
+  bullets: ['Campus, APT, Jobs, Finance preview', 'Protected app after verification', 'Subdomain-ready architecture'],
+  color: C.cyan,
+  colorHex: C.cyanHex,
+  icon: '⬢',
+  zPos: -55
+}, {
+  id: 'campus',
+  code: 'SPC-01',
+  label: 'Campus',
+  tagline: 'Digital city hall',
+  desc: 'Documents, appointments, courses, community, rewards, university integrations, and institutional processes in one civic command center.',
+  detail: 'Campus is the retention layer: visa tasks, address changes, government links, document storage, courses, certifications, tutorials, podcasts, clubs, rewards, university data, and LinkedIn-like community features.',
+  bullets: ['Visa, registration, address changes', 'Document vault and submissions', 'Courses, certifications, podcasts, clubs', 'Universities, authorities, organizations'],
+  color: C.green,
+  colorHex: C.greenHex,
+  icon: '⬡',
+  zPos: -95
+}, {
+  id: 'apt',
+  code: 'SPC-02',
+  label: 'APT',
+  tagline: 'Housing access',
+  desc: 'Verified users view homes, check eligibility, request viewings, and generate rental contracts when all criteria are met.',
+  detail: 'APT displays apartments with city, size, layout, room count, furnishing, extras, energy, WiFi, price category, availability, and application status.',
+  bullets: ['City, size, layout, rooms', 'Furnished, garden, balcony, energy, WiFi', 'Job or institution, income, residence visa', 'Viewing request and automated contract'],
+  color: C.cyan,
+  colorHex: C.cyanHex,
+  icon: '⌂',
+  zPos: -135
+}, {
+  id: 'jobs',
+  code: 'SPC-03',
+  label: 'Jobs',
+  tagline: 'Work & training',
+  desc: 'Skill assessment, employer matching, job listings, training opportunities, indirect outreach, and placement workflows.',
+  detail: 'Companies can list roles, view categorized verified profiles, and reach candidates through VYN Space. Filled jobs are removed and placement contracts can be created in-house.',
+  bullets: ['Job and training listings', 'Assessment for fit, strengths, weaknesses', 'Three financial readiness groups', 'Commission-style staffing model'],
+  color: C.amber,
+  colorHex: C.amberHex,
+  icon: '◈',
+  zPos: -175
+}, {
+  id: 'finance',
+  code: 'SPC-04',
+  label: 'Finance',
+  tagline: 'Banking layer',
+  desc: 'White-label banking access, account creation, balances, transactions, transfers, insights, insurance, and future products.',
+  detail: 'Finance starts outsourced with a provider such as Solaris, reuses completed verification, and can evolve toward proprietary banking, loans, investments, insurance, and carefully reviewed USDT-only wallet features.',
+  bullets: ['Solaris white-label path', 'Balance, transfers, income, expenses', 'Loans, insurance, investments later', 'Security, custody, and liquidity review'],
+  color: C.violet,
+  colorHex: C.violetHex,
+  icon: '◉',
+  zPos: -215
+}, {
+  id: 'register',
+  code: 'SPC-05',
+  label: 'Register',
+  tagline: 'Verified onboarding',
+  desc: 'Personal data, document upload, consent, and ID provider verification before service access is unlocked.',
+  detail: 'The access gate is prepared for providers such as IDnow so the authenticity of people and documents can be checked quickly and efficiently.',
+  bullets: ['Personal data and user group', 'Passport, visa, residence, proof files', 'Consent and audit status', 'Magic link first, stronger auth later'],
+  color: C.coral,
+  colorHex: C.coralHex,
+  icon: '◎',
+  zPos: -255
+}, {
+  id: 'about',
+  code: 'SYS-06',
+  label: 'About',
+  tagline: 'Vision & mission',
+  desc: 'The company story, founder vision, mission, and trust principles behind VYN Space.',
+  detail: 'VYN Space is positioned as a digital onboarding operating system for life in Germany: structured like an institution, smooth like a modern product, and designed for people under real pressure.',
+  bullets: ['History and founders', 'Mission and long-term bank goal', 'Trust layer for Germany integration'],
+  color: C.green,
+  colorHex: C.greenHex,
+  icon: '◇',
+  zPos: -295
+}, {
+  id: 'blog',
+  code: 'SYS-07',
+  label: 'Blog',
+  tagline: 'Stories & updates',
+  desc: 'Current posts from VYN Space, users, partners, and the integration ecosystem.',
+  detail: 'The blog should publish platform updates, housing guidance, campus explainers, finance notes, partner news, and user stories from the relocation journey.',
+  bullets: ['Housing, campus, finance, jobs', 'User voices and partner updates', 'Trust-focused editorial feed'],
+  color: C.amber,
+  colorHex: C.amberHex,
+  icon: '▤',
+  zPos: -335
+}, {
+  id: 'contact',
+  code: 'SYS-08',
+  label: 'Contact',
+  tagline: 'Appointments',
+  desc: 'Calendly for CEO business meetings plus a contact form for users, institutions, employers, and partners.',
+  detail: 'Business inquiries can book directly with the CEO. Other channels should support housing partners, employers, universities, authorities, NGOs, and user support.',
+  bullets: ['CEO Calendly for business inquiries', 'Partner and institution contact', 'User support contact form'],
+  color: C.cyan,
+  colorHex: C.cyanHex,
+  icon: '⌁',
+  zPos: -375
+}, {
+  id: 'donation',
+  code: 'SYS-09',
+  label: 'Donation',
+  tagline: 'Support access',
+  desc: 'PayPal and crypto donation paths presented with compliance-first messaging and clear impact.',
+  detail: 'Donation flows should support the integration mission without making the platform feel speculative. Crypto should begin cautiously, with USDT-only review if used.',
+  bullets: ['PayPal donation path', 'Crypto with compliance review', 'Impact messaging and transparency'],
+  color: C.gold,
+  colorHex: C.goldHex,
+  icon: '◍',
+  zPos: -415
+}, {
+  id: 'metaverse',
+  code: 'SYS-10',
+  label: 'Metaverse',
+  tagline: 'Immersive future',
+  desc: 'A future immersive environment for registered users, events, community, support, and avatar-led navigation.',
+  detail: 'The 3D layer should remain optional, lazy-loaded, and mobile-aware, with a standard interface fallback for low-power devices.',
+  bullets: ['Registered-user events', 'Avatar and chatbot future', 'Performance fallback for mobile'],
+  color: C.violet,
+  colorHex: C.violetHex,
+  icon: '✦',
+  zPos: -455
+}];
+type VerifyStep = {
+  num: string;
+  label: string;
+  desc: string;
+  color: string;
+};
+const VERIFY_STEPS: VerifyStep[] = [{
+  num: '01',
+  label: 'Personal data',
+  desc: 'Name, address, nationality, user group, relocation status, and consent captured securely.',
+  color: C.cyan
+}, {
+  num: '02',
+  label: 'Document check',
+  desc: 'Passport, visa, residence permit, income, student, employer, or institution proof uploaded.',
+  color: C.violet
+}, {
+  num: '03',
+  label: 'ID verification',
+  desc: 'Provider flow such as IDnow validates identity, liveness, and document authenticity.',
+  color: C.green
+}, {
+  num: '04',
+  label: 'Spaces login',
+  desc: 'Full platform access unlocked. One profile, every service.',
+  color: C.amber
+}];
+type FaqItem = {
+  q: string;
+  a: string;
+};
+const FAQ: FaqItem[] = [{
+  q: 'Who is VYN Space for?',
+  a: 'Refugees, international students, and skilled workers who need structured access to housing, finance, jobs, education, bureaucracy, and community in Germany.'
+}, {
+  q: 'Is verification mandatory?',
+  a: 'Yes. Full Campus, APT, Jobs, and Finance access should unlock only after registration, document submission, consent, and identity verification through a provider such as IDnow.'
+}, {
+  q: 'How do housing listings work?',
+  a: 'APT listings show city, size, layout, rooms, furnished status, extras, energy, WiFi, price category, availability, and eligibility criteria before application or viewing.'
+}, {
+  q: 'What does Campus include?',
+  a: 'Campus works like a digital city hall: documents, government links, appointments, visa and registration tasks, courses, podcasts, clubs, rewards, university integrations, and community features.'
+}, {
+  q: 'How should Finance launch?',
+  a: 'Finance should start through a regulated white-label provider such as Solaris, reuse completed verification, and grow cautiously toward accounts, transfers, insurance, loans, investments, and reviewed USDT-only wallet features.'
+}, {
+  q: 'What is the metaverse layer?',
+  a: 'A future immersive space for registered users, avatar support, events, community, and guided onboarding. It should be lazy-loaded with a normal dashboard fallback on mobile or low-power devices.'
+}];
+const CTA_STATS = [{
+  val: '4',
+  label: 'CORE SPACES',
+  color: C.cyan
+}, {
+  val: '1',
+  label: 'VERIFIED PROFILE',
+  color: C.green
+}, {
+  val: '3',
+  label: 'USER GROUPS',
+  color: C.amber
+}];
+
+// ─── CANVAS TEXTURE FACTORIES ──────────────────────────────────────────────────
+
+/** Creates a procedural window-lit building facade texture */
+function makeBuildingTexture(w: number, h: number, accentColor: string): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = '#030C1A';
+  ctx.fillRect(0, 0, w, h);
+  const cols = Math.floor(w / 8);
+  const rows = Math.floor(h / 12);
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const lit = Math.random() > 0.55;
+      if (lit) {
+        const bright = Math.random();
+        if (bright > 0.88) {
+          ctx.fillStyle = accentColor + 'CC';
+        } else if (bright > 0.72) {
+          ctx.fillStyle = '#AADDFF88';
+        } else {
+          ctx.fillStyle = '#FFE08855';
+        }
+        ctx.fillRect(c * 8 + 1, r * 12 + 1, 5, 8);
+      }
+    }
+  }
+  // roof antenna
+  ctx.strokeStyle = accentColor + '66';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(w / 2, 0);
+  ctx.lineTo(w / 2, h * 0.12);
+  ctx.stroke();
+  return new THREE.CanvasTexture(canvas);
+}
+
+/** Creates a glowing space-card texture with branding */
+function makeSpaceCardTexture(label: string, tagline: string, code: string, color: string): THREE.CanvasTexture {
+  const W = 512,
+    H = 320;
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d')!;
+
+  // Deep background
+  ctx.fillStyle = '#010810';
+  ctx.fillRect(0, 0, W, H);
+
+  // Gradient wash
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0, color + '18');
+  grad.addColorStop(1, '#00000000');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Outer border
+  ctx.strokeStyle = color + '55';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(1, 1, W - 2, H - 2);
+
+  // Top accent bar
+  ctx.fillStyle = color;
+  ctx.fillRect(0, 0, W, 2);
+
+  // Corner brackets
+  const bSize = 14;
+  ctx.strokeStyle = color + 'AA';
+  ctx.lineWidth = 1.5;
+  [[0, 0], [W, 0], [0, H], [W, H]].forEach(([cx, cy]) => {
+    const sx = cx === 0 ? 1 : -1;
+    const sy = cy === 0 ? 1 : -1;
+    ctx.beginPath();
+    ctx.moveTo(cx + sx * bSize, cy + sy);
+    ctx.lineTo(cx + sx, cy + sy);
+    ctx.lineTo(cx + sx, cy + sy * bSize);
+    ctx.stroke();
+  });
+
+  // Code tag
+  ctx.fillStyle = color + 'CC';
+  ctx.font = '700 11px monospace';
+  ctx.fillText(code, 20, 32);
+
+  // Horizontal divider
+  ctx.strokeStyle = color + '30';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(20, 44);
+  ctx.lineTo(W - 20, 44);
+  ctx.stroke();
+
+  // Label
+  ctx.fillStyle = '#E8F4FF';
+  ctx.font = '700 54px "Inter", sans-serif';
+  ctx.fillText(label, 20, 116);
+
+  // Tagline
+  ctx.fillStyle = color;
+  ctx.font = '500 18px "Inter", sans-serif';
+  ctx.fillText(tagline.toUpperCase(), 20, 148);
+
+  // Divider
+  ctx.strokeStyle = color + '22';
+  ctx.beginPath();
+  ctx.moveTo(20, 168);
+  ctx.lineTo(W - 20, 168);
+  ctx.stroke();
+
+  // Dots / data visualization
+  for (let i = 0; i < 16; i++) {
+    const x = 20 + i * 30;
+    const barH = 10 + Math.random() * 40;
+    ctx.fillStyle = color + (i % 3 === 0 ? 'CC' : '44');
+    ctx.fillRect(x, H - 48 - barH, 18, barH);
+  }
+
+  // Status
+  ctx.fillStyle = color + 'AA';
+  ctx.font = '600 10px monospace';
+  ctx.fillText('● ACTIVE', 20, H - 18);
+  ctx.fillStyle = '#6B8099';
+  ctx.fillText('ENTER →', W - 80, H - 18);
+  return new THREE.CanvasTexture(canvas);
+}
+
+/** Creates the central identity hub hologram texture */
+function makeIdentityTexture(): THREE.CanvasTexture {
+  const S = 512;
+  const canvas = document.createElement('canvas');
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = '#00060F';
+  ctx.fillRect(0, 0, S, S);
+
+  // Concentric hex rings
+  const cx = S / 2,
+    cy = S / 2;
+  for (let r = 1; r <= 6; r++) {
+    const radius = r * 38;
+    ctx.beginPath();
+    for (let i = 0; i <= 6; i++) {
+      const a = (i * 60 - 30) * (Math.PI / 180);
+      if (i === 0) ctx.moveTo(cx + radius * Math.cos(a), cy + radius * Math.sin(a));else ctx.lineTo(cx + radius * Math.cos(a), cy + radius * Math.sin(a));
+    }
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(77,255,239,${0.04 + r * 0.04})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // Radial spokes
+  for (let i = 0; i < 6; i++) {
+    const a = i * 60 * (Math.PI / 180);
+    ctx.strokeStyle = 'rgba(77,255,239,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 220 * Math.cos(a), cy + 220 * Math.sin(a));
+    ctx.stroke();
+  }
+
+  // Core glow
+  const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80);
+  grd.addColorStop(0, 'rgba(77,255,239,0.3)');
+  grd.addColorStop(0.5, 'rgba(77,255,239,0.08)');
+  grd.addColorStop(1, 'rgba(77,255,239,0)');
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 80, 0, Math.PI * 2);
+  ctx.fill();
+
+  // VYN text
+  ctx.fillStyle = 'rgba(232,244,255,0.9)';
+  ctx.font = '700 48px monospace';
+  ctx.textAlign = 'center';
+  ctx.fillText('VYN', cx, cy + 16);
+
+  // Outer text ring
+  ctx.font = '500 9px monospace';
+  ctx.fillStyle = 'rgba(77,255,239,0.6)';
+  const ringText = 'VERIFIED · IDENTITY · SYSTEM · GERMANY · 2026 · ';
+  const charCount = ringText.length;
+  for (let i = 0; i < charCount; i++) {
+    const a = i / charCount * Math.PI * 2 - Math.PI / 2;
+    const rx = cx + 215 * Math.cos(a);
+    const ry = cy + 215 * Math.sin(a);
+    ctx.save();
+    ctx.translate(rx, ry);
+    ctx.rotate(a + Math.PI / 2);
+    ctx.fillText(ringText[i], 0, 0);
+    ctx.restore();
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+
+/** Creates a grid/data floor texture */
+function makeFloorTexture(): THREE.CanvasTexture {
+  const S = 1024;
+  const canvas = document.createElement('canvas');
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext('2d')!;
+  ctx.fillStyle = '#00060F';
+  ctx.fillRect(0, 0, S, S);
+  const step = 64;
+  ctx.strokeStyle = 'rgba(77,255,239,0.06)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= S; x += step) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, S);
+    ctx.stroke();
+  }
+  for (let y = 0; y <= S; y += step) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(S, y);
+    ctx.stroke();
+  }
+
+  // Diagonal accent lines
+  ctx.strokeStyle = 'rgba(139,92,246,0.04)';
+  for (let i = -S; i < S * 2; i += 128) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + S, S);
+    ctx.stroke();
+  }
+
+  // Intersection dots
+  for (let x = 0; x <= S; x += step) {
+    for (let y = 0; y <= S; y += step) {
+      if (Math.random() > 0.7) {
+        ctx.fillStyle = `rgba(77,255,239,${0.04 + Math.random() * 0.12})`;
+        ctx.beginPath();
+        ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+  return new THREE.CanvasTexture(canvas);
+}
+
+/** Tunnel glow ring texture */
+function makeTunnelTexture(color: number): THREE.CanvasTexture {
+  const S = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = S;
+  canvas.height = S;
+  const ctx = canvas.getContext('2d')!;
+  ctx.clearRect(0, 0, S, S);
+  const r = color >> 16 & 0xff;
+  const g = color >> 8 & 0xff;
+  const b = color & 0xff;
+  const grd = ctx.createRadialGradient(S / 2, S / 2, S * 0.3, S / 2, S / 2, S / 2);
+  grd.addColorStop(0, `rgba(${r},${g},${b},0)`);
+  grd.addColorStop(0.7, `rgba(${r},${g},${b},0.6)`);
+  grd.addColorStop(0.85, `rgba(${r},${g},${b},0.9)`);
+  grd.addColorStop(1, `rgba(${r},${g},${b},0)`);
+  ctx.fillStyle = grd;
+  ctx.beginPath();
+  ctx.arc(S / 2, S / 2, S / 2, 0, Math.PI * 2);
+  ctx.fill();
+  return new THREE.CanvasTexture(canvas);
+}
+
+// ─── PRE-BUILT STATIC DATA ─────────────────────────────────────────────────────
+
+const NUM_BUILDINGS = 180;
+type BldgData = {
+  x: number;
+  z: number;
+  h: number;
+  w: number;
+  d: number;
+  colorIdx: number;
+};
+const BLDG_DATA: BldgData[] = Array.from({
+  length: NUM_BUILDINGS
+}, (_, i) => {
+  const side = i % 2 === 0 ? 1 : -1;
+  const row = Math.floor(i / 2);
+  const spread = 12 + Math.random() * 10;
+  return {
+    x: side * (spread + Math.random() * 7),
+    z: -row * 4.8 - Math.random() * 2.5,
+    h: 3 + Math.random() * 22,
+    w: 1.4 + Math.random() * 2.2,
+    d: 1.4 + Math.random() * 2.2,
+    colorIdx: Math.floor(Math.random() * 4)
+  };
+});
+const PARTICLE_COUNT = 5000;
+const pPos = new Float32Array(PARTICLE_COUNT * 3);
+const pCol = new Float32Array(PARTICLE_COUNT * 3);
+const pSizes = new Float32Array(PARTICLE_COUNT);
+const pColorPool = [new THREE.Color(C.cyan), new THREE.Color(C.green), new THREE.Color(C.violet), new THREE.Color(C.amber)];
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+  pPos[i * 3] = (Math.random() - 0.5) * 100;
+  pPos[i * 3 + 1] = (Math.random() - 0.5) * 60;
+  pPos[i * 3 + 2] = -(Math.random() * 620);
+  const pc = pColorPool[i % 4];
+  pCol[i * 3] = pc.r;
+  pCol[i * 3 + 1] = pc.g;
+  pCol[i * 3 + 2] = pc.b;
+  pSizes[i] = 0.3 + Math.random() * 1.4;
+}
+
+// Data stream ribbon lines
+const RIBBON_COUNT = 40;
+type RibbonData = {
+  x: number;
+  color: number;
+  speed: number;
+  offset: number;
+};
+const RIBBON_DATA: RibbonData[] = Array.from({
+  length: RIBBON_COUNT
+}, (_, i) => ({
+  x: (i % 2 === 0 ? 1 : -1) * (8 + i % 10 * 2.2),
+  color: [C.cyanHex, C.greenHex, C.violetHex, C.amberHex][i % 4],
+  speed: 0.8 + Math.random() * 2.4,
+  offset: Math.random() * 460
+}));
+
+// Tunnel arch positions
+const TUNNEL_ARCHES: Array<{
+  z: number;
+  color: number;
+  scale: number;
+}> = [{
+  z: -30,
+  color: C.cyanHex,
+  scale: 1.0
+}, {
+  z: -70,
+  color: C.greenHex,
+  scale: 0.9
+}, {
+  z: -110,
+  color: C.violetHex,
+  scale: 0.85
+}, {
+  z: -150,
+  color: C.amberHex,
+  scale: 0.8
+}, {
+  z: -190,
+  color: C.cyanHex,
+  scale: 0.75
+}, {
+  z: -240,
+  color: C.greenHex,
+  scale: 0.72
+}, {
+  z: -300,
+  color: C.violetHex,
+  scale: 0.7
+}, {
+  z: -360,
+  color: C.cyanHex,
+  scale: 0.68
+}, {
+  z: -420,
+  color: C.greenHex,
+  scale: 0.66
+}, {
+  z: -480,
+  color: C.violetHex,
+  scale: 0.64
+}, {
+  z: -540,
+  color: C.amberHex,
+  scale: 0.62
+}];
+
+// ─── 3D COMPONENT: PROCEDURAL CITY ────────────────────────────────────────────
+const ProceduralCity: React.FC = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const texColors = [C.cyan, C.green, C.violet, C.amber];
+  const buildingMeshes = useMemo(() => {
+    return BLDG_DATA.map(b => {
+      const tex = makeBuildingTexture(32, 64, texColors[b.colorIdx]);
+      const geo = new THREE.BoxGeometry(b.w, b.h, b.d, 1, 1, 1);
+      const mat = new THREE.MeshBasicMaterial({
+        map: tex
+      });
+      const edgeGeo = new THREE.EdgesGeometry(geo);
+      const edgeMat = new THREE.LineBasicMaterial({
+        color: new THREE.Color(texColors[b.colorIdx]),
+        transparent: true,
+        opacity: 0.12
+      });
+      return {
+        geo,
+        mat,
+        edgeGeo,
+        edgeMat,
+        b
+      };
+    });
+  }, []);
+  useFrame(({
+    clock
+  }) => {
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const ls = child.children[1] as THREE.LineSegments;
+      if (ls?.material) {
+        const mat = ls.material as THREE.LineBasicMaterial;
+        mat.opacity = 0.05 + Math.abs(Math.sin(clock.elapsedTime * 0.25 + i * 0.38)) * 0.18;
+      }
+    });
+  });
+  return <group ref={groupRef}>
+      {buildingMeshes.map(({
+      geo,
+      mat,
+      edgeGeo,
+      edgeMat,
+      b
+    }, i) => <group key={i} position={[b.x, b.h / 2 - 5.5, b.z]}>
+          <mesh geometry={geo} material={mat} />
+          <lineSegments geometry={edgeGeo} material={edgeMat} />
+        </group>)}
+    </group>;
+};
+
+// ─── 3D COMPONENT: DATA STREAM RIBBONS ────────────────────────────────────────
+const DataStreamRibbons: React.FC = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const ribbonObjects = useMemo(() => RIBBON_DATA.map(r => {
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(6 * 3);
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.LineBasicMaterial({
+      color: r.color,
+      transparent: true,
+      opacity: 0.0
+    });
+    return {
+      geo,
+      mat,
+      lineObj: new THREE.Line(geo, mat)
+    };
+  }), []);
+  useFrame(({
+    clock,
+    camera
+  }) => {
+    RIBBON_DATA.forEach((r, i) => {
+      const {
+        geo,
+        mat
+      } = ribbonObjects[i];
+      const t = clock.elapsedTime * r.speed;
+      const zBase = camera.position.z - (t * 60 + r.offset) % 460;
+      const pos = geo.attributes.position.array as Float32Array;
+      for (let j = 0; j < 6; j++) {
+        pos[j * 3] = r.x + j % 2 * 0.08;
+        pos[j * 3 + 1] = -6 + j * 5;
+        pos[j * 3 + 2] = zBase - j * 8;
+      }
+      geo.attributes.position.needsUpdate = true;
+      mat.opacity = 0.03 + Math.abs(Math.sin(t * 0.5)) * 0.12;
+    });
+  });
+  return <group ref={groupRef}>
+      {ribbonObjects.map(({
+      lineObj
+    }, i) => <primitive key={i} object={lineObj} />)}
+    </group>;
+};
+
+// ─── 3D COMPONENT: STARFIELD WITH CUSTOM SIZES ────────────────────────────────
+const StarField: React.FC = () => {
+  const ref = useRef<THREE.Points>(null);
+  const geo = useMemo(() => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+    g.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+    g.setAttribute('size', new THREE.BufferAttribute(pSizes, 1));
+    return g;
+  }, []);
+  useFrame(({
+    clock
+  }) => {
+    if (ref.current) {
+      ref.current.rotation.y = clock.elapsedTime * 0.002;
+      ref.current.rotation.x = Math.sin(clock.elapsedTime * 0.001) * 0.02;
+    }
+  });
+  return <points ref={ref} geometry={geo}>
+      <pointsMaterial size={0.06} vertexColors transparent opacity={0.7} sizeAttenuation />
+    </points>;
+};
+
+// ─── 3D COMPONENT: TEXTURED FLOOR ─────────────────────────────────────────────
+const Floor: React.FC = () => {
+  const tex = useMemo(() => {
+    const t = makeFloorTexture();
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(20, 110);
+    return t;
+  }, []);
+  return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5.5, -330]}>
+      <planeGeometry args={[180, 680, 1, 1]} />
+      <meshBasicMaterial map={tex} transparent opacity={0.6} />
+    </mesh>;
+};
+
+// ─── 3D COMPONENT: TUNNEL ARCH RINGS ──────────────────────────────────────────
+const TunnelArch: React.FC<{
+  z: number;
+  color: number;
+  scale: number;
+  idx: number;
+}> = ({
+  z,
+  color,
+  scale,
+  idx
+}) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const tex = useMemo(() => makeTunnelTexture(color), [color]);
+  const hexLineObj = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 6; i++) {
+      const a = (i * 60 - 30) * (Math.PI / 180);
+      pts.push(new THREE.Vector3(10 * scale * Math.cos(a), 10 * scale * Math.sin(a), 0));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.22
+    });
+    return new THREE.Line(g, m);
+  }, [scale, color]);
+  const innerLineObj = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 6; i++) {
+      const a = (i * 60 - 30) * (Math.PI / 180);
+      pts.push(new THREE.Vector3(6.5 * scale * Math.cos(a), 6.5 * scale * Math.sin(a), 0));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({
+      color,
+      transparent: true,
+      opacity: 0.1
+    });
+    return new THREE.Line(g, m);
+  }, [scale, color]);
+  const billGeo = useMemo(() => new THREE.PlaneGeometry(22 * scale, 22 * scale), [scale]);
+  const billMat = useMemo(() => new THREE.MeshBasicMaterial({
+    map: tex,
+    transparent: true,
+    opacity: 0.08,
+    depthWrite: false,
+    side: THREE.DoubleSide
+  }), [tex]);
+  useFrame(({
+    clock
+  }) => {
+    if (!groupRef.current) return;
+    const t = clock.elapsedTime * 0.18 + idx * 1.1;
+    groupRef.current.rotation.z = t;
+    const hexLine = groupRef.current.children[0] as THREE.Line;
+    if (hexLine?.material) {
+      (hexLine.material as THREE.LineBasicMaterial).opacity = 0.12 + Math.abs(Math.sin(clock.elapsedTime * 0.4 + idx)) * 0.16;
+    }
+  });
+  return <group position={[0, 0, z]}>
+      <group ref={groupRef}>
+        <primitive object={hexLineObj} />
+        <primitive object={innerLineObj} />
+      </group>
+      {[0, 1, 2, 3, 4, 5].map(j => {
+      const a = j * 60 * (Math.PI / 180);
+      const cx = 10 * scale * Math.cos(a);
+      const cy = 10 * scale * Math.sin(a);
+      return <mesh key={j} position={[cx, cy, 0]}>
+            <sphereGeometry args={[0.06, 6, 6]} />
+            <meshBasicMaterial color={color} transparent opacity={0.6} />
+          </mesh>;
+    })}
+      <mesh geometry={billGeo} material={billMat} />
+    </group>;
+};
+
+// ─── 3D COMPONENT: IDENTITY HUB ────────────────────────────────────────────────
+const IdentityHub: React.FC<{
+  position: [number, number, number];
+}> = ({
+  position
+}) => {
+  const outerRef = useRef<THREE.Group>(null);
+  const midRef = useRef<THREE.Group>(null);
+  const coreRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const idTex = useMemo(() => makeIdentityTexture(), []);
+
+  // DNA-like double helix
+  const helixPoints = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 80; i++) {
+      const t = i / 80 * Math.PI * 4;
+      pts.push(new THREE.Vector3(3.5 * Math.cos(t), i / 80 * 14 - 7, 3.5 * Math.sin(t)));
+    }
+    return pts;
+  }, []);
+  const helixGeo = useMemo(() => new THREE.BufferGeometry().setFromPoints(helixPoints), [helixPoints]);
+  const helixMat = useMemo(() => new THREE.LineBasicMaterial({
+    color: C.cyanHex,
+    transparent: true,
+    opacity: 0.28
+  }), []);
+  const helixLineObj = useMemo(() => new THREE.Line(helixGeo, helixMat), [helixGeo, helixMat]);
+  const helix2Points = useMemo(() => helixPoints.map(p => new THREE.Vector3(-p.x, p.y, -p.z)), [helixPoints]);
+  const helix2Geo = useMemo(() => new THREE.BufferGeometry().setFromPoints(helix2Points), [helix2Points]);
+  const helix2Mat = useMemo(() => new THREE.LineBasicMaterial({
+    color: C.violetHex,
+    transparent: true,
+    opacity: 0.22
+  }), []);
+  const helix2LineObj = useMemo(() => new THREE.Line(helix2Geo, helix2Mat), [helix2Geo, helix2Mat]);
+  const rungLineObjs = useMemo(() => helixPoints.filter((_, i) => i % 8 === 0).map(p => {
+    const g = new THREE.BufferGeometry().setFromPoints([p, new THREE.Vector3(-p.x, p.y, -p.z)]);
+    const m = new THREE.LineBasicMaterial({
+      color: C.greenHex,
+      transparent: true,
+      opacity: 0.15
+    });
+    return new THREE.Line(g, m);
+  }), [helixPoints]);
+
+  // Orbital ring geoms
+  const ring1Geo = useMemo(() => new THREE.TorusGeometry(5.5, 0.02, 4, 128), []);
+  const ring2Geo = useMemo(() => new THREE.TorusGeometry(7.5, 0.018, 4, 128), []);
+  const ring3Geo = useMemo(() => new THREE.TorusGeometry(10, 0.015, 4, 128), []);
+  const ring1Mat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: C.cyanHex,
+    transparent: true,
+    opacity: 0.18
+  }), []);
+  const ring2Mat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: C.violetHex,
+    transparent: true,
+    opacity: 0.14
+  }), []);
+  const ring3Mat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: C.greenHex,
+    transparent: true,
+    opacity: 0.10
+  }), []);
+  useFrame(({
+    clock
+  }) => {
+    const t = clock.elapsedTime;
+    if (outerRef.current) outerRef.current.rotation.y = t * 0.1;
+    if (midRef.current) {
+      midRef.current.rotation.x = t * 0.14;
+      midRef.current.rotation.z = t * 0.07;
+    }
+    if (coreRef.current) {
+      const s = 1 + Math.sin(t * 1.6) * 0.07;
+      coreRef.current.scale.set(s, s, s);
+    }
+    if (glowRef.current) {
+      const s = 1 + Math.sin(t * 0.9) * 0.12;
+      glowRef.current.scale.set(s, s, s);
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.04 + Math.sin(t * 0.9) * 0.02;
+    }
+  });
+  return <group position={position}>
+      {/* Outer glow sphere */}
+      <mesh ref={glowRef}>
+        <sphereGeometry args={[11, 32, 32]} />
+        <meshBasicMaterial color={C.cyanHex} transparent opacity={0.04} depthWrite={false} />
+      </mesh>
+
+      {/* Orbital rings */}
+      <mesh ref={outerRef} geometry={ring1Geo} material={ring1Mat} rotation={[Math.PI / 2, 0, 0]} />
+      <mesh geometry={ring2Geo} material={ring2Mat} rotation={[0.5, 0.3, 0]} />
+      <mesh geometry={ring3Geo} material={ring3Mat} rotation={[1.1, 0.8, 0.4]} />
+
+      {/* DNA double helix */}
+      <group ref={midRef}>
+        <primitive object={helixLineObj} />
+        <primitive object={helix2LineObj} />
+        {rungLineObjs.map((obj, i) => <primitive key={i} object={obj} />)}
+      </group>
+
+      {/* Core identity billboard (canvas tex) */}
+      <mesh ref={coreRef}>
+        <planeGeometry args={[5.5, 5.5]} />
+        <meshBasicMaterial map={idTex} transparent opacity={0.92} side={THREE.DoubleSide} depthWrite={false} />
+      </mesh>
+
+      {/* Inner hard sphere */}
+      <mesh>
+        <sphereGeometry args={[1.2, 20, 20]} />
+        <meshBasicMaterial color={C.cyanHex} transparent opacity={0.5} />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[0.55, 14, 14]} />
+        <meshBasicMaterial color="#E8F4FF" />
+      </mesh>
+
+      {/* Space orbit nodes */}
+      {SPACES.map((sp, i) => {
+      const a = i / SPACES.length * Math.PI * 2;
+      return <SpaceOrbitNode key={sp.id} angle={a} radius={5.5} color={sp.colorHex} idx={i} />;
+    })}
+    </group>;
+};
+const SpaceOrbitNode: React.FC<{
+  angle: number;
+  radius: number;
+  color: number;
+  idx: number;
+}> = ({
+  angle,
+  radius,
+  color,
+  idx
+}) => {
+  const ref = useRef<THREE.Group>(null);
+  useFrame(({
+    clock
+  }) => {
+    if (!ref.current) return;
+    const t = clock.elapsedTime * 0.18 + angle;
+    ref.current.position.x = radius * Math.cos(t);
+    ref.current.position.y = radius * Math.sin(t);
+    const s = 1 + Math.sin(clock.elapsedTime * 1.4 + idx * 1.2) * 0.18;
+    ref.current.scale.set(s, s, s);
+  });
+  return <group ref={ref}>
+      <mesh>
+        <octahedronGeometry args={[0.28, 0]} />
+        <meshBasicMaterial color={color} transparent opacity={0.85} />
+      </mesh>
+      <mesh>
+        <octahedronGeometry args={[0.48, 0]} />
+        <meshBasicMaterial color={color} transparent opacity={0.08} />
+      </mesh>
+    </group>;
+};
+
+// ─── 3D COMPONENT: SPACE PORTAL CARDS ─────────────────────────────────────────
+const SpacePortalCard: React.FC<{
+  space: SpaceItem;
+  idx: number;
+}> = ({
+  space,
+  idx
+}) => {
+  const groupRef = useRef<THREE.Group>(null);
+  const cardRef = useRef<THREE.Mesh>(null);
+  const glowRef = useRef<THREE.Mesh>(null);
+  const side = idx % 2 === 0 ? -1 : 1;
+  const xPos = side * 14;
+  const cardTex = useMemo(() => makeSpaceCardTexture(space.label, space.tagline, space.code, space.color), [space]);
+  const cardGeo = useMemo(() => new THREE.PlaneGeometry(12, 7.5), []);
+  const cardMat = useMemo(() => new THREE.MeshBasicMaterial({
+    map: cardTex,
+    transparent: true,
+    opacity: 0.88,
+    side: THREE.DoubleSide
+  }), [cardTex]);
+
+  // Edge frame
+  const edgeGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(12, 7.5, 0.05)), []);
+  const edgeMat = useMemo(() => new THREE.LineBasicMaterial({
+    color: space.colorHex,
+    transparent: true,
+    opacity: 0.45
+  }), [space.colorHex]);
+
+  // Corner crystals
+  const crystalGeo = useMemo(() => new THREE.OctahedronGeometry(0.22, 0), []);
+  const crystalMat = useMemo(() => new THREE.MeshBasicMaterial({
+    color: space.colorHex,
+    transparent: true,
+    opacity: 0.8
+  }), [space.colorHex]);
+  const glowGeo = useMemo(() => new THREE.PlaneGeometry(16, 11), []);
+  const glowMat = useMemo(() => {
+    const t = makeTunnelTexture(space.colorHex);
+    return new THREE.MeshBasicMaterial({
+      map: t,
+      transparent: true,
+      opacity: 0.1,
+      depthWrite: false
+    });
+  }, [space.colorHex]);
+  const connectorLineObj = useMemo(() => {
+    const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(-xPos, 0, 0)]);
+    const m = new THREE.LineBasicMaterial({
+      color: space.colorHex,
+      transparent: true,
+      opacity: 0.1
+    });
+    return new THREE.Line(g, m);
+  }, [xPos, space.colorHex]);
+  useFrame(({
+    clock
+  }) => {
+    if (!groupRef.current) return;
+    const t = clock.elapsedTime;
+    groupRef.current.position.y = Math.sin(t * 0.35 + idx * 1.4) * 0.8;
+    if (cardRef.current) {
+      cardRef.current.rotation.y = Math.sin(t * 0.12 + idx) * 0.08;
+    }
+    if (glowRef.current) {
+      (glowRef.current.material as THREE.MeshBasicMaterial).opacity = 0.05 + Math.abs(Math.sin(t * 0.5 + idx)) * 0.08;
+    }
+  });
+  return <group ref={groupRef} position={[xPos, 0.5, space.zPos]}>
+      <mesh ref={glowRef} geometry={glowGeo} material={glowMat} />
+      <mesh ref={cardRef} geometry={cardGeo} material={cardMat} />
+      <lineSegments geometry={edgeGeo} material={edgeMat} />
+      <primitive object={connectorLineObj} />
+      {([[-5.8, 3.5, 0.1], [5.8, 3.5, 0.1], [-5.8, -3.5, 0.1], [5.8, -3.5, 0.1]] as [number, number, number][]).map((pos, j) => <mesh key={j} geometry={crystalGeo} material={crystalMat} position={pos} />)}
+    </group>;
+};
+
+// ─── 3D COMPONENT: FINALE GATEWAY ─────────────────────────────────────────────
+const FinaleGateway: React.FC = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const portalRef = useRef<THREE.Mesh>(null);
+  const idTex = useMemo(() => makeIdentityTexture(), []);
+  const archLineObj = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 32; i++) {
+      const a = i / 32 * Math.PI * 2;
+      pts.push(new THREE.Vector3(16 * Math.cos(a), 16 * Math.sin(a), 0));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineBasicMaterial({
+      color: C.cyanHex,
+      transparent: true,
+      opacity: 0.18
+    });
+    return new THREE.Line(g, m);
+  }, []);
+  useFrame(({
+    clock
+  }) => {
+    if (groupRef.current) groupRef.current.rotation.y = clock.elapsedTime * 0.06;
+    if (portalRef.current) {
+      const s = 1 + Math.sin(clock.elapsedTime * 0.8) * 0.04;
+      portalRef.current.scale.set(s, s, s);
+    }
+  });
+  return <group position={[0, 0, -560]}>
+      {/* Outer glow */}
+      <mesh>
+        <sphereGeometry args={[22, 32, 32]} />
+        <meshBasicMaterial color={C.cyanHex} transparent opacity={0.02} depthWrite={false} />
+      </mesh>
+
+      {/* Layered rings */}
+      <group ref={groupRef}>
+        {[14, 17, 20, 23].map((r, i) => {
+        const colors = [C.cyanHex, C.violetHex, C.greenHex, C.amberHex];
+        const opacities = [0.16, 0.12, 0.09, 0.07];
+        return <mesh key={r} rotation={[i * 0.4, i * 0.3, 0]}>
+              <torusGeometry args={[r, 0.03, 4, 160]} />
+              <meshBasicMaterial color={colors[i]} transparent opacity={opacities[i]} />
+            </mesh>;
+      })}
+      </group>
+
+      <primitive object={archLineObj} />
+
+      {/* Identity portal billboard */}
+      <mesh ref={portalRef}>
+        <circleGeometry args={[8, 64]} />
+        <meshBasicMaterial map={idTex} transparent opacity={0.15} depthWrite={false} />
+      </mesh>
+
+      {/* Central void */}
+      <mesh>
+        <sphereGeometry args={[4, 24, 24]} />
+        <meshBasicMaterial color={C.cyanHex} transparent opacity={0.06} />
+      </mesh>
+      <mesh>
+        <sphereGeometry args={[2, 18, 18]} />
+        <meshBasicMaterial color="#E8F4FF" transparent opacity={0.18} />
+      </mesh>
+
+      {/* 6 crystalline pillars around gateway */}
+      {[0, 1, 2, 3, 4, 5].map(i => {
+      const a = i * 60 * (Math.PI / 180);
+      return <mesh key={i} position={[Math.cos(a) * 11, Math.sin(a) * 11, 0]}>
+            <octahedronGeometry args={[0.55, 0]} />
+            <meshBasicMaterial color={[C.cyanHex, C.greenHex, C.violetHex, C.amberHex, C.coralHex, C.cyanHex][i]} transparent opacity={0.75} />
+          </mesh>;
+    })}
+    </group>;
+};
+
+// ─── 3D COMPONENT: ATMOSPHERIC DEPTH FOG COLUMNS ──────────────────────────────
+const AtmosphericColumns: React.FC = () => {
+  const colData = useMemo(() => Array.from({
+    length: 20
+  }, (_, i) => ({
+    x: (Math.random() - 0.5) * 40,
+    z: -20 - i * 20,
+    color: [C.cyanHex, C.violetHex, C.greenHex][i % 3],
+    h: 8 + Math.random() * 20,
+    speed: 0.2 + Math.random() * 0.5,
+    offset: Math.random() * Math.PI * 2
+  })), []);
+  const refs = useRef<(THREE.Mesh | null)[]>([]);
+  useFrame(({
+    clock
+  }) => {
+    colData.forEach((col, i) => {
+      const mesh = refs.current[i];
+      if (!mesh) return;
+      (mesh.material as THREE.MeshBasicMaterial).opacity = 0.012 + Math.abs(Math.sin(clock.elapsedTime * col.speed + col.offset)) * 0.04;
+    });
+  });
+  return <group>
+      {colData.map((col, i) => <mesh key={i} ref={el => {
+      refs.current[i] = el;
+    }} position={[col.x, col.h / 2 - 6, col.z]}>
+          <cylinderGeometry args={[0.25, 1.5, col.h, 6, 1, true]} />
+          <meshBasicMaterial color={col.color} transparent opacity={0.02} side={THREE.DoubleSide} />
+        </mesh>)}
+    </group>;
+};
+
+// ─── 3D COMPONENT: FLOATING DATA BYTES ────────────────────────────────────────
+const FloatingBytes: React.FC = () => {
+  const groupRef = useRef<THREE.Group>(null);
+  const byteData = useMemo(() => Array.from({
+    length: 80
+  }, (_, i) => ({
+    x: (Math.random() - 0.5) * 50,
+    y: -4 + Math.random() * 14,
+    z: -(i * 5.5 + Math.random() * 4),
+    color: [C.cyanHex, C.greenHex, C.violetHex][i % 3],
+    speed: 0.3 + Math.random() * 0.8,
+    offset: Math.random() * Math.PI * 2,
+    size: 0.04 + Math.random() * 0.08
+  })), []);
+  const byteGeo = useMemo(() => new THREE.BoxGeometry(1, 1, 1), []);
+  useFrame(({
+    clock
+  }) => {
+    if (!groupRef.current) return;
+    groupRef.current.children.forEach((child, i) => {
+      const d = byteData[i];
+      if (!d) return;
+      child.position.y = d.y + Math.sin(clock.elapsedTime * d.speed + d.offset) * 1.2;
+      child.rotation.x = clock.elapsedTime * d.speed * 0.5;
+      child.rotation.y = clock.elapsedTime * d.speed * 0.7;
+      const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
+      mat.opacity = 0.1 + Math.abs(Math.sin(clock.elapsedTime * d.speed + d.offset)) * 0.35;
+    });
+  });
+  return <group ref={groupRef}>
+      {byteData.map((d, i) => <mesh key={i} geometry={byteGeo} position={[d.x, d.y, d.z]}>
+          <meshBasicMaterial color={d.color} transparent opacity={0.15} />
+        </mesh>)}
+    </group>;
+};
+
+// ─── CAMERA CONTROLLER ─────────────────────────────────────────────────────────
+const CameraController: React.FC<{
+  scrollProgress: number;
+  mouseX: number;
+  mouseY: number;
+}> = ({
+  scrollProgress,
+  mouseX,
+  mouseY
+}) => {
+  const {
+    camera
+  } = useThree();
+  const pos = useRef(new THREE.Vector3(0, 3, 24));
+  const tgt = useRef(new THREE.Vector3(0, 0, -10));
+  const vel = useRef(new THREE.Vector3());
+  useFrame(() => {
+    const prog = scrollProgress;
+    const totalZ = -600 * prog;
+    const waveX = Math.sin(prog * Math.PI * 4.2) * 5.5 + mouseX * 2.8;
+    const waveY = 2.5 + prog * 3 + Math.cos(prog * Math.PI * 2.5) * 1.8 + mouseY * 1.4;
+    const desired = new THREE.Vector3(waveX, waveY, 24 + totalZ);
+    vel.current.subVectors(desired, pos.current).multiplyScalar(0.038);
+    pos.current.add(vel.current);
+    camera.position.copy(pos.current);
+    tgt.current.set(waveX * 0.4, waveY - 2.2, pos.current.z - 32);
+    camera.lookAt(tgt.current);
+  });
+  return null;
+};
+
+// ─── MAIN SCENE ────────────────────────────────────────────────────────────────
+const VynScene: React.FC<{
+  scrollProgress: number;
+  mouseX: number;
+  mouseY: number;
+}> = ({
+  scrollProgress,
+  mouseX,
+  mouseY
+}) => {
+  return <group>
+      <fog attach="fog" args={[C.bg, 20, 220]} />
+      <CameraController scrollProgress={scrollProgress} mouseX={mouseX} mouseY={mouseY} />
+      <Floor />
+      <StarField />
+      <ProceduralCity />
+      <DataStreamRibbons />
+      <AtmosphericColumns />
+      <FloatingBytes />
+
+      {/* Tunnel arch rings along the journey */}
+      {TUNNEL_ARCHES.map((arch, i) => <TunnelArch key={i} z={arch.z} color={arch.color} scale={arch.scale} idx={i} />)}
+
+      {/* Hero identity hub */}
+      <IdentityHub position={[0, 1, -36]} />
+
+      {/* Space portal cards */}
+      {SPACES.map((sp, i) => <SpacePortalCard key={sp.id} space={sp} idx={i} />)}
+
+      {/* Finale gateway */}
+      <FinaleGateway />
+
+      {/* Mid-journey decorative panels */}
+      {[{
+      pos: [0, 2, -280] as [number, number, number],
+      color: C.greenHex,
+      w: 22,
+      h: 12
+    }, {
+      pos: [-14, 0, -365] as [number, number, number],
+      color: C.cyanHex,
+      w: 14,
+      h: 8
+    }, {
+      pos: [14, 1, -450] as [number, number, number],
+      color: C.violetHex,
+      w: 14,
+      h: 8
+    }].map((p, i) => <DeepPortal key={i} position={p.pos} color={p.color} w={p.w} h={p.h} idx={i} />)}
+    </group>;
+};
+const DeepPortal: React.FC<{
+  position: [number, number, number];
+  color: number;
+  w: number;
+  h: number;
+  idx: number;
+}> = ({
+  position,
+  color,
+  w,
+  h,
+  idx
+}) => {
+  const ref = useRef<THREE.Group>(null);
+  const tex = useMemo(() => makeTunnelTexture(color), [color]);
+  const edgeGeo = useMemo(() => new THREE.EdgesGeometry(new THREE.PlaneGeometry(w, h)), [w, h]);
+  const edgeMat = useMemo(() => new THREE.LineBasicMaterial({
+    color,
+    transparent: true,
+    opacity: 0.25
+  }), [color]);
+  const fillMat = useMemo(() => new THREE.MeshBasicMaterial({
+    map: tex,
+    transparent: true,
+    opacity: 0.06,
+    depthWrite: false
+  }), [tex]);
+  useFrame(({
+    clock
+  }) => {
+    if (!ref.current) return;
+    ref.current.position.y = position[1] + Math.sin(clock.elapsedTime * 0.3 + idx * 1.5) * 0.5;
+    ref.current.rotation.y = Math.sin(clock.elapsedTime * 0.1 + idx) * 0.04;
+  });
+  return <group ref={ref} position={position}>
+      <mesh>
+        <planeGeometry args={[w, h]} />
+        <primitive object={fillMat} />
+      </mesh>
+      <lineSegments geometry={edgeGeo} material={edgeMat} />
+    </group>;
+};
+
+// ─── HTML BRAND MARK ───────────────────────────────────────────────────────────
+const VynMark: React.FC<{
+  size?: number;
+}> = ({
+  size = 36
+}) => <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-label="VYN Space logo">
+    <defs>
+      <linearGradient id="vgr" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor={C.cyan} />
+        <stop offset="0.5" stopColor={C.violet} />
+        <stop offset="1" stopColor={C.green} />
+      </linearGradient>
+      <linearGradient id="vgr2" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stopColor={C.cyan} stopOpacity="0.15" />
+        <stop offset="1" stopColor={C.violet} stopOpacity="0.05" />
+      </linearGradient>
+    </defs>
+    <rect width="40" height="40" rx="11" fill="url(#vgr2)" stroke="url(#vgr)" strokeWidth="0.8" strokeOpacity="0.4" />
+    {/* Hex outline */}
+    <polygon points="20,5 32,12 32,26 20,33 8,26 8,12" fill="none" stroke="url(#vgr)" strokeWidth="0.8" strokeOpacity="0.3" />
+    {/* V chevron */}
+    <path d="M13 13 L20 27 L27 13" stroke="url(#vgr)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    {/* Core dot */}
+    <circle cx="20" cy="17" r="2.5" fill={C.cyan} />
+    <circle cx="20" cy="17" r="1.1" fill="#00060F" />
+  </svg>;
+
+// ─── SCROLL PROGRESS INDICATOR ─────────────────────────────────────────────────
+const SECTION_LABELS = ['ORIGIN', 'SPACES', 'CAMPUS', 'APT', 'JOBS', 'FINANCE', 'VERIFY', 'ABOUT', 'BLOG', 'CONTACT', 'DONATE', 'META', 'FAQ', 'ACCESS'];
+const ScrollIndicator: React.FC<{
+  progress: number;
+}> = ({
+  progress
+}) => <div style={{
+  position: 'fixed',
+  right: 22,
+  top: '50%',
+  transform: 'translateY(-50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 7,
+  zIndex: 300
+}}>
+    {SECTION_LABELS.map((label, i) => {
+    const sp = i / (SECTION_LABELS.length - 1);
+    const active = Math.abs(progress - sp) < 0.07;
+    const passed = progress > sp + 0.05;
+    return <div key={label} style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 5
+    }}>
+          <div style={{
+        width: active ? 18 : passed ? 6 : 4,
+        height: active ? 1.5 : 1,
+        backgroundColor: active ? C.cyan : passed ? C.cyanDim : C.dim,
+        transition: 'all 0.35s ease',
+        boxShadow: active ? `0 0 6px ${C.cyan}` : 'none'
+      }} />
+          {active && <span style={{
+        color: C.cyan,
+        fontSize: 6.5,
+        letterSpacing: '0.22em',
+        fontFamily: 'monospace',
+        textTransform: 'uppercase' as const
+      }}>
+              {label}
+            </span>}
+        </div>;
+  })}
+    {/* Progress bar */}
+    <div style={{
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 1,
+    backgroundColor: C.dim
+  }}>
+      <div style={{
+      width: '100%',
+      backgroundColor: C.cyan,
+      height: `${progress * 100}%`,
+      transition: 'height 0.1s linear',
+      boxShadow: `0 0 4px ${C.cyan}`
+    }} />
+    </div>
+  </div>;
+
+// ─── NAVBAR ────────────────────────────────────────────────────────────────────
+const NavBar: React.FC<{
+  scrolled: boolean;
+}> = ({
+  scrolled
+}) => {
+  const [open, setOpen] = useState(false);
+  return <motion.nav initial={{
+    y: -72,
+    opacity: 0
+  }} animate={{
+    y: 0,
+    opacity: 1
+  }} transition={{
+    duration: 1,
+    ease: [0.16, 1, 0.3, 1]
+  }} style={{
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 200,
+    backgroundColor: scrolled ? 'rgba(0,6,15,0.94)' : 'transparent',
+    backdropFilter: scrolled ? 'blur(28px)' : 'none',
+    borderBottom: scrolled ? `1px solid ${C.border}` : '1px solid transparent',
+    transition: 'all 0.55s ease'
+  }}>
+      <div style={{
+      maxWidth: 1400,
+      margin: '0 auto',
+      padding: '0 28px',
+      height: 64,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between'
+    }}>
+        <a href="#" style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        textDecoration: 'none'
+      }}>
+          <VynMark size={30} />
+          <span style={{
+          color: C.text,
+          fontSize: 14,
+          fontWeight: 700,
+          fontFamily: 'monospace',
+          letterSpacing: '0.08em'
+        }}>
+            VYN<span style={{
+            color: C.cyan
+          }}>·</span>SPACE
+          </span>
+        </a>
+
+        <div className="hidden md:flex" style={{
+        alignItems: 'center',
+        gap: 26
+      }}>
+          {NAV_ITEMS.map(l => <a key={l.label} href={l.href} style={{
+          color: C.muted,
+          fontSize: 9.5,
+          fontWeight: 600,
+          letterSpacing: '0.18em',
+          textDecoration: 'none',
+          textTransform: 'uppercase',
+          transition: 'color 0.2s, text-shadow 0.2s'
+        }} onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.color = C.cyan;
+          (e.currentTarget as HTMLElement).style.textShadow = `0 0 12px ${C.cyan}`;
+        }} onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.color = C.muted;
+          (e.currentTarget as HTMLElement).style.textShadow = 'none';
+        }}>
+              {l.label}
+            </a>)}
+        </div>
+
+        <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8
+      }}>
+          <button className="hidden md:flex" onClick={() => {
+          window.location.hash = 'spaces';
+        }} style={{
+          background: 'none',
+          border: `1px solid ${C.border}`,
+          color: C.muted,
+          fontSize: 9.5,
+          padding: '7px 16px',
+          borderRadius: 5,
+          cursor: 'pointer',
+          fontWeight: 600,
+          letterSpacing: '0.14em',
+          transition: 'all 0.2s',
+          fontFamily: 'monospace'
+        }} onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = C.cyan;
+          (e.currentTarget as HTMLElement).style.color = C.text;
+        }} onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = C.border;
+          (e.currentTarget as HTMLElement).style.color = C.muted;
+        }}>
+            SIGN_IN
+          </button>
+          <button className="hidden md:flex" onClick={() => {
+          window.location.hash = 'register';
+        }} style={{
+          background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
+          border: 'none',
+          color: '#00060F',
+          fontSize: 9.5,
+          padding: '8px 18px',
+          borderRadius: 5,
+          cursor: 'pointer',
+          fontWeight: 800,
+          letterSpacing: '0.14em',
+          fontFamily: 'monospace',
+          boxShadow: `0 0 20px ${C.cyan}30`
+        }}>
+            ENTER_SYSTEM
+          </button>
+          <button className="md:hidden" onClick={() => setOpen(o => !o)} style={{
+          background: 'none',
+          border: 'none',
+          color: C.muted,
+          cursor: 'pointer',
+          padding: 4
+        }}>
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              {open ? <><line x1="4" y1="4" x2="16" y2="16" stroke={C.muted} strokeWidth="1.8" /><line x1="16" y1="4" x2="4" y2="16" stroke={C.muted} strokeWidth="1.8" /></> : <><line x1="3" y1="6" x2="17" y2="6" stroke={C.muted} strokeWidth="1.8" /><line x1="3" y1="10" x2="17" y2="10" stroke={C.muted} strokeWidth="1.8" /><line x1="3" y1="14" x2="17" y2="14" stroke={C.muted} strokeWidth="1.8" /></>}
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {open && <motion.div initial={{
+        opacity: 0,
+        height: 0
+      }} animate={{
+        opacity: 1,
+        height: 'auto'
+      }} exit={{
+        opacity: 0,
+        height: 0
+      }} style={{
+        backgroundColor: 'rgba(0,6,15,0.97)',
+        borderTop: `1px solid ${C.border}`,
+        overflow: 'hidden'
+      }}>
+            <div style={{
+          padding: '24px 28px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 20
+        }}>
+              {NAV_ITEMS.map(l => <a key={l.label} href={l.href} onClick={() => setOpen(false)} style={{
+            color: C.muted,
+            fontSize: 13,
+            textDecoration: 'none',
+            letterSpacing: '0.12em',
+            fontFamily: 'monospace'
+          }}>
+                  {l.label}
+                </a>)}
+            </div>
+          </motion.div>}
+      </AnimatePresence>
+    </motion.nav>;
+};
+
+// ─── HERO OVERLAY ──────────────────────────────────────────────────────────────
+const HeroOverlay: React.FC<{
+  visible: boolean;
+}> = ({
+  visible
+}) => <div style={{
+  position: 'absolute',
+  inset: 0,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 10,
+  pointerEvents: visible ? 'auto' : 'none'
+}}>
+    <motion.div initial={{
+    opacity: 0,
+    y: 50
+  }} animate={{
+    opacity: visible ? 1 : 0,
+    y: visible ? 0 : -50
+  }} transition={{
+    duration: 0.9,
+    ease: [0.16, 1, 0.3, 1]
+  }} style={{
+    textAlign: 'center',
+    padding: '0 24px',
+    maxWidth: 920,
+    pointerEvents: 'none'
+  }}>
+      {/* Status pill */}
+      <motion.div initial={{
+      opacity: 0,
+      y: 14
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.4,
+      duration: 0.8
+    }} style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 42,
+      padding: '5px 14px',
+      borderRadius: 40,
+      border: `1px solid ${C.border}`,
+      backgroundColor: 'rgba(77,255,239,0.04)',
+      fontFamily: 'monospace'
+    }}>
+        <motion.span animate={{
+        opacity: [1, 0.2, 1],
+        boxShadow: [`0 0 6px ${C.green}`, `0 0 14px ${C.green}`, `0 0 6px ${C.green}`]
+      }} transition={{
+        repeat: Infinity,
+        duration: 2.4
+      }} style={{
+        width: 5,
+        height: 5,
+        borderRadius: '50%',
+        backgroundColor: C.green,
+        display: 'inline-block'
+      }} />
+        <span style={{
+        color: C.green,
+        fontSize: 8.5,
+        fontWeight: 700,
+        letterSpacing: '0.26em',
+        textTransform: 'uppercase' as const
+      }}>
+          SYS:ONLINE · v2.5.1 · GERMANY INTEGRATION PLATFORM
+        </span>
+      </motion.div>
+
+      {/* Main headline */}
+      <motion.h1 initial={{
+      opacity: 0,
+      y: 54
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.6,
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1]
+    }} style={{
+      fontFamily: 'monospace',
+      fontSize: 'clamp(48px, 8.5vw, 112px)',
+      fontWeight: 700,
+      color: C.text,
+      lineHeight: 0.92,
+      letterSpacing: '-0.03em',
+      margin: '0 0 8px'
+    }}>
+        Verified life
+      </motion.h1>
+      <motion.h1 initial={{
+      opacity: 0,
+      y: 54
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.78,
+      duration: 1.2,
+      ease: [0.16, 1, 0.3, 1]
+    }} style={{
+      fontFamily: 'monospace',
+      fontSize: 'clamp(48px, 8.5vw, 112px)',
+      fontWeight: 700,
+      lineHeight: 0.92,
+      letterSpacing: '-0.03em',
+      margin: '0 0 44px',
+      background: `linear-gradient(110deg, ${C.cyan} 0%, ${C.green} 45%, ${C.violet} 100%)`,
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent'
+    }}>
+        onboarding.
+      </motion.h1>
+
+      <motion.p initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 1.0,
+      duration: 0.9
+    }} style={{
+      color: C.muted,
+      fontSize: 'clamp(14px, 1.5vw, 17px)',
+      lineHeight: 1.82,
+      maxWidth: 510,
+      margin: '0 auto 52px',
+      fontFamily: 'Inter, sans-serif'
+    }}>
+        A trust layer for arrival, housing, banking, work, education, and community — built around one verified identity instead of scattered paperwork.
+      </motion.p>
+
+      <motion.div initial={{
+      opacity: 0,
+      y: 16
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 1.25,
+      duration: 0.8
+    }} style={{
+      display: 'flex',
+      gap: 10,
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      pointerEvents: 'auto'
+    }}>
+        <a href="#spaces" style={{
+        background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
+        color: '#00060F',
+        fontSize: 11,
+        fontWeight: 800,
+        padding: '13px 32px',
+        borderRadius: 6,
+        cursor: 'pointer',
+        letterSpacing: '0.12em',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        textDecoration: 'none',
+        fontFamily: 'monospace',
+        boxShadow: `0 0 24px ${C.cyan}35`
+      }}>
+          ENTER_SPACES
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="#00060F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </a>
+        <a href="#register" style={{
+        backgroundColor: 'transparent',
+        border: `1px solid rgba(77,255,239,0.25)`,
+        color: C.text,
+        fontSize: 11,
+        fontWeight: 600,
+        padding: '13px 32px',
+        borderRadius: 6,
+        cursor: 'pointer',
+        letterSpacing: '0.1em',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        textDecoration: 'none',
+        transition: 'all 0.25s',
+        fontFamily: 'monospace'
+      }} onMouseEnter={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = C.cyan;
+        (e.currentTarget as HTMLElement).style.boxShadow = `0 0 16px ${C.cyan}20`;
+      }} onMouseLeave={e => {
+        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(77,255,239,0.25)';
+        (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+      }}>
+          VERIFY_ACCESS
+        </a>
+      </motion.div>
+    </motion.div>
+
+    {/* Scroll indicator */}
+    <motion.div initial={{
+    opacity: 0
+  }} animate={{
+    opacity: visible ? 1 : 0
+  }} transition={{
+    delay: 2.8,
+    duration: 1
+  }} style={{
+    position: 'absolute',
+    bottom: 28,
+    left: '50%',
+    transform: 'translateX(-50%)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 7,
+    pointerEvents: 'none'
+  }}>
+      <span style={{
+      color: C.dim,
+      fontSize: 7.5,
+      letterSpacing: '0.3em',
+      textTransform: 'uppercase' as const,
+      fontFamily: 'monospace'
+    }}>SCROLL_TO_FLY</span>
+      <motion.div animate={{
+      y: [0, 9, 0]
+    }} transition={{
+      repeat: Infinity,
+      duration: 1.9,
+      ease: 'easeInOut'
+    }}>
+        <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 4l5 6 5-6" stroke={C.dim} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+      </motion.div>
+    </motion.div>
+  </div>;
+
+// ─── SECTION INFO PANEL ────────────────────────────────────────────────────────
+const SectionPanel: React.FC<{
+  visible: boolean;
+  space: SpaceItem;
+  side: 'left' | 'right';
+}> = ({
+  visible,
+  space,
+  side
+}) => <AnimatePresence>
+    {visible && <motion.div key={space.id} initial={{
+    opacity: 0,
+    x: side === 'left' ? -70 : 70
+  }} animate={{
+    opacity: 1,
+    x: 0
+  }} exit={{
+    opacity: 0,
+    x: side === 'left' ? -70 : 70
+  }} transition={{
+    duration: 0.75,
+    ease: [0.16, 1, 0.3, 1]
+  }} style={{
+    position: 'absolute',
+    [side]: 32,
+    bottom: 28,
+    width: 'min(360px, calc(100vw - 48px))',
+    maxHeight: 'calc(100vh - 116px)',
+    overflowY: 'auto',
+    zIndex: 10,
+    padding: '28px 28px',
+    backgroundColor: 'rgba(0,6,15,0.76)',
+    backdropFilter: 'blur(32px)',
+    border: `1px solid ${space.color}22`,
+    borderRadius: 16,
+    boxShadow: `0 0 50px ${space.color}0A`
+  }}>
+        {/* Code + divider */}
+        <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 18
+    }}>
+          <span style={{
+        width: 24,
+        height: 1,
+        backgroundColor: space.color,
+        display: 'inline-block'
+      }} />
+          <span style={{
+        color: space.color,
+        fontSize: 7.5,
+        fontWeight: 700,
+        letterSpacing: '0.28em',
+        fontFamily: 'monospace',
+        textTransform: 'uppercase' as const
+      }}>{space.code}</span>
+        </div>
+        <p style={{
+      color: space.color,
+      fontSize: 9,
+      fontWeight: 700,
+      letterSpacing: '0.18em',
+      textTransform: 'uppercase' as const,
+      marginBottom: 9,
+      fontFamily: 'monospace'
+    }}>
+          {space.tagline}
+        </p>
+        <h2 style={{
+      fontFamily: 'monospace',
+      fontSize: 'clamp(22px, 2.6vw, 38px)',
+      fontWeight: 700,
+      color: C.text,
+      lineHeight: 1.04,
+      marginBottom: 14
+    }}>
+          {space.label === 'Spaces' ? 'VYN Space access map' : `VYN ${space.label}`}
+        </h2>
+        <p style={{
+      color: C.muted,
+      fontSize: 13,
+      lineHeight: 1.82
+    }}>{space.desc}</p>
+
+        <p style={{
+      color: 'rgba(232,244,255,0.78)',
+      fontSize: 12,
+      lineHeight: 1.72,
+      marginTop: 14,
+      fontFamily: 'Inter, sans-serif'
+    }}>{space.detail}</p>
+
+        {/* Mini stat bars */}
+        <div style={{
+      marginTop: 22,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8
+    }}>
+          {space.bullets.slice(0, 4).map((stat, i) => <div key={stat}>
+              <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: 3
+        }}>
+                <span style={{
+            color: C.dim,
+            fontSize: 7.5,
+            fontFamily: 'monospace',
+            letterSpacing: '0.16em'
+          }}>{stat.toUpperCase()}</span>
+                <span style={{
+            color: space.color,
+            fontSize: 7.5,
+            fontFamily: 'monospace'
+          }}>{String(i + 1).padStart(2, '0')}</span>
+              </div>
+              <div style={{
+          height: 2,
+          backgroundColor: C.dim,
+          borderRadius: 1
+        }}>
+                <motion.div initial={{
+            width: 0
+          }} animate={{
+            width: `${[96, 88, 80, 72][i] ?? 70}%`
+          }} transition={{
+            delay: 0.3 + i * 0.1,
+            duration: 0.8
+          }} style={{
+            height: '100%',
+            backgroundColor: space.color,
+            borderRadius: 1,
+            boxShadow: `0 0 6px ${space.color}`
+          }} />
+              </div>
+            </div>)}
+        </div>
+
+        <a href="#register" style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: 7,
+      marginTop: 22,
+      background: `linear-gradient(135deg, ${space.color}, ${space.color}BB)`,
+      color: '#00060F',
+      fontSize: 9.5,
+      fontWeight: 800,
+      padding: '10px 20px',
+      borderRadius: 5,
+      cursor: 'pointer',
+      letterSpacing: '0.12em',
+      textDecoration: 'none',
+      fontFamily: 'monospace'
+    }}>
+          {space.id === 'register' ? 'START_VERIFY' : 'OPEN_SECTION'}
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 3l3 3-3 3" stroke="#00060F" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        </a>
+      </motion.div>}
+  </AnimatePresence>;
+
+// ─── REGISTER OVERLAY ──────────────────────────────────────────────────────────
+const RegisterOverlay: React.FC<{
+  visible: boolean;
+}> = ({
+  visible
+}) => {
+  const [active, setActive] = useState(0);
+  useEffect(() => {
+    if (!visible) return;
+    const t = setInterval(() => setActive(a => (a + 1) % VERIFY_STEPS.length), 2800);
+    return () => clearInterval(t);
+  }, [visible]);
+  return <AnimatePresence>
+      {visible && <motion.div initial={{
+      opacity: 0,
+      y: 60
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} exit={{
+      opacity: 0,
+      y: 60
+    }} transition={{
+      duration: 0.85,
+      ease: [0.16, 1, 0.3, 1]
+    }} style={{
+      position: 'absolute',
+      bottom: 28,
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+      width: '90%',
+      maxWidth: 920,
+      maxHeight: 'calc(100vh - 116px)',
+      overflowY: 'auto',
+      zIndex: 10
+    }}>
+          <div style={{
+        textAlign: 'center',
+        marginBottom: 28
+      }}>
+            <p style={{
+          color: C.violet,
+          fontSize: 8.5,
+          fontWeight: 700,
+          letterSpacing: '0.3em',
+          textTransform: 'uppercase' as const,
+          marginBottom: 12,
+          fontFamily: 'monospace'
+        }}>
+              ACCESS MODEL
+            </p>
+            <h2 style={{
+          fontFamily: 'monospace',
+          fontSize: 'clamp(24px, 3.2vw, 46px)',
+          fontWeight: 700,
+          color: C.text,
+          lineHeight: 1.0
+        }}>
+              Register once. Verify once. Unlock everything.
+            </h2>
+          </div>
+          <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))',
+        gap: 10
+      }}>
+            {VERIFY_STEPS.map((step, i) => <div key={step.num} onClick={() => setActive(i)} style={{
+          backgroundColor: active === i ? `${step.color}0E` : 'rgba(0,6,15,0.74)',
+          backdropFilter: 'blur(22px)',
+          border: `1px solid ${active === i ? step.color + '40' : C.border}`,
+          borderRadius: 12,
+          padding: '20px 16px',
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+                {active === i && <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 1.5,
+            backgroundColor: step.color,
+            boxShadow: `0 0 10px ${step.color}`
+          }} />}
+                <span style={{
+            color: active === i ? step.color : C.dim,
+            fontSize: 28,
+            fontWeight: 800,
+            fontFamily: 'monospace',
+            display: 'block',
+            marginBottom: 8
+          }}>
+                  {step.num}
+                </span>
+                <h3 style={{
+            color: C.text,
+            fontSize: 13.5,
+            fontWeight: 700,
+            fontFamily: 'monospace',
+            marginBottom: 7
+          }}>{step.label}</h3>
+                <p style={{
+            color: C.muted,
+            fontSize: 12,
+            lineHeight: 1.64
+          }}>{step.desc}</p>
+              </div>)}
+          </div>
+        </motion.div>}
+    </AnimatePresence>;
+};
+
+// ─── FAQ OVERLAY ───────────────────────────────────────────────────────────────
+const FaqOverlay: React.FC<{
+  visible: boolean;
+}> = ({
+  visible
+}) => {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  return <AnimatePresence>
+      {visible && <motion.div initial={{
+      opacity: 0,
+      scale: 0.95
+    }} animate={{
+      opacity: 1,
+      scale: 1
+    }} exit={{
+      opacity: 0,
+      scale: 0.95
+    }} transition={{
+      duration: 0.7
+    }} style={{
+      position: 'absolute',
+      top: '12vh',
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+      width: '88%',
+      maxWidth: 700,
+      maxHeight: '76vh',
+      overflowY: 'auto',
+      zIndex: 10,
+      backgroundColor: 'rgba(0,6,15,0.84)',
+      backdropFilter: 'blur(36px)',
+      border: `1px solid ${C.border}`,
+      borderRadius: 18,
+      padding: '38px 34px'
+    }}>
+          <p style={{
+        color: C.cyan,
+        fontSize: 8.5,
+        fontWeight: 700,
+        letterSpacing: '0.28em',
+        textTransform: 'uppercase' as const,
+        marginBottom: 12,
+        fontFamily: 'monospace'
+      }}>
+            FAQ.TXT
+          </p>
+          <h2 style={{
+        fontFamily: 'monospace',
+        fontSize: 'clamp(20px, 2.4vw, 34px)',
+        fontWeight: 700,
+        color: C.text,
+        lineHeight: 1.04,
+        marginBottom: 26
+      }}>
+            Plain answers.
+          </h2>
+          {FAQ.map((item, i) => <div key={item.q} style={{
+        borderBottom: `1px solid ${C.border}`,
+        overflow: 'hidden'
+      }}>
+              <button onClick={() => setOpenIdx(openIdx === i ? null : i)} style={{
+          width: '100%',
+          background: 'none',
+          border: 'none',
+          padding: '16px 0',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          cursor: 'pointer',
+          textAlign: 'left',
+          gap: 14
+        }}>
+                <span style={{
+            color: C.text,
+            fontSize: 13.5,
+            fontWeight: 600,
+            lineHeight: 1.4,
+            fontFamily: 'Inter, sans-serif'
+          }}>{item.q}</span>
+                <motion.div animate={{
+            rotate: openIdx === i ? 45 : 0
+          }} transition={{
+            duration: 0.2
+          }} style={{
+            flexShrink: 0
+          }}>
+                  <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                    <line x1="7" y1="1" x2="7" y2="13" stroke={C.cyan} strokeWidth="1.5" strokeLinecap="round" />
+                    <line x1="1" y1="7" x2="13" y2="7" stroke={C.cyan} strokeWidth="1.5" strokeLinecap="round" />
+                  </svg>
+                </motion.div>
+              </button>
+              <AnimatePresence>
+                {openIdx === i && <motion.div initial={{
+            height: 0,
+            opacity: 0
+          }} animate={{
+            height: 'auto',
+            opacity: 1
+          }} exit={{
+            height: 0,
+            opacity: 0
+          }} transition={{
+            duration: 0.22
+          }} style={{
+            overflow: 'hidden'
+          }}>
+                    <p style={{
+              color: C.muted,
+              fontSize: 13,
+              lineHeight: 1.82,
+              paddingBottom: 16,
+              margin: 0,
+              fontFamily: 'Inter, sans-serif'
+            }}>{item.a}</p>
+                  </motion.div>}
+              </AnimatePresence>
+            </div>)}
+        </motion.div>}
+    </AnimatePresence>;
+};
+
+// ─── CTA OVERLAY ───────────────────────────────────────────────────────────────
+const CtaOverlay: React.FC<{
+  visible: boolean;
+}> = ({
+  visible
+}) => {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
+  return <AnimatePresence>
+      {visible && <motion.div initial={{
+      opacity: 0,
+      y: 50
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} exit={{
+      opacity: 0,
+      y: 50
+    }} transition={{
+      duration: 0.95,
+      ease: [0.16, 1, 0.3, 1]
+    }} style={{
+      position: 'absolute',
+      top: '18vh',
+      left: 0,
+      right: 0,
+      margin: '0 auto',
+      width: '90%',
+      maxWidth: 700,
+      zIndex: 10,
+      textAlign: 'center',
+      pointerEvents: 'auto'
+    }}>
+          <motion.div animate={{
+        opacity: [1, 0.3, 1]
+      }} transition={{
+        repeat: Infinity,
+        duration: 2.2
+      }} style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 34,
+        padding: '5px 14px',
+        borderRadius: 40,
+        border: `1px solid ${C.border}`,
+        backgroundColor: 'rgba(77,255,239,0.04)',
+        fontFamily: 'monospace'
+      }}>
+            <span style={{
+          width: 5,
+          height: 5,
+          borderRadius: '50%',
+          backgroundColor: C.cyan,
+          boxShadow: `0 0 8px ${C.cyan}`,
+          display: 'inline-block'
+        }} />
+            <span style={{
+          color: C.cyan,
+          fontSize: 8.5,
+          fontWeight: 700,
+          letterSpacing: '0.26em',
+          textTransform: 'uppercase' as const
+        }}>
+              REGISTER TO UNLOCK CAMPUS · APT · JOBS · FINANCE
+            </span>
+          </motion.div>
+
+          <h2 style={{
+        fontFamily: 'monospace',
+        fontSize: 'clamp(36px, 5.5vw, 80px)',
+        fontWeight: 700,
+        color: C.text,
+        lineHeight: 0.95,
+        letterSpacing: '-0.02em',
+        marginBottom: 18
+      }}>
+            Ready to enter{' '}
+            <span style={{
+          background: `linear-gradient(90deg, ${C.cyan}, ${C.green})`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
+        }}>
+              Germany?
+            </span>
+          </h2>
+
+          <p style={{
+        color: C.muted,
+        fontSize: 15,
+        lineHeight: 1.78,
+        marginBottom: 38,
+        fontFamily: 'Inter, sans-serif'
+      }}>
+            Create one verified profile, complete document and identity checks, then enter the protected service spaces.
+          </p>
+
+          <form onSubmit={e => {
+        e.preventDefault();
+        if (email.trim()) setSent(true);
+      }} style={{
+        display: 'flex',
+        gap: 8,
+        justifyContent: 'center',
+        flexWrap: 'wrap',
+        marginBottom: 44
+      }}>
+            <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required style={{
+          flex: '1 1 200px',
+          backgroundColor: 'rgba(0,6,15,0.85)',
+          border: `1px solid rgba(77,255,239,0.24)`,
+          borderRadius: 6,
+          padding: '12px 16px',
+          color: C.text,
+          fontSize: 13,
+          outline: 'none',
+          fontFamily: 'monospace'
+        }} />
+            <button type="submit" style={{
+          background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
+          border: 'none',
+          color: '#00060F',
+          fontSize: 10.5,
+          fontWeight: 800,
+          padding: '12px 24px',
+          borderRadius: 6,
+          cursor: 'pointer',
+          letterSpacing: '0.14em',
+          fontFamily: 'monospace',
+          boxShadow: sent ? 'none' : `0 0 20px ${C.cyan}30`
+        }}>
+              {sent ? '✓ RECEIVED' : 'REQUEST_ACCESS'}
+            </button>
+          </form>
+
+          <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 44,
+        flexWrap: 'wrap'
+      }}>
+            {CTA_STATS.map(s => <div key={s.label} style={{
+          textAlign: 'center'
+        }}>
+                <div style={{
+            color: s.color,
+            fontFamily: 'monospace',
+            fontSize: 'clamp(20px, 2.4vw, 28px)',
+            fontWeight: 700,
+            textShadow: `0 0 16px ${s.color}55`
+          }}>{s.val}</div>
+                <div style={{
+            color: C.dim,
+            fontSize: 7.5,
+            letterSpacing: '0.18em',
+            marginTop: 4,
+            textTransform: 'uppercase' as const,
+            fontFamily: 'monospace'
+          }}>{s.label}</div>
+              </div>)}
+          </div>
+        </motion.div>}
+    </AnimatePresence>;
+};
+
+// ─── FOOTER ────────────────────────────────────────────────────────────────────
+const FOOTER_COLS = [{
+  title: 'Platform',
+  links: ['Spaces', 'Campus', 'APT', 'Jobs', 'Finance', 'Register', 'Metaverse']
+}, {
+  title: 'Company',
+  links: ['About', 'Team', 'Blog', 'Appointments', 'Contact']
+}, {
+  title: 'Trust',
+  links: ['Verification', 'Data Consent', 'FAQ', 'Donation', 'Security']
+}];
+const footerTarget = (label: string) => {
+  const map: Record<string, string> = {
+    Spaces: 'spaces',
+    Campus: 'campus',
+    APT: 'apt',
+    Jobs: 'jobs',
+    Finance: 'finance',
+    Register: 'register',
+    Metaverse: 'metaverse',
+    About: 'about',
+    Team: 'about',
+    Blog: 'blog',
+    Appointments: 'contact',
+    Contact: 'contact',
+    Verification: 'register',
+    'Data Consent': 'register',
+    FAQ: 'faq',
+    Donation: 'donation',
+    Security: 'faq'
+  };
+  return map[label] ?? 'hero';
+};
+const Footer: React.FC = () => <footer style={{
+  backgroundColor: '#00060F',
+  borderTop: `1px solid ${C.border}`,
+  padding: '56px 0 28px',
+  position: 'relative',
+  zIndex: 10
+}}>
+    <div style={{
+    maxWidth: 1400,
+    margin: '0 auto',
+    padding: '0 28px'
+  }}>
+      <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+      gap: 44,
+      marginBottom: 44
+    }}>
+        <div>
+          <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 9,
+          marginBottom: 12
+        }}>
+            <VynMark size={26} />
+            <span style={{
+            color: C.text,
+            fontSize: 12,
+            fontWeight: 700,
+            fontFamily: 'monospace',
+            letterSpacing: '0.07em'
+          }}>VYN<span style={{
+              color: C.cyan
+            }}>·</span>SPACE</span>
+          </div>
+          <p style={{
+          color: C.muted,
+          fontSize: 12,
+          lineHeight: 1.78,
+          maxWidth: 185,
+          margin: '0 0 14px',
+          fontFamily: 'Inter, sans-serif'
+        }}>
+            The trust layer for building your life in Germany. One verified identity. Every service.
+          </p>
+          {/* Footer terminal line */}
+          <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6
+        }}>
+            <span style={{
+            color: C.dim,
+            fontSize: 10,
+            fontFamily: 'monospace'
+          }}>{'>'}</span>
+            <motion.span animate={{
+            opacity: [1, 0, 1]
+          }} transition={{
+            repeat: Infinity,
+            duration: 1.2
+          }} style={{
+            width: 6,
+            height: 12,
+            backgroundColor: C.cyan,
+            display: 'inline-block'
+          }} />
+          </div>
+        </div>
+        {FOOTER_COLS.map(col => <div key={col.title}>
+            <h4 style={{
+          color: C.text,
+          fontSize: 7.5,
+          fontWeight: 700,
+          letterSpacing: '0.22em',
+          textTransform: 'uppercase' as const,
+          marginBottom: 14,
+          fontFamily: 'monospace'
+        }}>
+              {col.title}
+            </h4>
+            <ul style={{
+          listStyle: 'none',
+          padding: 0,
+          margin: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10
+        }}>
+              {col.links.map(l => <li key={l}>
+                  <a href={`#${footerTarget(l)}`} style={{
+              color: C.muted,
+              fontSize: 12.5,
+              textDecoration: 'none',
+              transition: 'color 0.2s',
+              fontFamily: 'Inter, sans-serif'
+            }} onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.color = C.text;
+            }} onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.color = C.muted;
+            }}>
+                    {l}
+                  </a>
+                </li>)}
+            </ul>
+          </div>)}
+      </div>
+      <div style={{
+      borderTop: `1px solid ${C.border}`,
+      paddingTop: 18,
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      gap: 8
+    }}>
+        <span style={{
+        color: C.dim,
+        fontSize: 11,
+        fontFamily: 'monospace'
+      }}>© 2026 VYN Space · Built for people building new lives in Germany.</span>
+        <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 7
+      }}>
+          <motion.div animate={{
+          opacity: [1, 0.3, 1],
+          boxShadow: [`0 0 4px ${C.green}`, `0 0 10px ${C.green}`, `0 0 4px ${C.green}`]
+        }} transition={{
+          repeat: Infinity,
+          duration: 2
+        }} style={{
+          width: 5,
+          height: 5,
+          borderRadius: '50%',
+          backgroundColor: C.green
+        }} />
+          <span style={{
+          color: C.green,
+          fontSize: 10.5,
+          fontWeight: 600,
+          fontFamily: 'monospace'
+        }}>SYS_ONLINE</span>
+        </div>
+      </div>
+    </div>
+  </footer>;
+
+// ─── SECTION DEFINITIONS ───────────────────────────────────────────────────────
+type SectionDef = {
+  id: string;
+  scrollStart: number;
+  scrollEnd: number;
+  type: 'hero' | 'space' | 'register' | 'faq' | 'cta';
+  spaceIndex?: number;
+};
+const SECTIONS: SectionDef[] = [{
+  id: 'hero',
+  scrollStart: 0,
+  scrollEnd: 0.07,
+  type: 'hero'
+}, {
+  id: 'spaces',
+  scrollStart: 0.08,
+  scrollEnd: 0.145,
+  type: 'space',
+  spaceIndex: 0
+}, {
+  id: 'campus',
+  scrollStart: 0.155,
+  scrollEnd: 0.215,
+  type: 'space',
+  spaceIndex: 1
+}, {
+  id: 'apt',
+  scrollStart: 0.225,
+  scrollEnd: 0.285,
+  type: 'space',
+  spaceIndex: 2
+}, {
+  id: 'jobs',
+  scrollStart: 0.295,
+  scrollEnd: 0.355,
+  type: 'space',
+  spaceIndex: 3
+}, {
+  id: 'finance',
+  scrollStart: 0.365,
+  scrollEnd: 0.425,
+  type: 'space',
+  spaceIndex: 4
+}, {
+  id: 'register',
+  scrollStart: 0.435,
+  scrollEnd: 0.51,
+  type: 'register'
+}, {
+  id: 'about',
+  scrollStart: 0.52,
+  scrollEnd: 0.58,
+  type: 'space',
+  spaceIndex: 6
+}, {
+  id: 'blog',
+  scrollStart: 0.59,
+  scrollEnd: 0.65,
+  type: 'space',
+  spaceIndex: 7
+}, {
+  id: 'contact',
+  scrollStart: 0.66,
+  scrollEnd: 0.72,
+  type: 'space',
+  spaceIndex: 8
+}, {
+  id: 'donation',
+  scrollStart: 0.73,
+  scrollEnd: 0.79,
+  type: 'space',
+  spaceIndex: 9
+}, {
+  id: 'metaverse',
+  scrollStart: 0.80,
+  scrollEnd: 0.86,
+  type: 'space',
+  spaceIndex: 10
+}, {
+  id: 'faq',
+  scrollStart: 0.875,
+  scrollEnd: 0.93,
+  type: 'faq'
+}, {
+  id: 'cta',
+  scrollStart: 0.945,
+  scrollEnd: 0.98,
+  type: 'cta'
+}];
+
+// ─── ROOT COMPONENT ────────────────────────────────────────────────────────────
+export const VynSpaceLanding: React.FC = () => {
+  const [scrollY, setScrollY] = useState(0);
+  const [scrollProg, setScrollProg] = useState(0);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  useEffect(() => {
+    // Inject fonts
+    if (!document.getElementById('vyn-fonts')) {
+      const link = document.createElement('link');
+      link.id = 'vyn-fonts';
+      link.rel = 'stylesheet';
+      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
+      document.head.appendChild(link);
+    }
+    document.body.style.backgroundColor = C.bg;
+    document.body.style.overflowX = 'hidden';
+    const onScroll = () => {
+      const sy = window.scrollY;
+      const total = document.body.scrollHeight - window.innerHeight;
+      setScrollY(sy);
+      setScrollProg(total > 0 ? Math.min(1, sy / total) : 0);
+    };
+    const onMouse = (e: MouseEvent) => {
+      setMouseX((e.clientX / window.innerWidth - 0.5) * 2);
+      setMouseY(-(e.clientY / window.innerHeight - 0.5) * 2);
+    };
+    const onHash = () => {
+      const id = window.location.hash.replace('#', '') || 'hero';
+      const target = document.getElementById(id);
+      if (target) target.scrollIntoView({
+        block: 'start'
+      });
+    };
+    window.addEventListener('scroll', onScroll, {
+      passive: true
+    });
+    window.addEventListener('mousemove', onMouse, {
+      passive: true
+    });
+    window.addEventListener('hashchange', onHash);
+    window.setTimeout(onHash, 80);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('mousemove', onMouse);
+      window.removeEventListener('hashchange', onHash);
+      document.body.style.backgroundColor = '';
+      document.body.style.overflowX = '';
+    };
+  }, []);
+  const activeSection = useMemo(() => SECTIONS.find(s => scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
+  const activeSpaceSection = useMemo(() => SECTIONS.find(s => s.type === 'space' && scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
+  return <div style={{
+    backgroundColor: C.bg,
+    color: C.text,
+    fontFamily: 'Inter, sans-serif'
+  }}>
+      <NavBar scrolled={scrollY > 55} />
+
+      {/* ── Sticky 3D viewport ── */}
+      <div style={{
+      position: 'sticky',
+      top: 0,
+      width: '100%',
+      height: '100vh',
+      zIndex: 1
+    }}>
+        <Canvas camera={{
+        position: [0, 3, 24],
+        fov: 64
+      }} style={{
+        position: 'absolute',
+        inset: 0,
+        width: '100%',
+        height: '100%'
+      }} gl={{
+        alpha: false,
+        antialias: false,
+        powerPreference: 'high-performance'
+      }} dpr={[1, 1.6]}>
+          <color attach="background" args={[C.bg]} />
+          <Suspense fallback={null}>
+            <VynScene scrollProgress={scrollProg} mouseX={mouseX} mouseY={mouseY} />
+          </Suspense>
+        </Canvas>
+
+        {/* HTML overlays */}
+        <HeroOverlay visible={activeSection?.type === 'hero'} />
+
+        {activeSpaceSection && activeSpaceSection.spaceIndex !== undefined && <SectionPanel key={activeSpaceSection.id} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right'} />}
+
+        <RegisterOverlay visible={activeSection?.type === 'register'} />
+        <FaqOverlay visible={activeSection?.type === 'faq'} />
+        <CtaOverlay visible={activeSection?.type === 'cta'} />
+        <ScrollIndicator progress={scrollProg} />
+
+        {/* HUD corner brackets */}
+        {([{
+        top: 78,
+        left: 26,
+        borderTop: `1px solid ${C.cyan}28`,
+        borderLeft: `1px solid ${C.cyan}28`
+      }, {
+        top: 78,
+        right: 26,
+        borderTop: `1px solid ${C.cyan}28`,
+        borderRight: `1px solid ${C.cyan}28`
+      }, {
+        bottom: 26,
+        left: 26,
+        borderBottom: `1px solid ${C.cyan}28`,
+        borderLeft: `1px solid ${C.cyan}28`
+      }, {
+        bottom: 26,
+        right: 26,
+        borderBottom: `1px solid ${C.cyan}28`,
+        borderRight: `1px solid ${C.cyan}28`
+      }] as React.CSSProperties[]).map((style, i) => <div key={i} style={{
+        position: 'absolute',
+        width: 20,
+        height: 20,
+        pointerEvents: 'none',
+        zIndex: 5,
+        ...style
+      }} />)}
+
+        {/* HUD telemetry readout */}
+        <div style={{
+        position: 'absolute',
+        bottom: 28,
+        left: 28,
+        pointerEvents: 'none',
+        zIndex: 5
+      }}>
+          <div style={{
+          color: C.dim,
+          fontSize: 7.5,
+          fontFamily: 'monospace',
+          lineHeight: 2,
+          letterSpacing: '0.12em'
+        }}>
+            <div>DEPTH: {Math.round(scrollProg * 600).toString().padStart(4, '0')}m</div>
+            <div>PROGRESS: {Math.round(scrollProg * 100).toString().padStart(3, '0')}%</div>
+            <div>NODE: {activeSection?.id?.toUpperCase() ?? 'STANDBY'}</div>
+          </div>
+        </div>
+
+        {/* Scan line */}
+        <motion.div animate={{
+        y: ['-100%', '100vh']
+      }} transition={{
+        repeat: Infinity,
+        duration: 5.5,
+        ease: 'linear',
+        repeatDelay: 7
+      }} style={{
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        height: 1,
+        pointerEvents: 'none',
+        zIndex: 4,
+        background: `linear-gradient(90deg, transparent, ${C.cyan}28, ${C.cyan}55, ${C.cyan}28, transparent)`
+      }} />
+
+        {/* Vignette */}
+        <div style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 2,
+        background: 'radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0,6,15,0.55) 100%)'
+      }} />
+
+        {/* Bottom fade */}
+        <div style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 100,
+        pointerEvents: 'none',
+        background: `linear-gradient(to bottom, transparent, ${C.bg})`,
+        zIndex: 3
+      }} />
+      </div>
+
+      {/* Scroll spacer and hash anchors for page-like navigation */}
+      <div style={{
+      height: '1120vh',
+      marginTop: '-100vh',
+      position: 'relative',
+      zIndex: 0
+    }}>
+        {SECTIONS.map(section => <div key={section.id} id={section.id} aria-hidden="true" style={{
+        position: 'absolute',
+        top: `calc(${section.scrollStart * 1120}vh + 1px)`,
+        width: 1,
+        height: 1,
+        pointerEvents: 'none'
+      }} />)}
+      </div>
+
+      <Footer />
+    </div>;
+};

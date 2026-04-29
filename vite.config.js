@@ -7,7 +7,7 @@ export default defineConfig({
   base: repoName ? `/${repoName}/` : "/",
   plugins: [react()],
   build: {
-    chunkSizeWarningLimit: 650,
+    chunkSizeWarningLimit: 850,
     rollupOptions: {
       output: {
         manualChunks: {
