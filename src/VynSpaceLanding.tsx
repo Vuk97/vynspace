@@ -5,15 +5,16 @@ import * as THREE from 'three';
 
 // ─── BRAND TOKENS ──────────────────────────────────────────────────────────────
 const C = {
-  bg: '#00060F',
-  bgVec: new THREE.Color('#00060F'),
-  cyan: '#4DFFEF',
-  cyanHex: 0x4dffef,
-  cyanDim: '#1A9E96',
+  bg: '#03060D',
+  bgVec: new THREE.Color('#03060D'),
+  navy: '#0A0F1C',
+  cyan: '#5BC0EB',
+  cyanHex: 0x5bc0eb,
+  cyanDim: '#0D5D76',
   green: '#00FFB2',
   greenHex: 0x00ffb2,
-  violet: '#8B5CF6',
-  violetHex: 0x8b5cf6,
+  violet: '#7A5CFF',
+  violetHex: 0x7a5cff,
   coral: '#FF6B5F',
   coralHex: 0xff6b5f,
   amber: '#FFCF5A',
@@ -23,8 +24,9 @@ const C = {
   text: '#E8F4FF',
   muted: '#6B8099',
   dim: '#1C2D40',
-  border: 'rgba(77,255,239,0.10)'
+  border: 'rgba(91,192,235,0.14)'
 } as const;
+const LOGO_URL = `${import.meta.env.BASE_URL}vynspacelogo.webp`;
 
 // ─── STATIC DATA ───────────────────────────────────────────────────────────────
 const NAV_ITEMS = [{
@@ -66,6 +68,10 @@ type SpaceItem = {
   desc: string;
   detail: string;
   bullets: string[];
+  contentBlocks: Array<{
+    title: string;
+    items: string[];
+  }>;
   color: string;
   colorHex: number;
   icon: string;
@@ -79,6 +85,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'The public map of Campus, APT, Jobs, and Finance. Full access unlocks only after registration, verification, and login.',
   detail: 'Spaces is the bridge between the public website and the protected app. It explains the platform clearly while preparing a future subdomain flow such as spaces.vyn-space.io.',
   bullets: ['Campus, APT, Jobs, Finance preview', 'Protected app after verification', 'Subdomain-ready architecture'],
+  contentBlocks: [{
+    title: 'Access model',
+    items: ['Public website previews the ecosystem', 'Protected service access after registration, verification, and login', 'Future deployment can support www.vyn-space.io/spaces and spaces.vyn-space.io']
+  }, {
+    title: 'Technical direction',
+    items: ['Shared verified profile across all services', 'Lazy-loaded 3D and avatar layer', 'Mobile fallback for low-performance devices']
+  }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⬢',
@@ -91,6 +104,16 @@ const SPACES: SpaceItem[] = [{
   desc: 'Documents, appointments, courses, community, rewards, university integrations, and institutional processes in one civic command center.',
   detail: 'Campus is the retention layer: visa tasks, address changes, government links, document storage, courses, certifications, tutorials, podcasts, clubs, rewards, university data, and LinkedIn-like community features.',
   bullets: ['Visa, registration, address changes', 'Document vault and submissions', 'Courses, certifications, podcasts, clubs', 'Universities, authorities, organizations'],
+  contentBlocks: [{
+    title: 'Digital city hall',
+    items: ['Useful websites, phone numbers, and appointment systems', 'Visa applications, registrations, address changes', 'Document storage, submission, and reuse']
+  }, {
+    title: 'Learning and community',
+    items: ['Courses, certifications, tutorials, podcasts, and video series via Skool', 'Clubs, sports, leisure activities, and community groups', 'Referral rewards and partner/company proof submissions']
+  }, {
+    title: 'Institution integrations',
+    items: ['Third-country national registration workflows', 'University schedules, lectures, grades, exams, certificates, and degrees', 'Data sharing with authorities, universities, and refugee organizations with consent']
+  }],
   color: C.green,
   colorHex: C.greenHex,
   icon: '⬡',
@@ -103,6 +126,16 @@ const SPACES: SpaceItem[] = [{
   desc: 'Verified users view homes, check eligibility, request viewings, and generate rental contracts when all criteria are met.',
   detail: 'APT displays apartments with city, size, layout, room count, furnishing, extras, energy, WiFi, price category, availability, and application status.',
   bullets: ['City, size, layout, rooms', 'Furnished, garden, balcony, energy, WiFi', 'Job or institution, income, residence visa', 'Viewing request and automated contract'],
+  contentBlocks: [{
+    title: 'Listing data',
+    items: ['City, size, layout, number of rooms', 'Furnished yes/no, garden, balcony, extras', 'Energy supply, WiFi, price category, availability date']
+  }, {
+    title: 'Eligibility',
+    items: ['Stable job, university, or institution', 'Sufficient income and proof documents', 'Residence visa and verified identity']
+  }, {
+    title: 'Actions',
+    items: ['Apply or request a viewing when criteria are met', 'Unavailable apartments marked as taken', 'Automated rental contract generated for signing']
+  }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌂',
@@ -115,6 +148,16 @@ const SPACES: SpaceItem[] = [{
   desc: 'Skill assessment, employer matching, job listings, training opportunities, indirect outreach, and placement workflows.',
   detail: 'Companies can list roles, view categorized verified profiles, and reach candidates through VYN Space. Filled jobs are removed and placement contracts can be created in-house.',
   bullets: ['Job and training listings', 'Assessment for fit, strengths, weaknesses', 'Three financial readiness groups', 'Commission-style staffing model'],
+  contentBlocks: [{
+    title: 'User side',
+    items: ['Job and training opportunities', 'Assessment test for suitable roles and training routes', 'Strengths, weaknesses, and financial readiness grouping']
+  }, {
+    title: 'Company side',
+    items: ['Companies list job offers and training programs', 'Companies view verified profiles and reach out indirectly', 'Filled jobs are removed from listings']
+  }, {
+    title: 'Business model',
+    items: ['VYN Space earns placement commission like a staffing agency', 'In-house contracts can be created when VYN Space places workers']
+  }],
   color: C.amber,
   colorHex: C.amberHex,
   icon: '◈',
@@ -127,6 +170,16 @@ const SPACES: SpaceItem[] = [{
   desc: 'White-label banking access, account creation, balances, transactions, transfers, insights, insurance, and future products.',
   detail: 'Finance starts outsourced with a provider such as Solaris, reuses completed verification, and can evolve toward proprietary banking, loans, investments, insurance, and carefully reviewed USDT-only wallet features.',
   bullets: ['Solaris white-label path', 'Balance, transfers, income, expenses', 'Loans, insurance, investments later', 'Security, custody, and liquidity review'],
+  contentBlocks: [{
+    title: 'Initial rollout',
+    items: ['Solaris white-label integration', 'Account creation after verification', 'Balance, transactions, transfers, income, and expenses']
+  }, {
+    title: 'Future products',
+    items: ['Loans, insurance, and investment paths', 'NFTs, real estate, bonds, and other products only after compliance review', 'Goal: build a proprietary bank']
+  }, {
+    title: 'Crypto and security',
+    items: ['Wallets require strict key and custody decisions', 'Liquidity pool legality must be reviewed', 'Use USDT only if digital assets launch']
+  }],
   color: C.violet,
   colorHex: C.violetHex,
   icon: '◉',
@@ -139,6 +192,16 @@ const SPACES: SpaceItem[] = [{
   desc: 'Personal data, document upload, consent, and ID provider verification before service access is unlocked.',
   detail: 'The access gate is prepared for providers such as IDnow so the authenticity of people and documents can be checked quickly and efficiently.',
   bullets: ['Personal data and user group', 'Passport, visa, residence, proof files', 'Consent and audit status', 'Magic link first, stronger auth later'],
+  contentBlocks: [{
+    title: 'Required data',
+    items: ['Personal data, email, city, user group, and main goal', 'Passport, visa, residence permit, income, student, or employment proof', 'Consent capture and audit status']
+  }, {
+    title: 'Verification provider',
+    items: ['IDnow-style document and liveness check', 'Authenticity of person and documents confirmed', 'Spaces unlock only after approval']
+  }, {
+    title: 'Authentication',
+    items: ['Magic link initially', 'Later step-up authentication and session risk checks', 'Security designed for finance and document workflows']
+  }],
   color: C.coral,
   colorHex: C.coralHex,
   icon: '◎',
@@ -151,6 +214,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'The company story, founder vision, mission, and trust principles behind VYN Space.',
   detail: 'VYN Space is positioned as a digital onboarding operating system for life in Germany: structured like an institution, smooth like a modern product, and designed for people under real pressure.',
   bullets: ['History and founders', 'Mission and long-term bank goal', 'Trust layer for Germany integration'],
+  contentBlocks: [{
+    title: 'Story',
+    items: ['History, founders, vision, and mission of VYN Space', 'Designed for refugees, students, and skilled workers', 'Built to reduce fragmented bureaucracy and relocation stress']
+  }, {
+    title: 'Team',
+    items: ['Founder and CEO profile', 'Operations and institution partnership roles', 'Linked team profiles for credibility']
+  }],
   color: C.green,
   colorHex: C.greenHex,
   icon: '◇',
@@ -163,6 +233,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'Current posts from VYN Space, users, partners, and the integration ecosystem.',
   detail: 'The blog should publish platform updates, housing guidance, campus explainers, finance notes, partner news, and user stories from the relocation journey.',
   bullets: ['Housing, campus, finance, jobs', 'User voices and partner updates', 'Trust-focused editorial feed'],
+  contentBlocks: [{
+    title: 'Editorial lanes',
+    items: ['VYN Space updates and product news', 'User stories from refugees, students, and skilled workers', 'Partner and institution explainers']
+  }, {
+    title: 'Example posts',
+    items: ['How verified onboarding reduces housing friction', 'From arrival to first government appointment', 'Financial access without crypto speculation']
+  }],
   color: C.amber,
   colorHex: C.amberHex,
   icon: '▤',
@@ -175,6 +252,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'Calendly for CEO business meetings plus a contact form for users, institutions, employers, and partners.',
   detail: 'Business inquiries can book directly with the CEO. Other channels should support housing partners, employers, universities, authorities, NGOs, and user support.',
   bullets: ['CEO Calendly for business inquiries', 'Partner and institution contact', 'User support contact form'],
+  contentBlocks: [{
+    title: 'Appointment paths',
+    items: ['Calendly link for CEO business inquiries', 'Housing partner contact', 'Employer, university, authority, and NGO contact']
+  }, {
+    title: 'Contact form topics',
+    items: ['Business inquiry', 'Housing partnership', 'Employer partnership', 'User support']
+  }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌁',
@@ -187,6 +271,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'PayPal and crypto donation paths presented with compliance-first messaging and clear impact.',
   detail: 'Donation flows should support the integration mission without making the platform feel speculative. Crypto should begin cautiously, with USDT-only review if used.',
   bullets: ['PayPal donation path', 'Crypto with compliance review', 'Impact messaging and transparency'],
+  contentBlocks: [{
+    title: 'Donation options',
+    items: ['PayPal for traditional donations', 'Crypto donation path only after compliance review', 'USDT-only direction if crypto is enabled']
+  }, {
+    title: 'Impact',
+    items: ['Support onboarding resources', 'Support housing and campus access', 'Support community and partner programs']
+  }],
   color: C.gold,
   colorHex: C.goldHex,
   icon: '◍',
@@ -199,6 +290,13 @@ const SPACES: SpaceItem[] = [{
   desc: 'A future immersive environment for registered users, events, community, support, and avatar-led navigation.',
   detail: 'The 3D layer should remain optional, lazy-loaded, and mobile-aware, with a standard interface fallback for low-power devices.',
   bullets: ['Registered-user events', 'Avatar and chatbot future', 'Performance fallback for mobile'],
+  contentBlocks: [{
+    title: 'Future experience',
+    items: ['Registered users enter immersive events', 'Avatar or chatbot guidance for services', 'Community and partner spaces']
+  }, {
+    title: 'Technical constraints',
+    items: ['Lazy-loaded 3D assets', 'Memory and texture budget for mobile', 'Standard UI fallback for low-performance devices']
+  }],
   color: C.violet,
   colorHex: C.violetHex,
   icon: '✦',
@@ -403,7 +501,7 @@ function makeIdentityTexture(): THREE.CanvasTexture {
   canvas.width = S;
   canvas.height = S;
   const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = '#00060F';
+  ctx.fillStyle = '#03060D';
   ctx.fillRect(0, 0, S, S);
 
   // Concentric hex rings
@@ -417,7 +515,7 @@ function makeIdentityTexture(): THREE.CanvasTexture {
       if (i === 0) ctx.moveTo(cx + radius * Math.cos(a), cy + radius * Math.sin(a));else ctx.lineTo(cx + radius * Math.cos(a), cy + radius * Math.sin(a));
     }
     ctx.closePath();
-    ctx.strokeStyle = `rgba(77,255,239,${0.04 + r * 0.04})`;
+    ctx.strokeStyle = `rgba(91,192,235,${0.04 + r * 0.04})`;
     ctx.lineWidth = 1;
     ctx.stroke();
   }
@@ -425,7 +523,7 @@ function makeIdentityTexture(): THREE.CanvasTexture {
   // Radial spokes
   for (let i = 0; i < 6; i++) {
     const a = i * 60 * (Math.PI / 180);
-    ctx.strokeStyle = 'rgba(77,255,239,0.15)';
+    ctx.strokeStyle = 'rgba(91,192,235,0.15)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx, cy);
@@ -435,9 +533,9 @@ function makeIdentityTexture(): THREE.CanvasTexture {
 
   // Core glow
   const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, 80);
-  grd.addColorStop(0, 'rgba(77,255,239,0.3)');
-  grd.addColorStop(0.5, 'rgba(77,255,239,0.08)');
-  grd.addColorStop(1, 'rgba(77,255,239,0)');
+  grd.addColorStop(0, 'rgba(91,192,235,0.3)');
+  grd.addColorStop(0.5, 'rgba(91,192,235,0.08)');
+  grd.addColorStop(1, 'rgba(91,192,235,0)');
   ctx.fillStyle = grd;
   ctx.beginPath();
   ctx.arc(cx, cy, 80, 0, Math.PI * 2);
@@ -451,7 +549,7 @@ function makeIdentityTexture(): THREE.CanvasTexture {
 
   // Outer text ring
   ctx.font = '500 9px monospace';
-  ctx.fillStyle = 'rgba(77,255,239,0.6)';
+  ctx.fillStyle = 'rgba(91,192,235,0.6)';
   const ringText = 'VERIFIED · IDENTITY · SYSTEM · GERMANY · 2026 · ';
   const charCount = ringText.length;
   for (let i = 0; i < charCount; i++) {
@@ -474,10 +572,10 @@ function makeFloorTexture(): THREE.CanvasTexture {
   canvas.width = S;
   canvas.height = S;
   const ctx = canvas.getContext('2d')!;
-  ctx.fillStyle = '#00060F';
+  ctx.fillStyle = '#03060D';
   ctx.fillRect(0, 0, S, S);
   const step = 64;
-  ctx.strokeStyle = 'rgba(77,255,239,0.06)';
+  ctx.strokeStyle = 'rgba(91,192,235,0.06)';
   ctx.lineWidth = 1;
   for (let x = 0; x <= S; x += step) {
     ctx.beginPath();
@@ -505,7 +603,7 @@ function makeFloorTexture(): THREE.CanvasTexture {
   for (let x = 0; x <= S; x += step) {
     for (let y = 0; y <= S; y += step) {
       if (Math.random() > 0.7) {
-        ctx.fillStyle = `rgba(77,255,239,${0.04 + Math.random() * 0.12})`;
+        ctx.fillStyle = `rgba(91,192,235,${0.04 + Math.random() * 0.12})`;
         ctx.beginPath();
         ctx.arc(x, y, 1.5, 0, Math.PI * 2);
         ctx.fill();
@@ -1374,27 +1472,25 @@ const VynMark: React.FC<{
   size?: number;
 }> = ({
   size = 36
-}) => <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-label="VYN Space logo">
-    <defs>
-      <linearGradient id="vgr" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-        <stop stopColor={C.cyan} />
-        <stop offset="0.5" stopColor={C.violet} />
-        <stop offset="1" stopColor={C.green} />
-      </linearGradient>
-      <linearGradient id="vgr2" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-        <stop stopColor={C.cyan} stopOpacity="0.15" />
-        <stop offset="1" stopColor={C.violet} stopOpacity="0.05" />
-      </linearGradient>
-    </defs>
-    <rect width="40" height="40" rx="11" fill="url(#vgr2)" stroke="url(#vgr)" strokeWidth="0.8" strokeOpacity="0.4" />
-    {/* Hex outline */}
-    <polygon points="20,5 32,12 32,26 20,33 8,26 8,12" fill="none" stroke="url(#vgr)" strokeWidth="0.8" strokeOpacity="0.3" />
-    {/* V chevron */}
-    <path d="M13 13 L20 27 L27 13" stroke="url(#vgr)" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-    {/* Core dot */}
-    <circle cx="20" cy="17" r="2.5" fill={C.cyan} />
-    <circle cx="20" cy="17" r="1.1" fill="#00060F" />
-  </svg>;
+}) => <span style={{
+  width: size,
+  height: size,
+  display: 'inline-grid',
+  placeItems: 'center',
+  borderRadius: Math.max(6, size * 0.18),
+  border: `1px solid rgba(91,192,235,0.32)`,
+  background: 'rgba(3,6,13,0.58)',
+  boxShadow: `0 0 ${Math.round(size * 0.9)}px rgba(91,192,235,0.20)`,
+  overflow: 'hidden',
+  flexShrink: 0
+}}>
+    <img src={LOGO_URL} alt="VYN Space logo" style={{
+    width: size * 0.86,
+    height: size * 0.86,
+    objectFit: 'contain',
+    display: 'block'
+  }} />
+  </span>;
 
 // ─── SCROLL PROGRESS INDICATOR ─────────────────────────────────────────────────
 const SECTION_LABELS = ['ORIGIN', 'SPACES', 'CAMPUS', 'APT', 'JOBS', 'FINANCE', 'VERIFY', 'ABOUT', 'BLOG', 'CONTACT', 'DONATE', 'META', 'FAQ', 'ACCESS'];
@@ -1570,7 +1666,7 @@ const NavBar: React.FC<{
         }} style={{
           background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
           border: 'none',
-          color: '#00060F',
+          color: '#03060D',
           fontSize: 9.5,
           padding: '8px 18px',
           borderRadius: 5,
@@ -1679,7 +1775,7 @@ const HeroOverlay: React.FC<{
       padding: '5px 14px',
       borderRadius: 40,
       border: `1px solid ${C.border}`,
-      backgroundColor: 'rgba(77,255,239,0.04)',
+      backgroundColor: 'rgba(91,192,235,0.04)',
       fontFamily: 'monospace'
     }}>
         <motion.span animate={{
@@ -1706,6 +1802,37 @@ const HeroOverlay: React.FC<{
         </span>
       </motion.div>
 
+      <motion.div initial={{
+      opacity: 0,
+      scale: 0.86,
+      y: 12
+    }} animate={{
+      opacity: 1,
+      scale: 1,
+      y: 0
+    }} transition={{
+      delay: 0.5,
+      duration: 0.85,
+      ease: [0.16, 1, 0.3, 1]
+    }} style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 22,
+      padding: 8,
+      borderRadius: 12,
+      border: `1px solid rgba(91,192,235,0.26)`,
+      background: 'rgba(3,6,13,0.46)',
+      boxShadow: `0 0 42px rgba(91,192,235,0.18)`
+    }}>
+        <img src={LOGO_URL} alt="VYN Space logo" style={{
+        width: 76,
+        height: 76,
+        objectFit: 'contain',
+        display: 'block'
+      }} />
+      </motion.div>
+
       {/* Main headline */}
       <motion.h1 initial={{
       opacity: 0,
@@ -1718,7 +1845,7 @@ const HeroOverlay: React.FC<{
       duration: 1.2,
       ease: [0.16, 1, 0.3, 1]
     }} style={{
-      fontFamily: 'monospace',
+      fontFamily: 'Comfortaa, Inter, sans-serif',
       fontSize: 'clamp(48px, 8.5vw, 112px)',
       fontWeight: 700,
       color: C.text,
@@ -1739,7 +1866,7 @@ const HeroOverlay: React.FC<{
       duration: 1.2,
       ease: [0.16, 1, 0.3, 1]
     }} style={{
-      fontFamily: 'monospace',
+      fontFamily: 'Comfortaa, Inter, sans-serif',
       fontSize: 'clamp(48px, 8.5vw, 112px)',
       fontWeight: 700,
       lineHeight: 0.92,
@@ -1790,7 +1917,7 @@ const HeroOverlay: React.FC<{
     }}>
         <a href="#spaces" style={{
         background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
-        color: '#00060F',
+        color: '#03060D',
         fontSize: 11,
         fontWeight: 800,
         padding: '13px 32px',
@@ -1805,11 +1932,11 @@ const HeroOverlay: React.FC<{
         boxShadow: `0 0 24px ${C.cyan}35`
       }}>
           ENTER_SPACES
-          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="#00060F" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="#03060D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </a>
         <a href="#register" style={{
         backgroundColor: 'transparent',
-        border: `1px solid rgba(77,255,239,0.25)`,
+        border: `1px solid rgba(91,192,235,0.25)`,
         color: C.text,
         fontSize: 11,
         fontWeight: 600,
@@ -1827,7 +1954,7 @@ const HeroOverlay: React.FC<{
         (e.currentTarget as HTMLElement).style.borderColor = C.cyan;
         (e.currentTarget as HTMLElement).style.boxShadow = `0 0 16px ${C.cyan}20`;
       }} onMouseLeave={e => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(77,255,239,0.25)';
+        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,192,235,0.25)';
         (e.currentTarget as HTMLElement).style.boxShadow = 'none';
       }}>
           VERIFY_ACCESS
@@ -1899,7 +2026,7 @@ const SectionPanel: React.FC<{
     position: 'absolute',
     [side]: 32,
     bottom: 28,
-    width: 'min(360px, calc(100vw - 48px))',
+    width: 'min(430px, calc(100vw - 48px))',
     maxHeight: 'calc(100vh - 116px)',
     overflowY: 'auto',
     zIndex: 10,
@@ -1967,6 +2094,56 @@ const SectionPanel: React.FC<{
       fontFamily: 'Inter, sans-serif'
     }}>{space.detail}</p>
 
+        <div style={{
+      display: 'grid',
+      gap: 12,
+      marginTop: 20
+    }}>
+          {space.contentBlocks.map(block => <div key={block.title} style={{
+        padding: '12px 12px 10px',
+        borderRadius: 10,
+        border: `1px solid ${space.color}18`,
+        backgroundColor: 'rgba(10,15,28,0.58)'
+      }}>
+              <div style={{
+          color: space.color,
+          fontSize: 8,
+          fontWeight: 800,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase' as const,
+          marginBottom: 8,
+          fontFamily: 'monospace'
+        }}>{block.title}</div>
+              <ul style={{
+          margin: 0,
+          padding: 0,
+          listStyle: 'none',
+          display: 'grid',
+          gap: 6
+        }}>
+                {block.items.map(item => <li key={item} style={{
+            display: 'grid',
+            gridTemplateColumns: '10px 1fr',
+            gap: 8,
+            color: C.muted,
+            fontSize: 11.2,
+            lineHeight: 1.55,
+            fontFamily: 'Inter, sans-serif'
+          }}>
+                    <span style={{
+              width: 5,
+              height: 5,
+              marginTop: 7,
+              borderRadius: '50%',
+              backgroundColor: space.color,
+              boxShadow: `0 0 8px ${space.color}`
+            }} />
+                    <span>{item}</span>
+                  </li>)}
+              </ul>
+            </div>)}
+        </div>
+
         {/* Mini stat bars */}
         <div style={{
       marginTop: 22,
@@ -2020,7 +2197,7 @@ const SectionPanel: React.FC<{
       gap: 7,
       marginTop: 22,
       background: `linear-gradient(135deg, ${space.color}, ${space.color}BB)`,
-      color: '#00060F',
+      color: '#03060D',
       fontSize: 9.5,
       fontWeight: 800,
       padding: '10px 20px',
@@ -2031,7 +2208,7 @@ const SectionPanel: React.FC<{
       fontFamily: 'monospace'
     }}>
           {space.id === 'register' ? 'START_VERIFY' : 'OPEN_SECTION'}
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 3l3 3-3 3" stroke="#00060F" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 3l3 3-3 3" stroke="#03060D" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </a>
       </motion.div>}
   </AnimatePresence>;
@@ -2320,7 +2497,7 @@ const CtaOverlay: React.FC<{
         padding: '5px 14px',
         borderRadius: 40,
         border: `1px solid ${C.border}`,
-        backgroundColor: 'rgba(77,255,239,0.04)',
+        backgroundColor: 'rgba(91,192,235,0.04)',
         fontFamily: 'monospace'
       }}>
             <span style={{
@@ -2384,7 +2561,7 @@ const CtaOverlay: React.FC<{
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" required style={{
           flex: '1 1 200px',
           backgroundColor: 'rgba(0,6,15,0.85)',
-          border: `1px solid rgba(77,255,239,0.24)`,
+          border: `1px solid rgba(91,192,235,0.24)`,
           borderRadius: 6,
           padding: '12px 16px',
           color: C.text,
@@ -2395,7 +2572,7 @@ const CtaOverlay: React.FC<{
             <button type="submit" style={{
           background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
           border: 'none',
-          color: '#00060F',
+          color: '#03060D',
           fontSize: 10.5,
           fontWeight: 800,
           padding: '12px 24px',
@@ -2473,7 +2650,7 @@ const footerTarget = (label: string) => {
   return map[label] ?? 'hero';
 };
 const Footer: React.FC = () => <footer style={{
-  backgroundColor: '#00060F',
+  backgroundColor: '#03060D',
   borderTop: `1px solid ${C.border}`,
   padding: '56px 0 28px',
   position: 'relative',
@@ -2724,7 +2901,7 @@ export const VynSpaceLanding: React.FC = () => {
       const link = document.createElement('link');
       link.id = 'vyn-fonts';
       link.rel = 'stylesheet';
-      link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap';
+      link.href = 'https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap';
       document.head.appendChild(link);
     }
     document.body.style.backgroundColor = C.bg;
