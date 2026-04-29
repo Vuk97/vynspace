@@ -35,32 +35,42 @@ const NAV_ITEMS = [{
   href: '#hero'
 }, {
   label: 'SPACES',
-  href: '#spaces'
+  href: '#/spaces'
 }, {
   label: 'CAMPUS',
-  href: '#campus'
+  href: '#/campus'
 }, {
   label: 'APT',
-  href: '#apt'
+  href: '#/apt'
 }, {
   label: 'JOBS',
-  href: '#jobs'
+  href: '#/jobs'
 }, {
   label: 'FINANCE',
-  href: '#finance'
+  href: '#/finance'
 }, {
   label: 'REGISTER',
-  href: '#register'
+  href: '#/register'
 }, {
   label: 'ABOUT',
-  href: '#about'
+  href: '#/about'
 }, {
   label: 'CONTACT',
-  href: '#contact'
+  href: '#/contact'
 }, {
   label: 'FAQ',
-  href: '#faq'
+  href: '#/faq'
 }];
+const ROUTE_ALIASES: Record<string, string> = {
+  meta: 'metaverse',
+  'meta-space': 'metaverse',
+  faqs: 'faq',
+  appointments: 'contact',
+  'appointments-4': 'contact',
+  services: 'spaces',
+  'about-1': 'about',
+  'contact-1': 'contact'
+};
 type SpaceItem = {
   id: string;
   code: string;
@@ -84,14 +94,14 @@ const SPACES: SpaceItem[] = [{
   label: 'Spaces',
   tagline: 'Preview hub',
   desc: 'The public map of Campus, APT, Jobs, and Finance. Full access unlocks only after registration, verification, and login.',
-  detail: 'Spaces is the bridge between the public website and the protected app. It explains the platform clearly while preparing a future subdomain flow such as spaces.vyn-space.io.',
+  detail: 'Spaces is the bridge between the public website and the protected member area. It explains the platform clearly before users register and verify their identity.',
   bullets: ['Campus, APT, Jobs, Finance preview', 'Protected app after verification', 'Subdomain-ready architecture'],
   contentBlocks: [{
     title: 'Access model',
     items: ['Public website previews the ecosystem', 'Protected service access after registration, verification, and login', 'Future deployment can support www.vyn-space.io/spaces and spaces.vyn-space.io']
   }, {
-    title: 'Technical direction',
-    items: ['Shared verified profile across all services', 'Lazy-loaded 3D and avatar layer', 'Mobile fallback for low-performance devices']
+    title: 'Access model',
+    items: ['One verified profile works across Campus, APT, Jobs, and Finance', 'Public previews explain each service before registration', 'The protected member area opens after identity and document verification']
   }],
   color: C.cyan,
   colorHex: C.cyanHex,
@@ -238,8 +248,8 @@ const SPACES: SpaceItem[] = [{
     title: 'Editorial lanes',
     items: ['VYN Space updates and product news', 'User stories from refugees, students, and skilled workers', 'Partner and institution explainers']
   }, {
-    title: 'Example posts',
-    items: ['How verified onboarding reduces housing friction', 'From arrival to first government appointment', 'Financial access without crypto speculation']
+    title: 'Content pillars',
+    items: ['Housing guidance for verified applicants', 'Campus explainers for appointments and documents', 'Finance notes about safe banking access and compliance']
   }],
   color: C.amber,
   colorHex: C.amberHex,
@@ -289,14 +299,14 @@ const SPACES: SpaceItem[] = [{
   label: 'Metaverse',
   tagline: 'Immersive future',
   desc: 'A future immersive environment for registered users, events, community, support, and avatar-led navigation.',
-  detail: 'The 3D layer should remain optional, lazy-loaded, and mobile-aware, with a standard interface fallback for low-power devices.',
-  bullets: ['Registered-user events', 'Avatar and chatbot future', 'Performance fallback for mobile'],
+  detail: 'The metaverse is a future member experience for rooms, events, live podcasts, games, community, and avatar-guided orientation.',
+  bullets: ['Registered-user events', 'Virtual rooms and podcasts', 'Avatar and chatbot future'],
   contentBlocks: [{
     title: 'Future experience',
     items: ['Registered users enter immersive events', 'Avatar or chatbot guidance for services', 'Community and partner spaces']
   }, {
-    title: 'Technical constraints',
-    items: ['Lazy-loaded 3D assets', 'Memory and texture budget for mobile', 'Standard UI fallback for low-performance devices']
+    title: 'Experience direction',
+    items: ['Immersive rooms for registered users', 'Events, podcasts, games, and partner spaces', 'Simple access from the verified member area']
   }],
   color: C.violet,
   colorHex: C.violetHex,
@@ -351,7 +361,7 @@ const FAQ: FaqItem[] = [{
   a: 'Finance should start through a regulated white-label provider such as Solaris, reuse completed verification, and grow cautiously toward accounts, transfers, insurance, loans, investments, and reviewed USDT-only wallet features.'
 }, {
   q: 'What is the metaverse layer?',
-  a: 'A future immersive space for registered users, avatar support, events, community, and guided onboarding. It should be lazy-loaded with a normal dashboard fallback on mobile or low-power devices.'
+  a: 'A future immersive space for registered users, avatar support, events, community, and guided onboarding inside VYN Space.'
 }];
 const CTA_STATS = [{
   val: '4',
@@ -366,6 +376,321 @@ const CTA_STATS = [{
   label: 'USER GROUPS',
   color: C.amber
 }];
+
+type PageBlock = {
+  title: string;
+  body?: string;
+  items?: string[];
+};
+type PageData = {
+  key: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  color: string;
+  progress: number;
+  stats?: Array<{
+    value: string;
+    label: string;
+  }>;
+  blocks: PageBlock[];
+  cta?: {
+    label: string;
+    href: string;
+  };
+};
+const ORIGINAL_CONTACT = ['VYN SPACE Holding GmbH', 'Kirchhofstr. 3, 40721 Hilden, Germany', 'info@vyn-space.com', '+49 157 33 77 98 94', 'Geschäftsführer: Victor Ferrari Alvarez', 'Registergericht: Amtsgericht Düsseldorf, HRB 105979'];
+const PAGE_DATA: Record<string, PageData> = {
+  spaces: {
+    key: 'spaces',
+    eyebrow: 'Public Preview Hub',
+    title: 'Our Spaces',
+    intro: 'VYN Space brings Campus, Jobs, Finance, and APT into one verified ecosystem. Each space is previewed publicly, then unlocked after registration, document verification, and login.',
+    color: C.cyan,
+    progress: 0.1,
+    stats: [{ value: '4', label: 'Core spaces' }, { value: '1', label: 'Verified profile' }, { value: 'IDnow', label: 'Verification path' }],
+    blocks: [{
+      title: 'VYN Campus',
+      body: 'Education is the key to unlocking potential. Campus turns online learning, administration, community, and German bureaucracy into one guided city-hall dashboard.',
+      items: ['Courses, certifications, tutorials, podcasts, and video series', 'Visa registration, address changes, insurance, appointment links, and document storage', 'University integrations for schedules, lectures, grades, exams, certificates, and degrees']
+    }, {
+      title: 'VYN Jobs',
+      body: 'VYN Jobs helps people gain valuable experience, hone their skills, and move toward their dream careers through jobs, internships, training, and placement support.',
+      items: ['Company listings and indirect profile outreach', 'Assessment for suitable jobs, training paths, strengths, and weaknesses', 'Commission-style placement model with in-house contracts']
+    }, {
+      title: 'VYN Finance',
+      body: 'The finance space gives verified users tools to manage money, access banking products, build credit, and later explore compliant investment and insurance products.',
+      items: ['Solaris-style white-label banking rollout', 'Accounts, balances, transactions, transfers, income, and expenses', 'Future loans, insurance, investments, USDT-only wallet review, and proprietary bank ambition']
+    }, {
+      title: 'VYN APT',
+      body: 'APT brings housing access into the verified ecosystem: rent, buy, invest, request viewings, and generate contracts when eligibility criteria are met.',
+      items: ['Listings by city, size, layout, rooms, furnishing, WiFi, extras, energy, and price category', 'Criteria: stable job or institution, sufficient income, residence visa, verified identity', 'Taken apartments are marked clearly with availability dates where relevant']
+    }],
+    cta: { label: 'Start verified access', href: '#/register' }
+  },
+  campus: {
+    key: 'campus',
+    eyebrow: 'Digital City Hall',
+    title: 'VYN Campus',
+    intro: 'Campus combines learning, bureaucracy, documents, community, and institutional integrations so users can understand what to do next and keep every process visible.',
+    color: C.green,
+    progress: 0.17,
+    stats: [{ value: '1', label: 'Dashboard' }, { value: 'Many', label: 'Institutions' }, { value: 'Skool', label: 'Learning layer' }],
+    blocks: [{
+      title: 'Learning and self development',
+      items: ['Online courses, certifications, tutorials, podcasts, and video series', 'Self-development spaces and community learning programs', 'Clubs, sports, leisure activities, and partner events']
+    }, {
+      title: 'Administration',
+      items: ['Visa applications, registrations, address changes, and insurance steps', 'Links to useful websites, phone numbers, and appointment systems', 'Document vault for storage, submission, and reuse']
+    }, {
+      title: 'University and authority integrations',
+      items: ['Partner universities can provide student data with consent', 'Schedules, lectures, grades, exams, certificates, degrees, and exchange student data', 'Data sharing with refugee organizations, authorities, and universities where legally approved']
+    }, {
+      title: 'Community and rewards',
+      items: ['Invite new users with referral links', 'Bring partners or companies with proof submission', 'LinkedIn-like profile, network, and community layer']
+    }],
+    cta: { label: 'Preview Spaces', href: '#/spaces' }
+  },
+  apt: {
+    key: 'apt',
+    eyebrow: 'Housing Access',
+    title: 'VYN APT',
+    intro: 'APT turns the old promise of rent, buy, and invest into a structured verified housing flow for refugees, students, and skilled workers arriving in Germany.',
+    color: C.cyan,
+    progress: 0.24,
+    stats: [{ value: '12+', label: 'Listing fields' }, { value: '3', label: 'Eligibility checks' }, { value: 'Auto', label: 'Contract generation' }],
+    blocks: [{
+      title: 'Property previews',
+      items: ['City, size, layout, number of rooms, and price category', 'Furnished status, garden, balcony, extras, energy supply, and WiFi', 'Availability state, taken status, and future availability dates']
+    }, {
+      title: 'Eligibility criteria',
+      items: ['Stable job, university, training provider, or institution', 'Sufficient income and supporting documents', 'Residence visa and successful identity verification']
+    }, {
+      title: 'Application flow',
+      items: ['Users apply or request a viewing when criteria are met', 'Landlord and partner data can be kept inside the verified workflow', 'Automated rental contract is generated for signing once all criteria pass']
+    }, {
+      title: 'Original positioning',
+      body: 'VYN APT offers a broad real estate selection for different needs and budgets, then moves applications into a safer verified process.'
+    }],
+    cta: { label: 'Register for access', href: '#/register' }
+  },
+  jobs: {
+    key: 'jobs',
+    eyebrow: 'Work and Training',
+    title: 'VYN Jobs',
+    intro: 'Jobs supports career entry with listings, internships, training opportunities, assessment, employer matching, indirect outreach, and placement contracts.',
+    color: C.amber,
+    progress: 0.31,
+    stats: [{ value: '3', label: 'Financial groups' }, { value: 'Fit', label: 'Assessment' }, { value: 'B2B', label: 'Commission model' }],
+    blocks: [{
+      title: 'Candidate experience',
+      items: ['Job and internship resources for students, refugees, and skilled workers', 'Assessment test for suitable jobs, strengths, weaknesses, and training paths', 'Profiles categorized into three financial readiness groups']
+    }, {
+      title: 'Company experience',
+      items: ['Companies can list job offers and training programs', 'Companies view verified user profiles and reach out indirectly', 'Filled roles are removed from listings to keep the marketplace clean']
+    }, {
+      title: 'Placement model',
+      items: ['VYN Space can earn commission like a staffing agency', 'In-house contracts are created when VYN Space places workers', 'Employer partnerships should emphasize ethical workplaces and personal development']
+    }],
+    cta: { label: 'Start profile', href: '#/register' }
+  },
+  finance: {
+    key: 'finance',
+    eyebrow: 'Banking Layer',
+    title: 'VYN Finance',
+    intro: 'Finance helps students and newcomers build financial independence through secure banking access, money management, and carefully reviewed financial products.',
+    color: C.violet,
+    progress: 0.38,
+    stats: [{ value: 'Solaris', label: 'White label path' }, { value: 'USDT', label: 'If crypto launches' }, { value: 'Bank', label: 'Long-term goal' }],
+    blocks: [{
+      title: 'Money management',
+      body: 'Having a bank account helps students and newcomers take control of their finances, track spending, set up automatic payments, and build money-management skills.',
+      items: ['Account creation after verified onboarding', 'Balance, transactions, transfers, income, and expenses', 'Purchase-data insights via banking data, with explicit consent']
+    }, {
+      title: 'Funding and investment',
+      body: 'VYN Space can connect users with funding and investment opportunities only through a compliance-reviewed finance direction.',
+      items: ['Loans, insurance, and work benefits', 'NFTs, real estate, bonds, climate projects, social projects, and community projects only after legal review', 'Goal: build a proprietary bank']
+    }, {
+      title: 'Security and custody',
+      items: ['Verification is reused from onboarding', 'Magic link first, stronger authentication later', 'Wallet keys, liquidity pool legality, custody, and USDT-only scope need security review']
+    }],
+    cta: { label: 'Verify before finance', href: '#/register' }
+  },
+  community: {
+    key: 'community',
+    eyebrow: 'Partners and Social Impact',
+    title: 'Be part of the community',
+    intro: 'The VYN Space community connects partners around ethical values, social impact, student growth, workplace opportunity, accommodation, and introductory calls.',
+    color: C.green,
+    progress: 0.52,
+    stats: [{ value: 'Impact', label: 'Partner filter' }, { value: 'Call', label: 'Intro process' }, { value: 'Proof', label: 'Partner submission' }],
+    blocks: [{
+      title: 'Partner standard',
+      body: 'Joining the community means being part of a movement that prioritizes social impact, ethical values, and growth.',
+      items: ['Supportive and empowering workplaces', 'Opportunities for learning or accommodations', 'Creativity, innovation, personal development, and ethical cooperation']
+    }, {
+      title: 'Cooperation process',
+      items: ['Potential partners schedule an introductory video call', 'VYN Space reviews fit, proof, and collaboration model', 'Organizations, companies, universities, and study programs can join the ecosystem']
+    }, {
+      title: 'Values',
+      items: ['Freedom as a universal value', 'Sustainable energy and human rights as business responsibilities', 'Ethics, cooperation, empathy, and shared responsibility']
+    }],
+    cta: { label: 'Book partner call', href: '#/contact' }
+  },
+  metaverse: {
+    key: 'metaverse',
+    eyebrow: 'Immersive Future Layer',
+    title: 'VYN Metaverse',
+    intro: 'The VYN Metaverse gives members a way to enter virtual rooms for events, games, podcasts, support, community, and avatar-guided orientation.',
+    color: C.violet,
+    progress: 0.83,
+    stats: [{ value: 'Gather', label: 'Original partner idea' }, { value: 'Rooms', label: 'Virtual spaces' }, { value: '3D', label: 'Future avatar layer' }],
+    blocks: [{
+      title: 'How to enter',
+      items: ['Sign up with the virtual space partner', 'Log in after registration to discover rooms, games, live podcasts, and events', 'Discover freely while respecting the community rules']
+    }, {
+      title: 'Community rules',
+      items: ['Everybody is welcome', 'Respect and integrity are values to share', 'Love over fear, empathy means the will for understanding, seek discomfort']
+    }, {
+      title: 'Opportunities',
+      items: ['Art and design showcases', 'Health, wellness, mindfulness, and virtual support', 'Career development, virtual internships, and professional networking']
+    }, {
+      title: 'Future experience direction',
+      items: ['Immersive VYN rooms for registered users', 'Avatar guidance for orientation and service discovery', 'Events, podcasts, games, and partner spaces connected to the member area']
+    }],
+    cta: { label: 'Register for events', href: '#/register' }
+  },
+  about: {
+    key: 'about',
+    eyebrow: 'Founded in Düsseldorf',
+    title: 'Who We Are',
+    intro: 'VYN SPACE is a community founded in 2022 in Düsseldorf, Germany, focused on accessible knowledge, ethical networking, and better integration into society.',
+    color: C.green,
+    progress: 0.55,
+    blocks: [{
+      title: 'Mission',
+      body: 'By providing the next generation an accessible entrance to the world, VYN Space focuses on giving people better access to knowledge and developing their potential based on social ethics.'
+    }, {
+      title: 'Belief',
+      body: 'Knowledge is power and networking is the key. VYN Space and partners offer their network and experience to students, employees, refugees, skilled workers, and everybody who wants to explore the full potential of global networking.'
+    }, {
+      title: 'New product vision',
+      items: ['A digital onboarding operating system for life in Germany', 'Structured like an institution, smooth like a modern product', 'Built around housing, finance, jobs, learning, bureaucracy, and community']
+    }],
+    cta: { label: 'Meet the team', href: '#/team' }
+  },
+  team: {
+    key: 'team',
+    eyebrow: 'Founders and Team',
+    title: 'Our Team',
+    intro: 'Victor Ferrari Alvarez, Timo Bayertz, and Marina Lettere form the human trust layer behind the VYN Space mission.',
+    color: C.cyan,
+    progress: 0.58,
+    blocks: [{
+      title: 'Victor Ferrari Alvarez',
+      body: 'Founder of VYN Space. Victor brings experience across sales, finance, emerging markets, fintech, international account management, entrepreneurship, credit, and real estate. His work centers on using knowledge and networking to create a more equitable and socially responsible business world.'
+    }, {
+      title: 'Timo Bayertz',
+      body: 'Entrepreneur and businessman with leadership experience in Düsseldorf. Timo brings a strong sense for business, innovation, community responsibility, and long-term company development.'
+    }, {
+      title: 'Marina Lettere',
+      body: 'Changemaker focused on social justice, equality, cultural studies, and inclusion work. Marina brings experience in refugee integration, workshops, community projects, film work, and social activism.'
+    }],
+    cta: { label: 'Contact VYN Space', href: '#/contact' }
+  },
+  contact: {
+    key: 'contact',
+    eyebrow: 'Appointments and Contact',
+    title: 'Let us know',
+    intro: 'Please reach out for inquiries, feedback, partnerships, housing, employers, universities, authorities, NGOs, or CEO business appointments.',
+    color: C.cyan,
+    progress: 0.68,
+    blocks: [{
+      title: 'Contact',
+      items: ORIGINAL_CONTACT
+    }, {
+      title: 'Appointment paths',
+      items: ['CEO Calendly for business inquiries', 'Partner, housing, employer, university, authority, and NGO contact', 'User support and platform questions']
+    }, {
+      title: 'Message form fields',
+      items: ['First name and last name', 'Email, subject, and message', 'Topic: business inquiry, housing partnership, employer partnership, user support, or institution integration']
+    }],
+    cta: { label: 'Email VYN Space', href: 'mailto:info@vyn-space.com' }
+  },
+  faq: {
+    key: 'faq',
+    eyebrow: 'Frequently Asked Questions',
+    title: 'Plain answers',
+    intro: 'The FAQ explains who VYN Space is for, how access works, and how the platform supports students, refugees, skilled workers, partners, and institutions.',
+    color: C.cyan,
+    progress: 0.9,
+    blocks: FAQ.map(item => ({ title: item.q, body: item.a })).concat([{
+      title: 'Can only students use VYN Space?',
+      body: 'No. VYN Space supports international students, refugees, skilled workers, and young people who want to develop themselves, network, and integrate into Germany.'
+    }, {
+      title: 'Does VYN Space cost anything?',
+      body: 'Platform access can be free depending on the program and partner setup. Users may still pay for accommodation, visa, registration, or finance-related fees where relevant.'
+    }]),
+    cta: { label: 'Ask a question', href: '#/contact' }
+  },
+  register: {
+    key: 'register',
+    eyebrow: 'Verified Onboarding',
+    title: 'Register once. Verify once.',
+    intro: 'Access to Campus, APT, Jobs, and Finance should unlock only after required personal data, documents, consent, and verification through a provider such as IDnow.',
+    color: C.coral,
+    progress: 0.45,
+    blocks: [{
+      title: 'Required data',
+      items: ['Personal data, email, city, user group, and main goal', 'Passport, visa, residence permit, income, student, employer, or institution proof', 'Consent capture and audit status']
+    }, {
+      title: 'Verification provider',
+      items: ['IDnow-style identity, document, and liveness checks', 'Authenticity of the person and documents confirmed quickly', 'Spaces unlock after approval']
+    }, {
+      title: 'Login plan',
+      items: ['Magic link initially', 'Step-up authentication later', 'Session risk checks for finance and document workflows']
+    }],
+    cta: { label: 'Contact to register', href: '#/contact' }
+  },
+  blog: {
+    key: 'blog',
+    eyebrow: 'Stories and Updates',
+    title: 'VYN Blog',
+    intro: 'A publication layer for VYN Space updates, user voices, housing guidance, finance notes, partner news, and integration stories.',
+    color: C.amber,
+    progress: 0.62,
+    blocks: [{
+      title: 'Editorial lanes',
+      items: ['VYN Space product updates', 'User stories from refugees, students, and skilled workers', 'Housing, finance, jobs, campus, and bureaucracy explainers']
+    }, {
+      title: 'Content pillars',
+      items: ['Verified onboarding and document readiness', 'Housing, employment, banking, and campus guidance', 'Ethical partner workplaces and community cooperation']
+    }],
+    cta: { label: 'Share a story', href: '#/contact' }
+  },
+  donation: {
+    key: 'donation',
+    eyebrow: 'Support Access',
+    title: 'Donation',
+    intro: 'Donations can support onboarding resources, housing access, campus content, community programs, and partnerships without making the platform feel speculative.',
+    color: C.gold,
+    progress: 0.75,
+    blocks: [{
+      title: 'Donation paths',
+      items: ['PayPal donation path', 'Crypto donations only after compliance review', 'USDT-only direction if digital assets are enabled']
+    }, {
+      title: 'Impact',
+      items: ['Support learning and integration resources', 'Support verified housing and campus access', 'Support community and partner programs']
+    }],
+    cta: { label: 'Contact about donations', href: '#/contact' }
+  }
+};
+const getRouteKey = () => {
+  const raw = window.location.hash.replace(/^#\/?/, '') || '';
+  if (!raw || raw === 'hero') return null;
+  const key = ROUTE_ALIASES[raw] ?? raw;
+  return PAGE_DATA[key] ? key : null;
+};
 
 // ─── CANVAS TEXTURE FACTORIES ──────────────────────────────────────────────────
 
@@ -1638,7 +1963,7 @@ const NavBar: React.FC<{
         gap: 8
       }}>
           <button className="hidden md:flex" onClick={() => {
-          window.location.hash = 'spaces';
+          window.location.hash = '/spaces';
         }} style={{
           background: 'none',
           border: `1px solid ${C.border}`,
@@ -1658,10 +1983,10 @@ const NavBar: React.FC<{
           (e.currentTarget as HTMLElement).style.borderColor = C.border;
           (e.currentTarget as HTMLElement).style.color = C.muted;
         }}>
-            SIGN_IN
+            SPACES
           </button>
           <button className="hidden md:flex" onClick={() => {
-          window.location.hash = 'register';
+          window.location.hash = '/register';
         }} style={{
           background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
           border: 'none',
@@ -1675,7 +2000,7 @@ const NavBar: React.FC<{
           fontFamily: 'monospace',
           boxShadow: `0 0 20px ${C.cyan}30`
         }}>
-            ENTER_SYSTEM
+            REGISTER
           </button>
           <button className="md:hidden" onClick={() => setOpen(o => !o)} style={{
           background: 'none',
@@ -1798,7 +2123,7 @@ const HeroOverlay: React.FC<{
         letterSpacing: '0.26em',
         textTransform: 'uppercase' as const
       }}>
-          SYS:ONLINE · v2.5.1 · GERMANY INTEGRATION PLATFORM
+          VYN SPACE · HOUSING · EDUCATION · JOBS · FINANCE
         </span>
       </motion.div>
 
@@ -1911,7 +2236,7 @@ const HeroOverlay: React.FC<{
       flexWrap: 'wrap',
       pointerEvents: 'auto'
     }}>
-        <a href="#spaces" style={{
+        <a href="#/spaces" style={{
         background: `linear-gradient(135deg, ${C.cyan}, ${C.cyanDim})`,
         color: '#03060D',
         fontSize: 11,
@@ -1927,10 +2252,10 @@ const HeroOverlay: React.FC<{
         fontFamily: 'monospace',
         boxShadow: `0 0 24px ${C.cyan}35`
       }}>
-          ENTER_SPACES
+          EXPLORE SPACES
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M2 7h10M8 3l4 4-4 4" stroke="#03060D" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </a>
-        <a href="#register" style={{
+        <a href="#/register" style={{
         backgroundColor: 'transparent',
         border: `1px solid rgba(91,192,235,0.25)`,
         color: C.text,
@@ -1953,7 +2278,7 @@ const HeroOverlay: React.FC<{
         (e.currentTarget as HTMLElement).style.borderColor = 'rgba(91,192,235,0.25)';
         (e.currentTarget as HTMLElement).style.boxShadow = 'none';
       }}>
-          VERIFY_ACCESS
+          REGISTER NOW
         </a>
       </motion.div>
     </motion.div>
@@ -2187,7 +2512,7 @@ const SectionPanel: React.FC<{
             </div>)}
         </div>
 
-        <a href="#register" style={{
+        <a href={`#/${space.id}`} style={{
       display: 'inline-flex',
       alignItems: 'center',
       gap: 7,
@@ -2203,7 +2528,7 @@ const SectionPanel: React.FC<{
       textDecoration: 'none',
       fontFamily: 'monospace'
     }}>
-          {space.id === 'register' ? 'START_VERIFY' : 'OPEN_SECTION'}
+          {space.id === 'register' ? 'START VERIFICATION' : 'LEARN MORE'}
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6h8M6 3l3 3-3 3" stroke="#03060D" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </a>
       </motion.div>}
@@ -2636,7 +2961,7 @@ const CtaOverlay: React.FC<{
           fontFamily: 'monospace',
           boxShadow: sent ? 'none' : `0 0 20px ${C.cyan}30`
         }}>
-              {sent ? '✓ RECEIVED' : 'REQUEST_ACCESS'}
+              {sent ? '✓ RECEIVED' : 'REGISTER INTEREST'}
             </button>
           </form>
 
@@ -2670,6 +2995,60 @@ const CtaOverlay: React.FC<{
     </AnimatePresence>;
 };
 
+const PageView: React.FC<{
+  page: PageData;
+}> = ({
+  page
+}) => <main className="page-view" style={{
+  '--page-color': page.color
+} as React.CSSProperties}>
+    <section className="page-hero">
+      <a href="#hero" className="page-back">Back home</a>
+      <div className="page-kicker">
+        <span style={{
+        backgroundColor: page.color,
+        boxShadow: `0 0 16px ${page.color}`
+      }} />
+        {page.eyebrow}
+      </div>
+      <h1>{page.title}</h1>
+      <p>{page.intro}</p>
+      {page.cta && <a className="page-cta" href={page.cta.href}>{page.cta.label}</a>}
+    </section>
+
+    {page.stats && <section className="page-stats" aria-label={`${page.title} facts`}>
+        {page.stats.map(stat => <article key={`${stat.value}-${stat.label}`}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </article>)}
+      </section>}
+
+    <section className="page-grid">
+      {page.blocks.map(block => <article key={block.title} className="page-card">
+          <h2>{block.title}</h2>
+          {block.body && <p>{block.body}</p>}
+          {block.items && <ul>
+              {block.items.map(item => <li key={item}>
+                  <span />
+                  <p>{item}</p>
+                </li>)}
+            </ul>}
+        </article>)}
+    </section>
+
+    {page.key === 'contact' && <section className="page-form" aria-label="Contact form preview">
+        <h2>Contact Us</h2>
+        <div className="page-form-grid">
+          <input placeholder="First name" aria-label="First name" />
+          <input placeholder="Last name" aria-label="Last name" />
+          <input placeholder="Email" aria-label="Email" />
+          <input placeholder="Subject" aria-label="Subject" />
+          <textarea placeholder="Message" aria-label="Message" />
+        </div>
+        <a href="mailto:info@vyn-space.com" className="page-cta">Send message</a>
+      </section>}
+  </main>;
+
 // ─── FOOTER ────────────────────────────────────────────────────────────────────
 const FOOTER_COLS = [{
   title: 'Platform',
@@ -2679,7 +3058,7 @@ const FOOTER_COLS = [{
   links: ['About', 'Team', 'Blog', 'Appointments', 'Contact']
 }, {
   title: 'Trust',
-  links: ['Verification', 'Data Consent', 'FAQ', 'Donation', 'Security']
+  links: ['Verification', 'FAQ', 'Donation', 'Community']
 }];
 const footerTarget = (label: string) => {
   const map: Record<string, string> = {
@@ -2696,10 +3075,9 @@ const footerTarget = (label: string) => {
     Appointments: 'contact',
     Contact: 'contact',
     Verification: 'register',
-    'Data Consent': 'register',
     FAQ: 'faq',
     Donation: 'donation',
-    Security: 'faq'
+    Community: 'community'
   };
   return map[label] ?? 'hero';
 };
@@ -2794,7 +3172,7 @@ const Footer: React.FC = () => <footer style={{
           gap: 10
         }}>
               {col.links.map(l => <li key={l}>
-                  <a href={`#${footerTarget(l)}`} style={{
+                  <a href={`#/${footerTarget(l)}`} style={{
               color: C.muted,
               fontSize: 12.5,
               textDecoration: 'none',
@@ -2949,6 +3327,7 @@ export const VynSpaceLanding: React.FC = () => {
   const [scrollProg, setScrollProg] = useState(0);
   const [mouseX, setMouseX] = useState(0);
   const [mouseY, setMouseY] = useState(0);
+  const [activePageKey, setActivePageKey] = useState<string | null>(() => getRouteKey());
   useEffect(() => {
     // Inject fonts
     if (!document.getElementById('vyn-fonts')) {
@@ -2971,6 +3350,15 @@ export const VynSpaceLanding: React.FC = () => {
       setMouseY(-(e.clientY / window.innerHeight - 0.5) * 2);
     };
     const onHash = () => {
+      const routeKey = getRouteKey();
+      setActivePageKey(routeKey);
+      if (routeKey) {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+        return;
+      }
       const id = window.location.hash.replace('#', '') || 'hero';
       const target = document.getElementById(id);
       if (target) target.scrollIntoView({
@@ -2984,7 +3372,10 @@ export const VynSpaceLanding: React.FC = () => {
       passive: true
     });
     window.addEventListener('hashchange', onHash);
-    window.setTimeout(onHash, 80);
+    window.setTimeout(() => {
+      onScroll();
+      onHash();
+    }, 80);
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('mousemove', onMouse);
@@ -2993,8 +3384,10 @@ export const VynSpaceLanding: React.FC = () => {
       document.body.style.overflowX = '';
     };
   }, []);
-  const activeSection = useMemo(() => SECTIONS.find(s => scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
-  const activeSpaceSection = useMemo(() => SECTIONS.find(s => s.type === 'space' && scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
+  const activePage = activePageKey ? PAGE_DATA[activePageKey] : null;
+  const sceneProgress = activePage?.progress ?? scrollProg;
+  const activeSection = useMemo(() => !activePage && (SECTIONS.find(s => sceneProgress >= s.scrollStart && sceneProgress <= s.scrollEnd) ?? null), [activePage, sceneProgress]);
+  const activeSpaceSection = useMemo(() => !activePage && (SECTIONS.find(s => s.type === 'space' && sceneProgress >= s.scrollStart && sceneProgress <= s.scrollEnd) ?? null), [activePage, sceneProgress]);
   return <div className="vyn-shell" style={{
     backgroundColor: C.bg,
     color: C.text,
@@ -3004,11 +3397,12 @@ export const VynSpaceLanding: React.FC = () => {
 
       {/* ── Sticky 3D viewport ── */}
       <div style={{
-      position: 'sticky',
+      position: activePage ? 'fixed' : 'sticky',
       top: 0,
       width: '100%',
       height: '100vh',
-      zIndex: 1
+      zIndex: 1,
+      pointerEvents: activePage ? 'none' : 'auto'
     }}>
         <Canvas camera={{
         position: [0, 3, 24],
@@ -3025,7 +3419,7 @@ export const VynSpaceLanding: React.FC = () => {
       }} dpr={[1, 1.6]}>
           <color attach="background" args={[C.bg]} />
           <Suspense fallback={null}>
-            <VynScene scrollProgress={scrollProg} mouseX={mouseX} mouseY={mouseY} />
+            <VynScene scrollProgress={sceneProgress} mouseX={mouseX} mouseY={mouseY} />
             <EffectComposer multisampling={0}>
               <Bloom intensity={0.28} luminanceThreshold={0.22} luminanceSmoothing={0.78} mipmapBlur />
               <Vignette offset={0.38} darkness={0.64} />
@@ -3034,17 +3428,17 @@ export const VynSpaceLanding: React.FC = () => {
         </Canvas>
 
         {/* HTML overlays */}
-        <HeroOverlay visible={activeSection?.type === 'hero'} />
+        {!activePage && <HeroOverlay visible={activeSection?.type === 'hero'} />}
 
         {activeSpaceSection && activeSpaceSection.spaceIndex !== undefined && <>
           <SectionPanel key={`${activeSpaceSection.id}-panel`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right'} />
           <DetailDeck key={`${activeSpaceSection.id}-details`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'right' : 'left'} />
         </>}
 
-        <RegisterOverlay visible={activeSection?.type === 'register'} />
-        <FaqOverlay visible={activeSection?.type === 'faq'} />
-        <CtaOverlay visible={activeSection?.type === 'cta'} />
-        <ScrollIndicator progress={scrollProg} />
+        {!activePage && <RegisterOverlay visible={activeSection?.type === 'register'} />}
+        {!activePage && <FaqOverlay visible={activeSection?.type === 'faq'} />}
+        {!activePage && <CtaOverlay visible={activeSection?.type === 'cta'} />}
+        {!activePage && <ScrollIndicator progress={sceneProgress} />}
 
         {/* HUD corner brackets */}
         {([{
@@ -3091,9 +3485,9 @@ export const VynSpaceLanding: React.FC = () => {
           lineHeight: 2,
           letterSpacing: '0.12em'
         }}>
-            <div>DEPTH: {Math.round(scrollProg * 600).toString().padStart(4, '0')}m</div>
-            <div>PROGRESS: {Math.round(scrollProg * 100).toString().padStart(3, '0')}%</div>
-            <div>NODE: {activeSection?.id?.toUpperCase() ?? 'STANDBY'}</div>
+            <div>DEPTH: {Math.round(sceneProgress * 600).toString().padStart(4, '0')}m</div>
+            <div>PROGRESS: {Math.round(sceneProgress * 100).toString().padStart(3, '0')}%</div>
+            <div>NODE: {activePage?.key?.toUpperCase() ?? activeSection?.id?.toUpperCase() ?? 'STANDBY'}</div>
           </div>
         </div>
 
@@ -3137,8 +3531,10 @@ export const VynSpaceLanding: React.FC = () => {
       }} />
       </div>
 
-      {/* Scroll spacer and hash anchors for page-like navigation */}
-      <div style={{
+      {activePage && <PageView page={activePage} />}
+
+      {/* Scroll spacer and hash anchors for the immersive homepage */}
+      {!activePage && <div style={{
       height: '1120vh',
       marginTop: '-100vh',
       position: 'relative',
@@ -3151,7 +3547,7 @@ export const VynSpaceLanding: React.FC = () => {
         height: 1,
         pointerEvents: 'none'
       }} />)}
-      </div>
+      </div>}
 
       <Footer />
     </div>;
