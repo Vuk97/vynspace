@@ -10,10 +10,14 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.4",
-    "vite": "^7.1.12",
+    "lucide-react": "^0.468.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "lucide-react": "^0.468.0"
+    "three": "^0.184.0",
+    "vite": "^7.1.12"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "playwright-core": "^1.59.1",
+    "pngjs": "^7.0.0"
+  }
 }

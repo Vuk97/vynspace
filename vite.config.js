@@ -6,4 +6,14 @@ const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1];
 export default defineConfig({
   base: repoName ? `/${repoName}/` : "/",
   plugins: [react()],
+  build: {
+    chunkSizeWarningLimit: 650,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ["three"],
+        },
+      },
+    },
+  },
 });

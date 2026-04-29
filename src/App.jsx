@@ -54,6 +54,8 @@ import {
   Wifi,
   X,
 } from "lucide-react";
+import HeroScene from "./HeroScene.jsx";
+import PageScene from "./PageScene.jsx";
 
 const navItems = [
   { id: "home", label: "Home" },
@@ -273,6 +275,81 @@ const blogPosts = [
   },
 ];
 
+const sceneNarratives = {
+  spaces: {
+    eyebrow: "Spatial product map",
+    title: "Each orbit is a protected service surface.",
+    text: "The public site sells the idea; the protected app becomes a spatial command center for verified users.",
+    points: ["Preview hub", "Locked services", "Shared identity", "3D-ready shell"],
+  },
+  apt: {
+    eyebrow: "Housing layer",
+    title: "Apartment data behaves like a live eligibility system.",
+    text: "Listings, criteria, viewings, and contracts are presented as one journey instead of separate landlord paperwork.",
+    points: ["Availability", "Criteria", "Viewing", "Contract"],
+  },
+  finance: {
+    eyebrow: "Financial core",
+    title: "Banking is staged as controlled infrastructure.",
+    text: "Accounts, transfers, analytics, insurance, and future investments stay visually high-trust, not speculative.",
+    points: ["Solaris", "Transfers", "Insurance", "USDT review"],
+  },
+  jobs: {
+    eyebrow: "Matching engine",
+    title: "Candidates, skills, employers, and contracts form a live network.",
+    text: "The design makes fit score, readiness, training, and placement feel like a precise operating system.",
+    points: ["Assessment", "Fit score", "Employer route", "Placement"],
+  },
+  campus: {
+    eyebrow: "Digital city hall",
+    title: "Campus turns bureaucracy into a visible map.",
+    text: "Tasks, documents, appointments, university data, courses, and community sit inside one navigable civic layer.",
+    points: ["Documents", "Appointments", "Courses", "Rewards"],
+  },
+  registration: {
+    eyebrow: "Trust gateway",
+    title: "Verification becomes the opening sequence.",
+    text: "The first user action feels like entering a secure institution-grade system, not filling another form.",
+    points: ["Personal data", "Documents", "ID provider", "Unlocked access"],
+  },
+  about: {
+    eyebrow: "Company signal",
+    title: "The mission is visualized as controlled global access.",
+    text: "The founder story, team, and vision sit inside the same design language as the actual product.",
+    points: ["Founders", "Mission", "Partners", "Trust"],
+  },
+  blog: {
+    eyebrow: "Editorial feed",
+    title: "Posts feel like dispatches from the platform.",
+    text: "Updates and user stories are framed as signal cards inside the VYN Space operating environment.",
+    points: ["Housing", "Campus", "Finance", "Stories"],
+  },
+  appointments: {
+    eyebrow: "Contact bridge",
+    title: "Business conversations get a premium entry point.",
+    text: "Calendly, partner contact, and form submission are presented as a direct channel into the company core.",
+    points: ["CEO calls", "Partners", "Support", "Institutions"],
+  },
+  faq: {
+    eyebrow: "Answer graph",
+    title: "Frequently asked questions become a searchable trust layer.",
+    text: "The FAQ is designed to reduce anxiety around verification, access, finance, housing, and the future metaverse.",
+    points: ["Access", "Verification", "Finance", "Metaverse"],
+  },
+  donation: {
+    eyebrow: "Support channel",
+    title: "Donations sit behind compliance-first trust signals.",
+    text: "PayPal and crypto routes are clear, restrained, and visually separated from speculation.",
+    points: ["PayPal", "USDT", "Compliance", "Impact"],
+  },
+  metaverse: {
+    eyebrow: "Immersive layer",
+    title: "The future 3D world is already part of the interface language.",
+    text: "Events, support, and avatar navigation can grow from the current WebGL shell without rebuilding the brand.",
+    points: ["Avatar", "Events", "Fallback", "WebGL"],
+  },
+};
+
 function getInitialRoute() {
   const hash = window.location.hash.replace("#", "");
   const allRoutes = new Set([
@@ -390,43 +467,94 @@ function Header({ route, menuOpen, setMenuOpen }) {
 function HomePage() {
   return (
     <main>
-      <section className="hero">
-        <DigitalScene />
-        <div className="hero-content">
-          <p className="eyebrow">Digital onboarding operating system for life in Germany</p>
-          <img className="hero-logo" src={`${import.meta.env.BASE_URL}vynspacelogo.webp`} alt="VYN Space logo" />
-          <h1>VYN Space</h1>
-          <p className="hero-copy">
-            One verified platform connecting refugees, students, and skilled workers with housing,
-            banking, jobs, education, bureaucracy, and community.
-          </p>
-          <div className="button-row">
-            <ButtonLink to="spaces" icon={ArrowRight}>
-              Learn More
-            </ButtonLink>
-            <ButtonLink to="register" variant="secondary" icon={ShieldCheck}>
-              Register Now
-            </ButtonLink>
+      <section className="hero premium-hero">
+        <HeroScene />
+        <div className="hero-vignette" />
+        <div className="hero-shell">
+          <div className="hero-content">
+            <p className="eyebrow">Verified life onboarding for Germany</p>
+            <img
+              className="hero-logo"
+              src={`${import.meta.env.BASE_URL}vynspacelogo.webp`}
+              alt="VYN Space logo"
+            />
+            <h1>VYN Space</h1>
+            <p className="hero-copy">
+              A trust layer for arrival, housing, banking, work, education, and community, built
+              around one verified identity instead of scattered paperwork.
+            </p>
+            <div className="button-row">
+              <ButtonLink to="spaces" icon={ArrowRight}>
+                Enter Spaces
+              </ButtonLink>
+              <ButtonLink to="register" variant="secondary" icon={ShieldCheck}>
+                Verify Access
+              </ButtonLink>
+            </div>
           </div>
-          <div className="trust-strip" aria-label="Platform readiness">
-            <span>
-              <BadgeCheck size={16} /> Verified onboarding
-            </span>
-            <span>
-              <Network size={16} /> Subdomain-ready services
-            </span>
-            <span>
-              <Layers3 size={16} /> 3D assistant prepared
-            </span>
-          </div>
+
+          <aside className="hero-console" aria-label="VYN Space access status">
+            <div className="console-topline">
+              <span>Access Core</span>
+              <strong>Prepared</strong>
+            </div>
+            <div className="console-meter" aria-hidden="true">
+              <span style={{ width: "78%" }} />
+            </div>
+            <div className="console-grid">
+              {[
+                [BadgeCheck, "Identity", "IDnow-ready"],
+                [Network, "Spaces", "Subdomain-ready"],
+                [Layers3, "3D layer", "Lazy-load plan"],
+              ].map(([Icon, title, text]) => (
+                <div className="console-item" key={title}>
+                  <Icon size={17} />
+                  <span>{title}</span>
+                  <small>{text}</small>
+                </div>
+              ))}
+            </div>
+          </aside>
+        </div>
+
+        <nav className="orbit-nav" aria-label="Core VYN Space services">
+          {spaces.map((space) => {
+            const Icon = space.icon;
+            return (
+              <a className={`orbit-chip ${space.accent}`} href={`#${space.id}`} key={space.id}>
+                <Icon size={18} />
+                <span>{space.title}</span>
+              </a>
+            );
+          })}
+        </nav>
+      </section>
+
+      <section className="signal-section">
+        <div className="signal-copy">
+          <p className="eyebrow">System shape</p>
+          <h2>One verified profile moves through every service.</h2>
+        </div>
+        <div className="signal-runway" aria-label="Verified onboarding sequence">
+          {[
+            ["01", "Register"],
+            ["02", "Verify"],
+            ["03", "Match"],
+            ["04", "Contract"],
+          ].map(([number, label]) => (
+            <div className="runway-node" key={number}>
+              <span>{number}</span>
+              <strong>{label}</strong>
+            </div>
+          ))}
         </div>
       </section>
 
       <section className="section section-tight">
         <SectionHeader
           eyebrow="Core spaces"
-          title="Four services, one trusted access layer"
-          summary="The public website explains the platform. Full Campus, APT, Jobs, and Finance access is unlocked after registration, identity verification, and login."
+          title="Four locked spaces, one operational spine"
+          summary="Each space has its own product surface, but the same verified user profile, documents, consent, and process state travel across all of them."
         />
         <ServiceSlider />
       </section>
@@ -434,8 +562,8 @@ function HomePage() {
       <section className="section">
         <SectionHeader
           eyebrow="Overview"
-          title="A complete map of the product"
-          summary="Every area is designed to reduce friction in relocation and make the next step visible."
+          title="Product map"
+          summary="The public site previews the platform; the protected app becomes the working layer after verification."
         />
         <div className="card-grid three">
           {pageCards.map((card) => (
@@ -1118,7 +1246,7 @@ function MetaversePage() {
       summary="Registered users will be able to enter a VYN Space metaverse for guided support, events, community, and spatial service navigation."
     >
       <section className="metaverse-stage">
-        <DigitalScene compact />
+        <HeroScene compact />
         <div>
           <p className="eyebrow">Future access</p>
           <h2>Events, support, and avatar navigation</h2>
@@ -1158,16 +1286,44 @@ function MetaversePage() {
   );
 }
 
-function PageShell({ eyebrow, title, summary, actions, children }) {
+function PageShell({ eyebrow, title, summary, actions, children, scene }) {
+  const sceneKey =
+    scene ||
+    eyebrow
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .split(" ")[0];
+  const narrative = sceneNarratives[sceneKey] || sceneNarratives.spaces;
+
   return (
-    <main className="page">
-      <section className="page-hero">
-        <div>
+    <main className={`page page-${sceneKey}`}>
+      <section className="page-hero cinematic-page-hero">
+        <PageScene variant={sceneKey} />
+        <div className="page-hero-shade" />
+        <div className="page-hero-copy">
           <p className="eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
           <p>{summary}</p>
         </div>
         {actions && <div className="button-row">{actions}</div>}
+      </section>
+      <section className={`spatial-scroll-stage spatial-${sceneKey}`}>
+        <PageScene variant={sceneKey} />
+        <div className="spatial-stage-shade" />
+        <div className="spatial-scroll-copy">
+          <p className="eyebrow">{narrative.eyebrow}</p>
+          <h2>{narrative.title}</h2>
+          <p>{narrative.text}</p>
+        </div>
+        <div className="spatial-points" aria-label={`${title} spatial signals`}>
+          {narrative.points.map((point, index) => (
+            <div className="spatial-point" key={point}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{point}</strong>
+            </div>
+          ))}
+        </div>
       </section>
       <div className="page-content">{children}</div>
     </main>
