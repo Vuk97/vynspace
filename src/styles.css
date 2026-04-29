@@ -38,6 +38,40 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
+.vyn-shell {
+  --hero-title-size: 94px;
+  --hero-copy-size: 17px;
+  --section-title-size: 36px;
+  --register-title-size: 42px;
+  --faq-title-size: 32px;
+  --cta-title-size: 74px;
+  --stat-size: 28px;
+}
+
+@media (max-width: 899px) {
+  .vyn-shell {
+    --hero-title-size: 60px;
+    --hero-copy-size: 15px;
+    --section-title-size: 30px;
+    --register-title-size: 34px;
+    --faq-title-size: 28px;
+    --cta-title-size: 50px;
+    --stat-size: 24px;
+  }
+}
+
+@media (max-width: 520px) {
+  .vyn-shell {
+    --hero-title-size: 44px;
+    --hero-copy-size: 14px;
+    --section-title-size: 25px;
+    --register-title-size: 28px;
+    --faq-title-size: 23px;
+    --cta-title-size: 38px;
+    --stat-size: 21px;
+  }
+}
+
 /* Tailwind-like responsive helpers used inline by the landing component. */
 .hidden {
   display: none !important;
@@ -58,5 +92,112 @@ summary {
   }
   .md\:hidden {
     display: flex !important;
+  }
+  .scroll-indicator,
+  .hud-readout {
+    display: none !important;
+  }
+}
+
+.detail-deck {
+  position: absolute;
+  top: 104px;
+  z-index: 9;
+  width: min(500px, calc(50vw - 80px));
+  max-height: calc(100vh - 168px);
+  overflow: auto;
+  padding: 20px;
+  border: 1px solid rgba(91, 192, 235, 0.18);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)),
+    rgba(3, 6, 13, 0.48);
+  backdrop-filter: blur(24px);
+}
+
+.detail-deck-left {
+  left: 32px;
+}
+
+.detail-deck-right {
+  right: 32px;
+}
+
+.detail-deck-heading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+}
+
+.detail-deck-heading span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.detail-deck-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.detail-card {
+  padding: 16px 17px;
+  border: 1px solid rgba(91, 192, 235, 0.16);
+  border-radius: 8px;
+  background: rgba(10, 15, 28, 0.40);
+}
+
+.detail-card h3 {
+  margin: 0 0 12px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.detail-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.detail-card li {
+  display: grid;
+  grid-template-columns: 8px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.detail-card li span {
+  width: 5px;
+  height: 5px;
+  margin-top: 8px;
+  border-radius: 999px;
+}
+
+.detail-card p {
+  margin: 0;
+  color: #a0a7b8;
+  font-size: 12.5px;
+  line-height: 1.62;
+}
+
+@media (min-width: 900px) {
+  .mobile-content-blocks {
+    display: none !important;
+  }
+}
+
+@media (max-width: 899px) {
+  .detail-deck {
+    display: none !important;
   }
 }

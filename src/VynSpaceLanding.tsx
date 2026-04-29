@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback, Suspense } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 
@@ -26,7 +27,7 @@ const C = {
   dim: '#1C2D40',
   border: 'rgba(91,192,235,0.14)'
 } as const;
-const LOGO_URL = `${import.meta.env.BASE_URL}vynspacelogo.webp`;
+const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
 
 // ─── STATIC DATA ───────────────────────────────────────────────────────────────
 const NAV_ITEMS = [{
@@ -638,7 +639,7 @@ function makeTunnelTexture(color: number): THREE.CanvasTexture {
 
 // ─── PRE-BUILT STATIC DATA ─────────────────────────────────────────────────────
 
-const NUM_BUILDINGS = 180;
+const NUM_BUILDINGS = 118;
 type BldgData = {
   x: number;
   z: number;
@@ -652,17 +653,17 @@ const BLDG_DATA: BldgData[] = Array.from({
 }, (_, i) => {
   const side = i % 2 === 0 ? 1 : -1;
   const row = Math.floor(i / 2);
-  const spread = 12 + Math.random() * 10;
+  const spread = 22 + Math.random() * 16;
   return {
-    x: side * (spread + Math.random() * 7),
-    z: -row * 4.8 - Math.random() * 2.5,
-    h: 3 + Math.random() * 22,
-    w: 1.4 + Math.random() * 2.2,
-    d: 1.4 + Math.random() * 2.2,
+    x: side * (spread + Math.random() * 10),
+    z: -46 - row * 7.2 - Math.random() * 4.5,
+    h: 3 + Math.random() * 18,
+    w: 1.1 + Math.random() * 1.9,
+    d: 1.1 + Math.random() * 1.9,
     colorIdx: Math.floor(Math.random() * 4)
   };
 });
-const PARTICLE_COUNT = 5000;
+const PARTICLE_COUNT = 3000;
 const pPos = new Float32Array(PARTICLE_COUNT * 3);
 const pCol = new Float32Array(PARTICLE_COUNT * 3);
 const pSizes = new Float32Array(PARTICLE_COUNT);
@@ -679,7 +680,7 @@ for (let i = 0; i < PARTICLE_COUNT; i++) {
 }
 
 // Data stream ribbon lines
-const RIBBON_COUNT = 40;
+const RIBBON_COUNT = 24;
 type RibbonData = {
   x: number;
   color: number;
@@ -689,9 +690,9 @@ type RibbonData = {
 const RIBBON_DATA: RibbonData[] = Array.from({
   length: RIBBON_COUNT
 }, (_, i) => ({
-  x: (i % 2 === 0 ? 1 : -1) * (8 + i % 10 * 2.2),
+  x: (i % 2 === 0 ? 1 : -1) * (13 + i % 8 * 2.6),
   color: [C.cyanHex, C.greenHex, C.violetHex, C.amberHex][i % 4],
-  speed: 0.8 + Math.random() * 2.4,
+  speed: 0.65 + Math.random() * 1.6,
   offset: Math.random() * 460
 }));
 
@@ -701,49 +702,49 @@ const TUNNEL_ARCHES: Array<{
   color: number;
   scale: number;
 }> = [{
-  z: -30,
+  z: -58,
   color: C.cyanHex,
-  scale: 1.0
+  scale: 0.84
 }, {
-  z: -70,
+  z: -98,
   color: C.greenHex,
-  scale: 0.9
-}, {
-  z: -110,
-  color: C.violetHex,
-  scale: 0.85
-}, {
-  z: -150,
-  color: C.amberHex,
   scale: 0.8
 }, {
-  z: -190,
-  color: C.cyanHex,
-  scale: 0.75
+  z: -138,
+  color: C.violetHex,
+  scale: 0.76
 }, {
-  z: -240,
-  color: C.greenHex,
+  z: -178,
+  color: C.amberHex,
   scale: 0.72
 }, {
-  z: -300,
-  color: C.violetHex,
+  z: -220,
+  color: C.cyanHex,
   scale: 0.7
 }, {
-  z: -360,
-  color: C.cyanHex,
+  z: -270,
+  color: C.greenHex,
   scale: 0.68
 }, {
-  z: -420,
-  color: C.greenHex,
+  z: -328,
+  color: C.violetHex,
   scale: 0.66
 }, {
-  z: -480,
-  color: C.violetHex,
+  z: -386,
+  color: C.cyanHex,
   scale: 0.64
 }, {
-  z: -540,
-  color: C.amberHex,
+  z: -444,
+  color: C.greenHex,
   scale: 0.62
+}, {
+  z: -500,
+  color: C.violetHex,
+  scale: 0.6
+}, {
+  z: -556,
+  color: C.amberHex,
+  scale: 0.58
 }];
 
 // ─── 3D COMPONENT: PROCEDURAL CITY ────────────────────────────────────────────
@@ -780,7 +781,7 @@ const ProceduralCity: React.FC = () => {
       const ls = child.children[1] as THREE.LineSegments;
       if (ls?.material) {
         const mat = ls.material as THREE.LineBasicMaterial;
-        mat.opacity = 0.05 + Math.abs(Math.sin(clock.elapsedTime * 0.25 + i * 0.38)) * 0.18;
+        mat.opacity = 0.035 + Math.abs(Math.sin(clock.elapsedTime * 0.22 + i * 0.38)) * 0.11;
       }
     });
   });
@@ -834,7 +835,7 @@ const DataStreamRibbons: React.FC = () => {
         pos[j * 3 + 2] = zBase - j * 8;
       }
       geo.attributes.position.needsUpdate = true;
-      mat.opacity = 0.03 + Math.abs(Math.sin(t * 0.5)) * 0.12;
+      mat.opacity = 0.02 + Math.abs(Math.sin(t * 0.5)) * 0.08;
     });
   });
   return <group ref={groupRef}>
@@ -863,7 +864,7 @@ const StarField: React.FC = () => {
     }
   });
   return <points ref={ref} geometry={geo}>
-      <pointsMaterial size={0.06} vertexColors transparent opacity={0.7} sizeAttenuation />
+      <pointsMaterial size={0.052} vertexColors transparent opacity={0.58} sizeAttenuation />
     </points>;
 };
 
@@ -877,7 +878,7 @@ const Floor: React.FC = () => {
   }, []);
   return <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -5.5, -330]}>
       <planeGeometry args={[180, 680, 1, 1]} />
-      <meshBasicMaterial map={tex} transparent opacity={0.6} />
+      <meshBasicMaterial map={tex} transparent opacity={0.46} />
     </mesh>;
 };
 
@@ -905,7 +906,7 @@ const TunnelArch: React.FC<{
     const m = new THREE.LineBasicMaterial({
       color,
       transparent: true,
-      opacity: 0.22
+      opacity: 0.15
     });
     return new THREE.Line(g, m);
   }, [scale, color]);
@@ -927,7 +928,7 @@ const TunnelArch: React.FC<{
   const billMat = useMemo(() => new THREE.MeshBasicMaterial({
     map: tex,
     transparent: true,
-    opacity: 0.08,
+    opacity: 0.045,
     depthWrite: false,
     side: THREE.DoubleSide
   }), [tex]);
@@ -939,7 +940,7 @@ const TunnelArch: React.FC<{
     groupRef.current.rotation.z = t;
     const hexLine = groupRef.current.children[0] as THREE.Line;
     if (hexLine?.material) {
-      (hexLine.material as THREE.LineBasicMaterial).opacity = 0.12 + Math.abs(Math.sin(clock.elapsedTime * 0.4 + idx)) * 0.16;
+      (hexLine.material as THREE.LineBasicMaterial).opacity = 0.08 + Math.abs(Math.sin(clock.elapsedTime * 0.34 + idx)) * 0.1;
     }
   });
   return <group position={[0, 0, z]}>
@@ -1277,12 +1278,12 @@ const FinaleGateway: React.FC = () => {
 // ─── 3D COMPONENT: ATMOSPHERIC DEPTH FOG COLUMNS ──────────────────────────────
 const AtmosphericColumns: React.FC = () => {
   const colData = useMemo(() => Array.from({
-    length: 20
+    length: 12
   }, (_, i) => ({
-    x: (Math.random() - 0.5) * 40,
-    z: -20 - i * 20,
+    x: (Math.random() - 0.5) * 62,
+    z: -54 - i * 34,
     color: [C.cyanHex, C.violetHex, C.greenHex][i % 3],
-    h: 8 + Math.random() * 20,
+    h: 8 + Math.random() * 16,
     speed: 0.2 + Math.random() * 0.5,
     offset: Math.random() * Math.PI * 2
   })), []);
@@ -1293,7 +1294,7 @@ const AtmosphericColumns: React.FC = () => {
     colData.forEach((col, i) => {
       const mesh = refs.current[i];
       if (!mesh) return;
-      (mesh.material as THREE.MeshBasicMaterial).opacity = 0.012 + Math.abs(Math.sin(clock.elapsedTime * col.speed + col.offset)) * 0.04;
+      (mesh.material as THREE.MeshBasicMaterial).opacity = 0.008 + Math.abs(Math.sin(clock.elapsedTime * col.speed + col.offset)) * 0.024;
     });
   });
   return <group>
@@ -1310,13 +1311,13 @@ const AtmosphericColumns: React.FC = () => {
 const FloatingBytes: React.FC = () => {
   const groupRef = useRef<THREE.Group>(null);
   const byteData = useMemo(() => Array.from({
-    length: 80
+    length: 42
   }, (_, i) => ({
-    x: (Math.random() - 0.5) * 50,
+    x: (Math.random() - 0.5) * 76,
     y: -4 + Math.random() * 14,
-    z: -(i * 5.5 + Math.random() * 4),
+    z: -34 - (i * 9 + Math.random() * 7),
     color: [C.cyanHex, C.greenHex, C.violetHex][i % 3],
-    speed: 0.3 + Math.random() * 0.8,
+    speed: 0.22 + Math.random() * 0.56,
     offset: Math.random() * Math.PI * 2,
     size: 0.04 + Math.random() * 0.08
   })), []);
@@ -1332,7 +1333,7 @@ const FloatingBytes: React.FC = () => {
       child.rotation.x = clock.elapsedTime * d.speed * 0.5;
       child.rotation.y = clock.elapsedTime * d.speed * 0.7;
       const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
-      mat.opacity = 0.1 + Math.abs(Math.sin(clock.elapsedTime * d.speed + d.offset)) * 0.35;
+      mat.opacity = 0.06 + Math.abs(Math.sin(clock.elapsedTime * d.speed + d.offset)) * 0.2;
     });
   });
   return <group ref={groupRef}>
@@ -1361,8 +1362,8 @@ const CameraController: React.FC<{
   useFrame(() => {
     const prog = scrollProgress;
     const totalZ = -600 * prog;
-    const waveX = Math.sin(prog * Math.PI * 4.2) * 5.5 + mouseX * 2.8;
-    const waveY = 2.5 + prog * 3 + Math.cos(prog * Math.PI * 2.5) * 1.8 + mouseY * 1.4;
+    const waveX = Math.sin(prog * Math.PI * 4.2) * 4.2 + mouseX * 1.8;
+    const waveY = 2.7 + prog * 2.4 + Math.cos(prog * Math.PI * 2.5) * 1.2 + mouseY * 0.9;
     const desired = new THREE.Vector3(waveX, waveY, 24 + totalZ);
     vel.current.subVectors(desired, pos.current).multiplyScalar(0.038);
     pos.current.add(vel.current);
@@ -1383,6 +1384,7 @@ const VynScene: React.FC<{
   mouseX,
   mouseY
 }) => {
+  const showPortals = scrollProgress > 0.035;
   return <group>
       <fog attach="fog" args={[C.bg, 20, 220]} />
       <CameraController scrollProgress={scrollProgress} mouseX={mouseX} mouseY={mouseY} />
@@ -1397,10 +1399,10 @@ const VynScene: React.FC<{
       {TUNNEL_ARCHES.map((arch, i) => <TunnelArch key={i} z={arch.z} color={arch.color} scale={arch.scale} idx={i} />)}
 
       {/* Hero identity hub */}
-      <IdentityHub position={[0, 1, -36]} />
+      <IdentityHub position={[0, 0.8, -46]} />
 
       {/* Space portal cards */}
-      {SPACES.map((sp, i) => <SpacePortalCard key={sp.id} space={sp} idx={i} />)}
+      {showPortals && SPACES.map((sp, i) => <SpacePortalCard key={sp.id} space={sp} idx={i} />)}
 
       {/* Finale gateway */}
       <FinaleGateway />
@@ -1475,18 +1477,15 @@ const VynMark: React.FC<{
 }) => <span style={{
   width: size,
   height: size,
-  display: 'inline-grid',
-  placeItems: 'center',
-  borderRadius: Math.max(6, size * 0.18),
-  border: `1px solid rgba(91,192,235,0.32)`,
-  background: 'rgba(3,6,13,0.58)',
-  boxShadow: `0 0 ${Math.round(size * 0.9)}px rgba(91,192,235,0.20)`,
-  overflow: 'hidden',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  filter: `drop-shadow(0 0 ${Math.round(size * 0.35)}px rgba(91,192,235,0.38))`,
   flexShrink: 0
 }}>
     <img src={LOGO_URL} alt="VYN Space logo" style={{
-    width: size * 0.86,
-    height: size * 0.86,
+    width: size,
+    height: size,
     objectFit: 'contain',
     display: 'block'
   }} />
@@ -1498,7 +1497,7 @@ const ScrollIndicator: React.FC<{
   progress: number;
 }> = ({
   progress
-}) => <div style={{
+}) => <div className="scroll-indicator" style={{
   position: 'fixed',
   right: 22,
   top: '50%',
@@ -1740,7 +1739,8 @@ const HeroOverlay: React.FC<{
   alignItems: 'center',
   justifyContent: 'center',
   zIndex: 10,
-  pointerEvents: visible ? 'auto' : 'none'
+  pointerEvents: visible ? 'auto' : 'none',
+  background: visible ? 'radial-gradient(ellipse at 50% 50%, rgba(3,6,13,0.82) 0%, rgba(3,6,13,0.58) 36%, rgba(3,6,13,0.20) 66%, transparent 86%)' : 'transparent'
 }}>
     <motion.div initial={{
     opacity: 0,
@@ -1754,7 +1754,7 @@ const HeroOverlay: React.FC<{
   }} style={{
     textAlign: 'center',
     padding: '0 24px',
-    maxWidth: 920,
+    maxWidth: 840,
     pointerEvents: 'none'
   }}>
       {/* Status pill */}
@@ -1771,7 +1771,7 @@ const HeroOverlay: React.FC<{
       display: 'inline-flex',
       alignItems: 'center',
       gap: 8,
-      marginBottom: 42,
+      marginBottom: 30,
       padding: '5px 14px',
       borderRadius: 40,
       border: `1px solid ${C.border}`,
@@ -1819,15 +1819,11 @@ const HeroOverlay: React.FC<{
       alignItems: 'center',
       justifyContent: 'center',
       marginBottom: 22,
-      padding: 8,
-      borderRadius: 12,
-      border: `1px solid rgba(91,192,235,0.26)`,
-      background: 'rgba(3,6,13,0.46)',
-      boxShadow: `0 0 42px rgba(91,192,235,0.18)`
+      filter: 'drop-shadow(0 0 22px rgba(91,192,235,0.30))'
     }}>
         <img src={LOGO_URL} alt="VYN Space logo" style={{
-        width: 76,
-        height: 76,
+        width: 78,
+        height: 78,
         objectFit: 'contain',
         display: 'block'
       }} />
@@ -1846,11 +1842,11 @@ const HeroOverlay: React.FC<{
       ease: [0.16, 1, 0.3, 1]
     }} style={{
       fontFamily: 'Comfortaa, Inter, sans-serif',
-      fontSize: 'clamp(48px, 8.5vw, 112px)',
+      fontSize: 'var(--hero-title-size)',
       fontWeight: 700,
       color: C.text,
-      lineHeight: 0.92,
-      letterSpacing: '-0.03em',
+      lineHeight: 0.98,
+      letterSpacing: 0,
       margin: '0 0 8px'
     }}>
         Verified life
@@ -1867,11 +1863,11 @@ const HeroOverlay: React.FC<{
       ease: [0.16, 1, 0.3, 1]
     }} style={{
       fontFamily: 'Comfortaa, Inter, sans-serif',
-      fontSize: 'clamp(48px, 8.5vw, 112px)',
+      fontSize: 'var(--hero-title-size)',
       fontWeight: 700,
-      lineHeight: 0.92,
-      letterSpacing: '-0.03em',
-      margin: '0 0 44px',
+      lineHeight: 0.98,
+      letterSpacing: 0,
+      margin: '0 0 34px',
       background: `linear-gradient(110deg, ${C.cyan} 0%, ${C.green} 45%, ${C.violet} 100%)`,
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent'
@@ -1889,11 +1885,11 @@ const HeroOverlay: React.FC<{
       delay: 1.0,
       duration: 0.9
     }} style={{
-      color: C.muted,
-      fontSize: 'clamp(14px, 1.5vw, 17px)',
-      lineHeight: 1.82,
-      maxWidth: 510,
-      margin: '0 auto 52px',
+      color: 'rgba(160,167,184,0.86)',
+      fontSize: 'var(--hero-copy-size)',
+      lineHeight: 1.76,
+      maxWidth: 590,
+      margin: '0 auto 42px',
       fontFamily: 'Inter, sans-serif'
     }}>
         A trust layer for arrival, housing, banking, work, education, and community — built around one verified identity instead of scattered paperwork.
@@ -1920,8 +1916,8 @@ const HeroOverlay: React.FC<{
         color: '#03060D',
         fontSize: 11,
         fontWeight: 800,
-        padding: '13px 32px',
-        borderRadius: 6,
+        padding: '12px 30px',
+        borderRadius: 5,
         cursor: 'pointer',
         letterSpacing: '0.12em',
         display: 'inline-flex',
@@ -1940,8 +1936,8 @@ const HeroOverlay: React.FC<{
         color: C.text,
         fontSize: 11,
         fontWeight: 600,
-        padding: '13px 32px',
-        borderRadius: 6,
+        padding: '12px 30px',
+        borderRadius: 5,
         cursor: 'pointer',
         letterSpacing: '0.1em',
         display: 'inline-flex',
@@ -2026,15 +2022,15 @@ const SectionPanel: React.FC<{
     position: 'absolute',
     [side]: 32,
     bottom: 28,
-    width: 'min(430px, calc(100vw - 48px))',
+    width: 'min(400px, calc(100vw - 48px))',
     maxHeight: 'calc(100vh - 116px)',
     overflowY: 'auto',
     zIndex: 10,
-    padding: '28px 28px',
-    backgroundColor: 'rgba(0,6,15,0.76)',
+    padding: '26px 26px',
+    backgroundColor: 'rgba(0,6,15,0.68)',
     backdropFilter: 'blur(32px)',
     border: `1px solid ${space.color}22`,
-    borderRadius: 16,
+    borderRadius: 8,
     boxShadow: `0 0 50px ${space.color}0A`
   }}>
         {/* Code + divider */}
@@ -2071,11 +2067,11 @@ const SectionPanel: React.FC<{
           {space.tagline}
         </p>
         <h2 style={{
-      fontFamily: 'monospace',
-      fontSize: 'clamp(22px, 2.6vw, 38px)',
+      fontFamily: 'Comfortaa, Inter, sans-serif',
+      fontSize: 'var(--section-title-size)',
       fontWeight: 700,
       color: C.text,
-      lineHeight: 1.04,
+      lineHeight: 1.12,
       marginBottom: 14
     }}>
           {space.label === 'Spaces' ? 'VYN Space access map' : `VYN ${space.label}`}
@@ -2094,14 +2090,14 @@ const SectionPanel: React.FC<{
       fontFamily: 'Inter, sans-serif'
     }}>{space.detail}</p>
 
-        <div style={{
+        <div className="mobile-content-blocks" style={{
       display: 'grid',
       gap: 12,
       marginTop: 20
     }}>
           {space.contentBlocks.map(block => <div key={block.title} style={{
         padding: '12px 12px 10px',
-        borderRadius: 10,
+        borderRadius: 8,
         border: `1px solid ${space.color}18`,
         backgroundColor: 'rgba(10,15,28,0.58)'
       }}>
@@ -2213,6 +2209,64 @@ const SectionPanel: React.FC<{
       </motion.div>}
   </AnimatePresence>;
 
+const DetailDeck: React.FC<{
+  visible: boolean;
+  space: SpaceItem;
+  side: 'left' | 'right';
+}> = ({
+  visible,
+  space,
+  side
+}) => <AnimatePresence>
+    {visible && <motion.aside className={`detail-deck detail-deck-${side}`} initial={{
+    opacity: 0,
+    y: 28,
+    filter: 'blur(8px)'
+  }} animate={{
+    opacity: 1,
+    y: 0,
+    filter: 'blur(0px)'
+  }} exit={{
+    opacity: 0,
+    y: 28,
+    filter: 'blur(8px)'
+  }} transition={{
+    duration: 0.8,
+    ease: [0.16, 1, 0.3, 1]
+  }} style={{
+    borderColor: `${space.color}24`,
+    boxShadow: `0 26px 90px rgba(0,0,0,0.28), 0 0 70px ${space.color}10`
+  }}>
+        <div className="detail-deck-heading">
+          <span style={{
+        backgroundColor: space.color,
+        boxShadow: `0 0 16px ${space.color}`
+      }} />
+          <strong style={{
+        color: space.color
+      }}>{space.label.toUpperCase()} DETAILS</strong>
+        </div>
+        <div className="detail-deck-grid">
+          {space.contentBlocks.map(block => <article className="detail-card" key={block.title} style={{
+        borderColor: `${space.color}1F`
+      }}>
+              <h3 style={{
+          color: space.color
+        }}>{block.title}</h3>
+              <ul>
+                {block.items.map(item => <li key={item}>
+                    <span style={{
+              backgroundColor: space.color,
+              boxShadow: `0 0 10px ${space.color}`
+            }} />
+                    <p>{item}</p>
+                  </li>)}
+              </ul>
+            </article>)}
+        </div>
+      </motion.aside>}
+  </AnimatePresence>;
+
 // ─── REGISTER OVERLAY ──────────────────────────────────────────────────────────
 const RegisterOverlay: React.FC<{
   visible: boolean;
@@ -2266,11 +2320,11 @@ const RegisterOverlay: React.FC<{
               ACCESS MODEL
             </p>
             <h2 style={{
-          fontFamily: 'monospace',
-          fontSize: 'clamp(24px, 3.2vw, 46px)',
+          fontFamily: 'Comfortaa, Inter, sans-serif',
+          fontSize: 'var(--register-title-size)',
           fontWeight: 700,
           color: C.text,
-          lineHeight: 1.0
+          lineHeight: 1.1
         }}>
               Register once. Verify once. Unlock everything.
             </h2>
@@ -2284,7 +2338,7 @@ const RegisterOverlay: React.FC<{
           backgroundColor: active === i ? `${step.color}0E` : 'rgba(0,6,15,0.74)',
           backdropFilter: 'blur(22px)',
           border: `1px solid ${active === i ? step.color + '40' : C.border}`,
-          borderRadius: 12,
+          borderRadius: 8,
           padding: '20px 16px',
           cursor: 'pointer',
           transition: 'all 0.3s ease',
@@ -2361,7 +2415,7 @@ const FaqOverlay: React.FC<{
       backgroundColor: 'rgba(0,6,15,0.84)',
       backdropFilter: 'blur(36px)',
       border: `1px solid ${C.border}`,
-      borderRadius: 18,
+      borderRadius: 8,
       padding: '38px 34px'
     }}>
           <p style={{
@@ -2376,11 +2430,11 @@ const FaqOverlay: React.FC<{
             FAQ.TXT
           </p>
           <h2 style={{
-        fontFamily: 'monospace',
-        fontSize: 'clamp(20px, 2.4vw, 34px)',
+        fontFamily: 'Comfortaa, Inter, sans-serif',
+        fontSize: 'var(--faq-title-size)',
         fontWeight: 700,
         color: C.text,
-        lineHeight: 1.04,
+        lineHeight: 1.14,
         marginBottom: 26
       }}>
             Plain answers.
@@ -2520,12 +2574,12 @@ const CtaOverlay: React.FC<{
           </motion.div>
 
           <h2 style={{
-        fontFamily: 'monospace',
-        fontSize: 'clamp(36px, 5.5vw, 80px)',
+        fontFamily: 'Comfortaa, Inter, sans-serif',
+        fontSize: 'var(--cta-title-size)',
         fontWeight: 700,
         color: C.text,
-        lineHeight: 0.95,
-        letterSpacing: '-0.02em',
+        lineHeight: 1.02,
+        letterSpacing: 0,
         marginBottom: 18
       }}>
             Ready to enter{' '}
@@ -2562,7 +2616,7 @@ const CtaOverlay: React.FC<{
           flex: '1 1 200px',
           backgroundColor: 'rgba(0,6,15,0.85)',
           border: `1px solid rgba(91,192,235,0.24)`,
-          borderRadius: 6,
+          borderRadius: 5,
           padding: '12px 16px',
           color: C.text,
           fontSize: 13,
@@ -2576,7 +2630,7 @@ const CtaOverlay: React.FC<{
           fontSize: 10.5,
           fontWeight: 800,
           padding: '12px 24px',
-          borderRadius: 6,
+          borderRadius: 5,
           cursor: 'pointer',
           letterSpacing: '0.14em',
           fontFamily: 'monospace',
@@ -2598,7 +2652,7 @@ const CtaOverlay: React.FC<{
                 <div style={{
             color: s.color,
             fontFamily: 'monospace',
-            fontSize: 'clamp(20px, 2.4vw, 28px)',
+            fontSize: 'var(--stat-size)',
             fontWeight: 700,
             textShadow: `0 0 16px ${s.color}55`
           }}>{s.val}</div>
@@ -2941,7 +2995,7 @@ export const VynSpaceLanding: React.FC = () => {
   }, []);
   const activeSection = useMemo(() => SECTIONS.find(s => scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
   const activeSpaceSection = useMemo(() => SECTIONS.find(s => s.type === 'space' && scrollProg >= s.scrollStart && scrollProg <= s.scrollEnd) ?? null, [scrollProg]);
-  return <div style={{
+  return <div className="vyn-shell" style={{
     backgroundColor: C.bg,
     color: C.text,
     fontFamily: 'Inter, sans-serif'
@@ -2958,7 +3012,7 @@ export const VynSpaceLanding: React.FC = () => {
     }}>
         <Canvas camera={{
         position: [0, 3, 24],
-        fov: 64
+        fov: 58
       }} style={{
         position: 'absolute',
         inset: 0,
@@ -2966,19 +3020,26 @@ export const VynSpaceLanding: React.FC = () => {
         height: '100%'
       }} gl={{
         alpha: false,
-        antialias: false,
+        antialias: true,
         powerPreference: 'high-performance'
       }} dpr={[1, 1.6]}>
           <color attach="background" args={[C.bg]} />
           <Suspense fallback={null}>
             <VynScene scrollProgress={scrollProg} mouseX={mouseX} mouseY={mouseY} />
+            <EffectComposer multisampling={0}>
+              <Bloom intensity={0.28} luminanceThreshold={0.22} luminanceSmoothing={0.78} mipmapBlur />
+              <Vignette offset={0.38} darkness={0.64} />
+            </EffectComposer>
           </Suspense>
         </Canvas>
 
         {/* HTML overlays */}
         <HeroOverlay visible={activeSection?.type === 'hero'} />
 
-        {activeSpaceSection && activeSpaceSection.spaceIndex !== undefined && <SectionPanel key={activeSpaceSection.id} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right'} />}
+        {activeSpaceSection && activeSpaceSection.spaceIndex !== undefined && <>
+          <SectionPanel key={`${activeSpaceSection.id}-panel`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right'} />
+          <DetailDeck key={`${activeSpaceSection.id}-details`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'right' : 'left'} />
+        </>}
 
         <RegisterOverlay visible={activeSection?.type === 'register'} />
         <FaqOverlay visible={activeSection?.type === 'faq'} />
@@ -3016,7 +3077,7 @@ export const VynSpaceLanding: React.FC = () => {
       }} />)}
 
         {/* HUD telemetry readout */}
-        <div style={{
+        <div className="hud-readout" style={{
         position: 'absolute',
         bottom: 28,
         left: 28,
@@ -3041,9 +3102,9 @@ export const VynSpaceLanding: React.FC = () => {
         y: ['-100%', '100vh']
       }} transition={{
         repeat: Infinity,
-        duration: 5.5,
+        duration: 7.2,
         ease: 'linear',
-        repeatDelay: 7
+        repeatDelay: 9
       }} style={{
         position: 'absolute',
         left: 0,
@@ -3051,7 +3112,7 @@ export const VynSpaceLanding: React.FC = () => {
         height: 1,
         pointerEvents: 'none',
         zIndex: 4,
-        background: `linear-gradient(90deg, transparent, ${C.cyan}28, ${C.cyan}55, ${C.cyan}28, transparent)`
+        background: `linear-gradient(90deg, transparent, ${C.cyan}18, ${C.cyan}34, ${C.cyan}18, transparent)`
       }} />
 
         {/* Vignette */}
@@ -3060,7 +3121,7 @@ export const VynSpaceLanding: React.FC = () => {
         inset: 0,
         pointerEvents: 'none',
         zIndex: 2,
-        background: 'radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0,6,15,0.55) 100%)'
+        background: 'radial-gradient(ellipse at 50% 50%, transparent 66%, rgba(0,6,15,0.58) 100%)'
       }} />
 
         {/* Bottom fade */}
@@ -3069,7 +3130,7 @@ export const VynSpaceLanding: React.FC = () => {
         bottom: 0,
         left: 0,
         right: 0,
-        height: 100,
+        height: 140,
         pointerEvents: 'none',
         background: `linear-gradient(to bottom, transparent, ${C.bg})`,
         zIndex: 3
