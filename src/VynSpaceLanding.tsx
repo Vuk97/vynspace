@@ -28,6 +28,8 @@ const C = {
   border: 'rgba(91,192,235,0.14)'
 } as const;
 const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
+const APT_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-apt-listings.webp`;
+const JOB_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-job-listings.webp`;
 
 // ─── STATIC DATA ───────────────────────────────────────────────────────────────
 const NAV_ITEMS = [{
@@ -399,6 +401,166 @@ type PageData = {
     href: string;
   };
 };
+type AptListing = {
+  title: string;
+  city: string;
+  size: string;
+  layout: string;
+  rooms: string;
+  furnished: string;
+  extras: string[];
+  energy: string;
+  wifi: string;
+  price: string;
+  priceNote: string;
+  availability: string;
+  status: string;
+  criteria: string[];
+};
+type JobListing = {
+  title: string;
+  company: string;
+  city: string;
+  type: string;
+  salary: string;
+  language: string;
+  training: string;
+  fit: string;
+  status: string;
+  strengths: string[];
+};
+const APT_LISTINGS: AptListing[] = [{
+  title: 'Mitte Arrival Apartment',
+  city: 'Berlin',
+  size: '54 sqm',
+  layout: '2-room apartment',
+  rooms: '2',
+  furnished: 'Yes',
+  extras: ['Balcony', 'Elevator', 'Document-ready landlord'],
+  energy: 'Yes',
+  wifi: 'Yes',
+  price: 'EUR 1,180',
+  priceNote: 'warm estimate / month',
+  availability: 'Available from 01.07.2026',
+  status: 'Applications open',
+  criteria: ['Employment or university enrollment', 'Income proof or guarantor', 'Residence visa or permit']
+}, {
+  title: 'Rhine Student Studio',
+  city: 'Dusseldorf',
+  size: '32 sqm',
+  layout: 'Studio',
+  rooms: '1',
+  furnished: 'Yes',
+  extras: ['Shared garden', 'Near transit', 'Starter furniture package'],
+  energy: 'Yes',
+  wifi: 'Yes',
+  price: 'EUR 720',
+  priceNote: 'warm estimate / month',
+  availability: 'Available now',
+  status: 'Viewing requests open',
+  criteria: ['University, Ausbildung, or job contract', 'Verified ID documents', 'Deposit readiness']
+}, {
+  title: 'Neukolln Family Base',
+  city: 'Berlin',
+  size: '78 sqm',
+  layout: '3-room apartment',
+  rooms: '3',
+  furnished: 'Partial',
+  extras: ['Balcony', 'Cellar storage', 'Family-friendly building'],
+  energy: 'Yes',
+  wifi: 'No',
+  price: 'EUR 1,540',
+  priceNote: 'warm estimate / month',
+  availability: 'Taken until 15.08.2026',
+  status: 'Waitlist',
+  criteria: ['Stable job or institution support', 'Sufficient monthly income', 'Residence status confirmed']
+}, {
+  title: 'Ehrenfeld Shared Loft',
+  city: 'Cologne',
+  size: '46 sqm',
+  layout: 'Shared 2-person flat',
+  rooms: '2',
+  furnished: 'Yes',
+  extras: ['Coworking corner', 'Bike room', 'Close to S-Bahn'],
+  energy: 'Yes',
+  wifi: 'Yes',
+  price: 'EUR 640',
+  priceNote: 'per room / month',
+  availability: 'Available from 15.06.2026',
+  status: 'Partner review',
+  criteria: ['Student or training contract', 'Verified profile complete', 'House rules accepted']
+}, {
+  title: 'Harburg Starter Home',
+  city: 'Hamburg',
+  size: '61 sqm',
+  layout: '2.5-room apartment',
+  rooms: '2.5',
+  furnished: 'No',
+  extras: ['Balcony', 'Storage room', 'Family-friendly area'],
+  energy: 'Yes',
+  wifi: 'No',
+  price: 'EUR 1,050',
+  priceNote: 'cold estimate / month',
+  availability: 'Available from 01.09.2026',
+  status: 'Pre-application',
+  criteria: ['Stable job or sponsor institution', 'SCHUFA alternative review', 'Residence permit or appointment proof']
+}];
+const JOB_LISTINGS: JobListing[] = [{
+  title: 'Customer Operations Trainee',
+  company: 'Fintech partner',
+  city: 'Berlin / Hybrid',
+  type: 'Traineeship',
+  salary: 'EUR 2,200-2,700 gross',
+  language: 'English B2, German A2+',
+  training: 'Customer support, KYC basics, banking operations',
+  fit: 'Best for service-minded starters',
+  status: 'Profile match open',
+  strengths: ['Communication', 'Reliability', 'Detail orientation']
+}, {
+  title: 'Junior Facility Coordinator',
+  company: 'Housing partner',
+  city: 'Dusseldorf',
+  type: 'Full-time',
+  salary: 'EUR 2,500-3,100 gross',
+  language: 'German A2-B1, English helpful',
+  training: 'Tenant communication, viewings, documentation',
+  fit: 'Best for organized practical workers',
+  status: 'Employer preview',
+  strengths: ['Organization', 'Problem solving', 'Local mobility']
+}, {
+  title: 'Software Support Intern',
+  company: 'Campus technology partner',
+  city: 'Cologne / Remote',
+  type: 'Internship',
+  salary: 'EUR 900-1,200 stipend',
+  language: 'English B2, German optional',
+  training: 'Helpdesk, QA, tutorial creation',
+  fit: 'Best for students entering tech',
+  status: 'Internship preview',
+  strengths: ['Digital tools', 'Learning speed', 'Documentation']
+}, {
+  title: 'Healthcare Admin Assistant',
+  company: 'Community clinic partner',
+  city: 'Hamburg',
+  type: 'Ausbildung pathway',
+  salary: 'Program-dependent',
+  language: 'German B1 required',
+  training: 'Reception, appointment systems, patient documents',
+  fit: 'Best for care-oriented candidates',
+  status: 'Training pathway',
+  strengths: ['Empathy', 'Structure', 'German practice']
+}, {
+  title: 'Logistics Planning Assistant',
+  company: 'Mobility partner',
+  city: 'Frankfurt am Main',
+  type: 'Full-time',
+  salary: 'EUR 2,600-3,200 gross',
+  language: 'German A2-B1, English B1',
+  training: 'Route planning, warehouse coordination, supplier updates',
+  fit: 'Best for structured hands-on candidates',
+  status: 'Placement preview',
+  strengths: ['Planning', 'Punctuality', 'Team coordination']
+}];
 const ORIGINAL_CONTACT = ['VYN SPACE Holding GmbH', 'Kirchhofstr. 3, 40721 Hilden, Germany', 'info@vyn-space.com', '+49 157 33 77 98 94', 'Geschäftsführer: Victor Ferrari Alvarez', 'Registergericht: Amtsgericht Düsseldorf, HRB 105979'];
 const PAGE_DATA: Record<string, PageData> = {
   spaces: {
@@ -3035,6 +3197,99 @@ const PageView: React.FC<{
             </ul>}
         </article>)}
     </section>
+
+    {page.key === 'apt' && <section className="listing-section" aria-label="Draft apartment listings">
+        <div className="listing-visual">
+          <img src={APT_LISTING_IMAGE} alt="Futuristic verified apartment listing preview" />
+        </div>
+        <div className="listing-heading">
+          <span>Listing previews</span>
+          <h2>Apartment ads</h2>
+          <p>Sample housing ads showing how VYN APT can present real inventory once verified landlord data is connected.</p>
+        </div>
+        <div className="listing-grid listing-grid-apt">
+          {APT_LISTINGS.map((listing, index) => <article className="listing-ad listing-ad-apt" key={listing.title}>
+              <div className="listing-ad-media" style={{
+            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.82)), url(${APT_LISTING_IMAGE})`,
+            backgroundPosition: `${22 + index * 22}% center`
+          }}>
+                <span className="listing-pill">For rent</span>
+                <span className="listing-status">{listing.status}</span>
+              </div>
+              <div className="listing-ad-body">
+                <div className="listing-ad-topline">
+                  <span>{listing.city}</span>
+                  <strong>{listing.status}</strong>
+                </div>
+                <h3>{listing.title}</h3>
+                <p>{listing.availability}</p>
+                <div className="listing-price">
+                  <strong>{listing.price}</strong>
+                  <span>{listing.priceNote}</span>
+                </div>
+                <div className="listing-facts">
+                  <span><strong>{listing.size}</strong><small>Size</small></span>
+                  <span><strong>{listing.rooms}</strong><small>Rooms</small></span>
+                  <span><strong>{listing.furnished}</strong><small>Furnished</small></span>
+                </div>
+                <div className="listing-tags">
+                  {[listing.layout, `Energy: ${listing.energy}`, `WiFi: ${listing.wifi}`, ...listing.extras].map(tag => <span key={tag}>{tag}</span>)}
+                </div>
+                <div className="listing-requirements">
+                  <h4>Verified applicant criteria</h4>
+                  <ul>{listing.criteria.map(item => <li key={item}>{item}</li>)}</ul>
+                </div>
+                <a href="#/register">Request viewing</a>
+              </div>
+            </article>)}
+        </div>
+      </section>}
+
+    {page.key === 'jobs' && <section className="listing-section" aria-label="Draft job listings">
+        <div className="listing-visual">
+          <img src={JOB_LISTING_IMAGE} alt="Futuristic verified job matching preview" />
+        </div>
+        <div className="listing-heading">
+          <span>Listing previews</span>
+          <h2>Job and training ads</h2>
+          <p>Sample job ads showing how VYN Jobs can present roles, training routes, profile signals, and placement actions for verified users.</p>
+        </div>
+        <div className="listing-grid">
+          {JOB_LISTINGS.map((listing, index) => <article className="listing-ad listing-ad-job" key={listing.title}>
+              <div className="listing-ad-media" style={{
+            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.84)), url(${JOB_LISTING_IMAGE})`,
+            backgroundPosition: `${18 + index * 18}% center`
+          }}>
+                <span className="listing-pill">Now hiring</span>
+                <span className="listing-status">{listing.status}</span>
+              </div>
+              <div className="listing-ad-body">
+                <div className="listing-ad-topline">
+                  <span>{listing.city}</span>
+                  <strong>{listing.status}</strong>
+                </div>
+                <h3>{listing.title}</h3>
+                <p>{listing.company}</p>
+                <div className="listing-price">
+                  <strong>{listing.salary}</strong>
+                  <span>{listing.type}</span>
+                </div>
+                <div className="listing-facts listing-facts-job">
+                  <span><strong>{listing.language}</strong><small>Language</small></span>
+                  <span><strong>{listing.type}</strong><small>Contract</small></span>
+                </div>
+                <div className="listing-tags">
+                  {[listing.training, listing.fit, ...listing.strengths].map(tag => <span key={tag}>{tag}</span>)}
+                </div>
+                <div className="listing-requirements">
+                  <h4>Profile signals</h4>
+                  <ul>{listing.strengths.map(item => <li key={item}>{item}</li>)}</ul>
+                </div>
+                <a href="#/register">Apply with profile</a>
+              </div>
+            </article>)}
+        </div>
+      </section>}
 
     {page.key === 'contact' && <section className="page-form" aria-label="Contact form preview">
         <h2>Contact Us</h2>
