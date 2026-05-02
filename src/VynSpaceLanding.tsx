@@ -28,8 +28,6 @@ const C = {
   border: 'rgba(91,192,235,0.14)'
 } as const;
 const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
-const APT_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-apt-listings.webp`;
-const JOB_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-job-listings.webp`;
 const APT_IMAGES = {
   mitte: `${import.meta.env.BASE_URL}generated/apt-mitte-arrival.webp`,
   rhine: `${import.meta.env.BASE_URL}generated/apt-rhine-student-studio.webp`,
@@ -3225,9 +3223,6 @@ const PageView: React.FC<{
     </section>
 
     {page.key === 'apt' && <section className="listing-section" aria-label="Apartment listings">
-        <div className="listing-visual">
-          <img src={APT_LISTING_IMAGE} alt="Futuristic verified apartment listing preview" />
-        </div>
         <div className="listing-heading">
           <span>Listing previews</span>
           <h2>Apartment ads</h2>
@@ -3272,9 +3267,6 @@ const PageView: React.FC<{
       </section>}
 
     {page.key === 'jobs' && <section className="listing-section" aria-label="Job listings">
-        <div className="listing-visual">
-          <img src={JOB_LISTING_IMAGE} alt="Futuristic verified job matching preview" />
-        </div>
         <div className="listing-heading">
           <span>Listing previews</span>
           <h2>Job and training ads</h2>
