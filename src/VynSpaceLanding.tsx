@@ -30,6 +30,20 @@ const C = {
 const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
 const APT_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-apt-listings.webp`;
 const JOB_LISTING_IMAGE = `${import.meta.env.BASE_URL}generated/vyn-job-listings.webp`;
+const APT_IMAGES = {
+  mitte: `${import.meta.env.BASE_URL}generated/apt-mitte-arrival.webp`,
+  rhine: `${import.meta.env.BASE_URL}generated/apt-rhine-student-studio.webp`,
+  neukolln: `${import.meta.env.BASE_URL}generated/apt-neukolln-family-base.webp`,
+  ehrenfeld: `${import.meta.env.BASE_URL}generated/apt-ehrenfeld-shared-loft.webp`,
+  harburg: `${import.meta.env.BASE_URL}generated/apt-harburg-starter-home.webp`
+} as const;
+const JOB_IMAGES = {
+  customer: `${import.meta.env.BASE_URL}generated/job-customer-operations-trainee.webp`,
+  facility: `${import.meta.env.BASE_URL}generated/job-facility-coordinator.webp`,
+  software: `${import.meta.env.BASE_URL}generated/job-software-support-intern.webp`,
+  healthcare: `${import.meta.env.BASE_URL}generated/job-healthcare-admin-assistant.webp`,
+  logistics: `${import.meta.env.BASE_URL}generated/job-logistics-planning-assistant.webp`
+} as const;
 
 // ─── STATIC DATA ───────────────────────────────────────────────────────────────
 const NAV_ITEMS = [{
@@ -403,6 +417,7 @@ type PageData = {
 };
 type AptListing = {
   title: string;
+  image: string;
   city: string;
   size: string;
   layout: string;
@@ -419,6 +434,7 @@ type AptListing = {
 };
 type JobListing = {
   title: string;
+  image: string;
   company: string;
   city: string;
   type: string;
@@ -431,6 +447,7 @@ type JobListing = {
 };
 const APT_LISTINGS: AptListing[] = [{
   title: 'Mitte Arrival Apartment',
+  image: APT_IMAGES.mitte,
   city: 'Berlin',
   size: '54 sqm',
   layout: '2-room apartment',
@@ -446,6 +463,7 @@ const APT_LISTINGS: AptListing[] = [{
   criteria: ['Employment or university enrollment', 'Income proof or guarantor', 'Residence visa or permit']
 }, {
   title: 'Rhine Student Studio',
+  image: APT_IMAGES.rhine,
   city: 'Dusseldorf',
   size: '32 sqm',
   layout: 'Studio',
@@ -461,6 +479,7 @@ const APT_LISTINGS: AptListing[] = [{
   criteria: ['University, Ausbildung, or job contract', 'Verified ID documents', 'Deposit readiness']
 }, {
   title: 'Neukolln Family Base',
+  image: APT_IMAGES.neukolln,
   city: 'Berlin',
   size: '78 sqm',
   layout: '3-room apartment',
@@ -476,6 +495,7 @@ const APT_LISTINGS: AptListing[] = [{
   criteria: ['Stable job or institution support', 'Sufficient monthly income', 'Residence status confirmed']
 }, {
   title: 'Ehrenfeld Shared Loft',
+  image: APT_IMAGES.ehrenfeld,
   city: 'Cologne',
   size: '46 sqm',
   layout: 'Shared 2-person flat',
@@ -491,6 +511,7 @@ const APT_LISTINGS: AptListing[] = [{
   criteria: ['Student or training contract', 'Verified profile complete', 'House rules accepted']
 }, {
   title: 'Harburg Starter Home',
+  image: APT_IMAGES.harburg,
   city: 'Hamburg',
   size: '61 sqm',
   layout: '2.5-room apartment',
@@ -507,6 +528,7 @@ const APT_LISTINGS: AptListing[] = [{
 }];
 const JOB_LISTINGS: JobListing[] = [{
   title: 'Customer Operations Trainee',
+  image: JOB_IMAGES.customer,
   company: 'Fintech partner',
   city: 'Berlin / Hybrid',
   type: 'Traineeship',
@@ -518,6 +540,7 @@ const JOB_LISTINGS: JobListing[] = [{
   strengths: ['Communication', 'Reliability', 'Detail orientation']
 }, {
   title: 'Junior Facility Coordinator',
+  image: JOB_IMAGES.facility,
   company: 'Housing partner',
   city: 'Dusseldorf',
   type: 'Full-time',
@@ -529,6 +552,7 @@ const JOB_LISTINGS: JobListing[] = [{
   strengths: ['Organization', 'Problem solving', 'Local mobility']
 }, {
   title: 'Software Support Intern',
+  image: JOB_IMAGES.software,
   company: 'Campus technology partner',
   city: 'Cologne / Remote',
   type: 'Internship',
@@ -540,6 +564,7 @@ const JOB_LISTINGS: JobListing[] = [{
   strengths: ['Digital tools', 'Learning speed', 'Documentation']
 }, {
   title: 'Healthcare Admin Assistant',
+  image: JOB_IMAGES.healthcare,
   company: 'Community clinic partner',
   city: 'Hamburg',
   type: 'Ausbildung pathway',
@@ -551,6 +576,7 @@ const JOB_LISTINGS: JobListing[] = [{
   strengths: ['Empathy', 'Structure', 'German practice']
 }, {
   title: 'Logistics Planning Assistant',
+  image: JOB_IMAGES.logistics,
   company: 'Mobility partner',
   city: 'Frankfurt am Main',
   type: 'Full-time',
@@ -3198,20 +3224,20 @@ const PageView: React.FC<{
         </article>)}
     </section>
 
-    {page.key === 'apt' && <section className="listing-section" aria-label="Draft apartment listings">
+    {page.key === 'apt' && <section className="listing-section" aria-label="Apartment listings">
         <div className="listing-visual">
           <img src={APT_LISTING_IMAGE} alt="Futuristic verified apartment listing preview" />
         </div>
         <div className="listing-heading">
           <span>Listing previews</span>
           <h2>Apartment ads</h2>
-          <p>Sample housing ads showing how VYN APT can present real inventory once verified landlord data is connected.</p>
+          <p>Housing ads showing how VYN APT presents verified inventory, eligibility signals, and viewing requests once landlord data is connected.</p>
         </div>
         <div className="listing-grid listing-grid-apt">
-          {APT_LISTINGS.map((listing, index) => <article className="listing-ad listing-ad-apt" key={listing.title}>
+          {APT_LISTINGS.map(listing => <article className="listing-ad listing-ad-apt" key={listing.title}>
               <div className="listing-ad-media" style={{
-            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.82)), url(${APT_LISTING_IMAGE})`,
-            backgroundPosition: `${22 + index * 22}% center`
+            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.82)), url(${listing.image})`,
+            backgroundPosition: 'center'
           }}>
                 <span className="listing-pill">For rent</span>
                 <span className="listing-status">{listing.status}</span>
@@ -3245,20 +3271,20 @@ const PageView: React.FC<{
         </div>
       </section>}
 
-    {page.key === 'jobs' && <section className="listing-section" aria-label="Draft job listings">
+    {page.key === 'jobs' && <section className="listing-section" aria-label="Job listings">
         <div className="listing-visual">
           <img src={JOB_LISTING_IMAGE} alt="Futuristic verified job matching preview" />
         </div>
         <div className="listing-heading">
           <span>Listing previews</span>
           <h2>Job and training ads</h2>
-          <p>Sample job ads showing how VYN Jobs can present roles, training routes, profile signals, and placement actions for verified users.</p>
+          <p>Job ads showing how VYN Jobs presents roles, training routes, profile signals, and placement actions for verified users.</p>
         </div>
         <div className="listing-grid">
-          {JOB_LISTINGS.map((listing, index) => <article className="listing-ad listing-ad-job" key={listing.title}>
+          {JOB_LISTINGS.map(listing => <article className="listing-ad listing-ad-job" key={listing.title}>
               <div className="listing-ad-media" style={{
-            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.84)), url(${JOB_LISTING_IMAGE})`,
-            backgroundPosition: `${18 + index * 18}% center`
+            backgroundImage: `linear-gradient(180deg, rgba(3,6,13,0.05), rgba(3,6,13,0.84)), url(${listing.image})`,
+            backgroundPosition: 'center'
           }}>
                 <span className="listing-pill">Now hiring</span>
                 <span className="listing-status">{listing.status}</span>
