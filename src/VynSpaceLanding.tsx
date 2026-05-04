@@ -1835,17 +1835,17 @@ const VynMark: React.FC<{
 // (matches the 0.082 narrow bands); SPACES uses 0.105 because its band is
 // 2.5x wider, and ORIGIN uses 0.05 to match the short hero band.
 const SECTION_LABELS: Array<{ label: string; prog: number; halfWidth?: number }> = [
-  { label: 'ORIGIN', prog: 0.05, halfWidth: 0.05 },
-  { label: 'SPACES', prog: 0.204, halfWidth: 0.105 },
-  { label: 'APT', prog: 0.349 },
-  { label: 'JOBS', prog: 0.431 },
-  { label: 'FINANCE', prog: 0.513 },
-  { label: 'VERIFY', prog: 0.595 },
-  { label: 'ABOUT', prog: 0.677 },
-  { label: 'BLOG', prog: 0.759 },
-  { label: 'CONTACT', prog: 0.841 },
-  { label: 'FAQ', prog: 0.915, halfWidth: 0.025 },
-  { label: 'ACCESS', prog: 0.975, halfWidth: 0.025 }
+  { label: 'ORIGIN', prog: 0.04, halfWidth: 0.04 },
+  { label: 'SPACES', prog: 0.179, halfWidth: 0.105 },
+  { label: 'APT', prog: 0.324 },
+  { label: 'JOBS', prog: 0.406 },
+  { label: 'FINANCE', prog: 0.488 },
+  { label: 'VERIFY', prog: 0.570 },
+  { label: 'ABOUT', prog: 0.652 },
+  { label: 'BLOG', prog: 0.734 },
+  { label: 'CONTACT', prog: 0.816 },
+  { label: 'FAQ', prog: 0.892, halfWidth: 0.028 },
+  { label: 'ACCESS', prog: 0.965, halfWidth: 0.035 }
 ];
 const ScrollIndicator: React.FC<{
   progress: number;
@@ -3360,70 +3360,70 @@ type SectionDef = {
 const SECTIONS: SectionDef[] = [{
   id: 'hero',
   scrollStart: 0,
-  scrollEnd: 0.10,
+  scrollEnd: 0.075,
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.10,
-  scrollEnd: 0.308,
+  scrollStart: 0.075,
+  scrollEnd: 0.283,
   type: 'space',
   spaceIndex: 0,
   panelSide: 'left'
 }, {
   id: 'apt',
-  scrollStart: 0.308,
-  scrollEnd: 0.390,
+  scrollStart: 0.283,
+  scrollEnd: 0.365,
   type: 'space',
   spaceIndex: 1,
   panelSide: 'right'
 }, {
   id: 'jobs',
-  scrollStart: 0.390,
-  scrollEnd: 0.472,
+  scrollStart: 0.365,
+  scrollEnd: 0.447,
   type: 'space',
   spaceIndex: 2,
   panelSide: 'left'
 }, {
   id: 'finance',
-  scrollStart: 0.472,
-  scrollEnd: 0.554,
+  scrollStart: 0.447,
+  scrollEnd: 0.529,
   type: 'space',
   spaceIndex: 3,
   panelSide: 'right'
 }, {
   id: 'register',
-  scrollStart: 0.554,
-  scrollEnd: 0.636,
+  scrollStart: 0.529,
+  scrollEnd: 0.611,
   type: 'register'
 }, {
   id: 'about',
-  scrollStart: 0.636,
-  scrollEnd: 0.718,
+  scrollStart: 0.611,
+  scrollEnd: 0.693,
   type: 'space',
   spaceIndex: 5,
   panelSide: 'left'
 }, {
   id: 'blog',
-  scrollStart: 0.718,
-  scrollEnd: 0.800,
+  scrollStart: 0.693,
+  scrollEnd: 0.775,
   type: 'space',
   spaceIndex: 6,
   panelSide: 'right'
 }, {
   id: 'contact',
-  scrollStart: 0.800,
-  scrollEnd: 0.882,
+  scrollStart: 0.775,
+  scrollEnd: 0.857,
   type: 'space',
   spaceIndex: 7,
   panelSide: 'left'
 }, {
   id: 'faq',
-  scrollStart: 0.89,
-  scrollEnd: 0.94,
+  scrollStart: 0.865,
+  scrollEnd: 0.92,
   type: 'faq'
 }, {
   id: 'cta',
-  scrollStart: 0.95,
+  scrollStart: 0.93,
   scrollEnd: 1.0,
   type: 'cta'
 }];
