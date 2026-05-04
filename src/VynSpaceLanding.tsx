@@ -5,29 +5,30 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 
 // ─── BRAND TOKENS ──────────────────────────────────────────────────────────────
-// Pastel palette on a soft midnight bg. Lower saturation, higher lightness, lifted
-// muted/dim values so pastels still pop on the dark canvas with bloom on.
+// Deeper pastel palette: all hues at ~22% saturation, ~85% lightness for a
+// cohesive powdery feel. Bg is a soft slate-midnight; muted/dim are lifted so
+// pastels still register with bloom on top.
 const C = {
-  bg: '#0A1322',
-  bgVec: new THREE.Color('#0A1322'),
-  navy: '#141C30',
-  cyan: '#B5DFEF',
-  cyanHex: 0xb5dfef,
-  cyanDim: '#7BB3CC',
-  green: '#B8EFD3',
-  greenHex: 0xb8efd3,
-  violet: '#C9BBF0',
-  violetHex: 0xc9bbf0,
-  coral: '#F8C0B6',
-  coralHex: 0xf8c0b6,
-  amber: '#F5E2A6',
-  amberHex: 0xf5e2a6,
-  gold: '#ECD89E',
-  goldHex: 0xecd89e,
-  text: '#F2F6FF',
-  muted: '#A0AEC4',
-  dim: '#3A485F',
-  border: 'rgba(181,223,239,0.18)'
+  bg: '#0E1626',
+  bgVec: new THREE.Color('#0E1626'),
+  navy: '#1A2236',
+  cyan: '#BFE2EC',
+  cyanHex: 0xbfe2ec,
+  cyanDim: '#86B5C2',
+  green: '#C5EAD6',
+  greenHex: 0xc5ead6,
+  violet: '#D0C5E8',
+  violetHex: 0xd0c5e8,
+  coral: '#F4CCC4',
+  coralHex: 0xf4ccc4,
+  amber: '#F0E1B5',
+  amberHex: 0xf0e1b5,
+  gold: '#ECDCB2',
+  goldHex: 0xecdcb2,
+  text: '#F4F7FC',
+  muted: '#AEBACF',
+  dim: '#445268',
+  border: 'rgba(191,226,236,0.22)'
 } as const;
 const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
 const APT_IMAGES = {
@@ -114,7 +115,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⬢',
-  zPos: -55
+  zPos: -58
 }, {
   id: 'apt',
   code: 'SPC-01',
@@ -133,7 +134,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌂',
-  zPos: -110
+  zPos: -97
 }, {
   id: 'jobs',
   code: 'SPC-02',
@@ -152,7 +153,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '◈',
-  zPos: -165
+  zPos: -136
 }, {
   id: 'finance',
   code: 'SPC-03',
@@ -171,7 +172,7 @@ const SPACES: SpaceItem[] = [{
   color: C.violet,
   colorHex: C.violetHex,
   icon: '◉',
-  zPos: -220
+  zPos: -175
 }, {
   id: 'register',
   code: 'SPC-04',
@@ -190,13 +191,13 @@ const SPACES: SpaceItem[] = [{
   color: C.coral,
   colorHex: C.coralHex,
   icon: '◎',
-  zPos: -270
+  zPos: -222
 }, {
   id: 'about',
   code: 'SYS-05',
   label: 'About',
   tagline: 'Vision & mission',
-  desc: 'A trust layer for life in Germany — built like an institution, used like a product.',
+  desc: 'A trust layer for life in Germany. Built like an institution, used like a product.',
   detail: 'A digital onboarding system designed for refugees, students, and skilled workers.',
   bullets: ['Founders and team', 'Mission and long-term direction', 'Trust over fragmentation'],
   contentBlocks: [{
@@ -206,7 +207,7 @@ const SPACES: SpaceItem[] = [{
   color: C.green,
   colorHex: C.greenHex,
   icon: '◇',
-  zPos: -315
+  zPos: -261
 }, {
   id: 'blog',
   code: 'SYS-06',
@@ -222,7 +223,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '▤',
-  zPos: -355
+  zPos: -300
 }, {
   id: 'contact',
   code: 'SYS-07',
@@ -238,7 +239,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌁',
-  zPos: -395
+  zPos: -339
 }];
 type VerifyStep = {
   num: string;
@@ -513,7 +514,7 @@ const PAGE_DATA: Record<string, PageData> = {
     }, {
       title: 'VYN Finance',
       body: 'White-label banking access plus the tools to manage money, with insurance and loans on the roadmap.',
-      items: ['Solaris-style white-label rollout', 'Accounts, transfers, income, expenses', 'Loans, insurance, investments — later, after review']
+      items: ['Solaris-style white-label rollout', 'Accounts, transfers, income, expenses', 'Loans, insurance, investments later, after review']
     }],
     cta: { label: 'Start verified access', href: '#/register' }
   },
@@ -2223,7 +2224,7 @@ const HeroOverlay: React.FC<{
       margin: '0 auto 42px',
       fontFamily: 'Inter, sans-serif'
     }}>
-        Housing, banking, and work — unified by one verified identity.
+        Housing, banking, and work, unified by one verified identity.
       </motion.p>
 
       <motion.div initial={{
@@ -2900,7 +2901,7 @@ const CtaOverlay: React.FC<{
           letterSpacing: '0.26em',
           textTransform: 'uppercase' as const
         }}>
-              REGISTER TO UNLOCK CAMPUS · APT · JOBS · FINANCE
+              REGISTER TO UNLOCK APT · JOBS · FINANCE
             </span>
           </motion.div>
 
@@ -3328,67 +3329,69 @@ type SectionDef = {
   type: 'hero' | 'space' | 'register' | 'faq' | 'cta';
   spaceIndex?: number;
 };
+// Each scroll band is centered on the prog value where the camera's lookAt
+// reaches that card's zPos: prog = (-8 - zPos) / 390. Bands are ±0.04 wide.
 const SECTIONS: SectionDef[] = [{
   id: 'hero',
   scrollStart: 0,
-  scrollEnd: 0.07,
+  scrollEnd: 0.06,
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.085,
-  scrollEnd: 0.16,
+  scrollStart: 0.09,
+  scrollEnd: 0.17,
   type: 'space',
   spaceIndex: 0
 }, {
   id: 'apt',
-  scrollStart: 0.175,
-  scrollEnd: 0.25,
+  scrollStart: 0.19,
+  scrollEnd: 0.27,
   type: 'space',
   spaceIndex: 1
 }, {
   id: 'jobs',
-  scrollStart: 0.265,
-  scrollEnd: 0.34,
+  scrollStart: 0.29,
+  scrollEnd: 0.37,
   type: 'space',
   spaceIndex: 2
 }, {
   id: 'finance',
-  scrollStart: 0.355,
-  scrollEnd: 0.43,
+  scrollStart: 0.39,
+  scrollEnd: 0.47,
   type: 'space',
   spaceIndex: 3
 }, {
   id: 'register',
-  scrollStart: 0.445,
-  scrollEnd: 0.55,
+  scrollStart: 0.51,
+  scrollEnd: 0.59,
   type: 'register'
 }, {
   id: 'about',
-  scrollStart: 0.565,
-  scrollEnd: 0.64,
+  scrollStart: 0.61,
+  scrollEnd: 0.69,
   type: 'space',
   spaceIndex: 5
 }, {
   id: 'blog',
-  scrollStart: 0.655,
-  scrollEnd: 0.73,
+  scrollStart: 0.71,
+  scrollEnd: 0.79,
   type: 'space',
   spaceIndex: 6
 }, {
   id: 'contact',
-  scrollStart: 0.745,
-  scrollEnd: 0.82,
+  scrollStart: 0.81,
+  scrollEnd: 0.89,
   type: 'space',
   spaceIndex: 7
 }, {
   id: 'faq',
-  scrollStart: 0.84,
-  scrollEnd: 0.92,
+  scrollStart: 0.91,
+  scrollEnd: 0.95,
   type: 'faq'
 }, {
   id: 'cta',
-  scrollStart: 0.94,
-  scrollEnd: 0.98,
+  scrollStart: 0.97,
+  scrollEnd: 1.0,
   type: 'cta'
 }];
 
