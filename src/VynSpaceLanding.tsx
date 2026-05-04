@@ -115,7 +115,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⬢',
-  zPos: -58
+  zPos: -45
 }, {
   id: 'apt',
   code: 'SPC-01',
@@ -134,7 +134,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌂',
-  zPos: -97
+  zPos: -84
 }, {
   id: 'jobs',
   code: 'SPC-02',
@@ -153,7 +153,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '◈',
-  zPos: -136
+  zPos: -123
 }, {
   id: 'finance',
   code: 'SPC-03',
@@ -172,7 +172,7 @@ const SPACES: SpaceItem[] = [{
   color: C.violet,
   colorHex: C.violetHex,
   icon: '◉',
-  zPos: -175
+  zPos: -162
 }, {
   id: 'register',
   code: 'SPC-04',
@@ -191,7 +191,7 @@ const SPACES: SpaceItem[] = [{
   color: C.coral,
   colorHex: C.coralHex,
   icon: '◎',
-  zPos: -222
+  zPos: -201
 }, {
   id: 'about',
   code: 'SYS-05',
@@ -207,7 +207,7 @@ const SPACES: SpaceItem[] = [{
   color: C.green,
   colorHex: C.greenHex,
   icon: '◇',
-  zPos: -261
+  zPos: -240
 }, {
   id: 'blog',
   code: 'SYS-06',
@@ -223,7 +223,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '▤',
-  zPos: -300
+  zPos: -279
 }, {
   id: 'contact',
   code: 'SYS-07',
@@ -239,7 +239,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌁',
-  zPos: -339
+  zPos: -318
 }];
 type VerifyStep = {
   num: string;
@@ -3328,69 +3328,79 @@ type SectionDef = {
   scrollEnd: number;
   type: 'hero' | 'space' | 'register' | 'faq' | 'cta';
   spaceIndex?: number;
+  panelSide?: 'left' | 'right';
 };
-// Each scroll band is centered on the prog value where the camera's lookAt
-// reaches that card's zPos: prog = (-8 - zPos) / 390. Bands are ±0.04 wide.
+// Each space band is centered on the prog where the camera is *approaching* the
+// card (~30 units behind it). With cards spread every ~40 z-units, that puts
+// each popup at i × 0.10. Bands are ±0.04 wide so the panel slides in fully
+// before the camera reaches the card and slides out as it passes.
 const SECTIONS: SectionDef[] = [{
   id: 'hero',
   scrollStart: 0,
-  scrollEnd: 0.06,
+  scrollEnd: 0.05,
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.09,
-  scrollEnd: 0.17,
+  scrollStart: 0.06,
+  scrollEnd: 0.14,
   type: 'space',
-  spaceIndex: 0
+  spaceIndex: 0,
+  panelSide: 'left'
 }, {
   id: 'apt',
-  scrollStart: 0.19,
-  scrollEnd: 0.27,
+  scrollStart: 0.16,
+  scrollEnd: 0.24,
   type: 'space',
-  spaceIndex: 1
+  spaceIndex: 1,
+  panelSide: 'right'
 }, {
   id: 'jobs',
-  scrollStart: 0.29,
-  scrollEnd: 0.37,
+  scrollStart: 0.26,
+  scrollEnd: 0.34,
   type: 'space',
-  spaceIndex: 2
+  spaceIndex: 2,
+  panelSide: 'left'
 }, {
   id: 'finance',
-  scrollStart: 0.39,
-  scrollEnd: 0.47,
+  scrollStart: 0.36,
+  scrollEnd: 0.44,
   type: 'space',
-  spaceIndex: 3
+  spaceIndex: 3,
+  panelSide: 'right'
 }, {
   id: 'register',
-  scrollStart: 0.51,
-  scrollEnd: 0.59,
+  scrollStart: 0.46,
+  scrollEnd: 0.54,
   type: 'register'
 }, {
   id: 'about',
-  scrollStart: 0.61,
-  scrollEnd: 0.69,
+  scrollStart: 0.56,
+  scrollEnd: 0.64,
   type: 'space',
-  spaceIndex: 5
+  spaceIndex: 5,
+  panelSide: 'left'
 }, {
   id: 'blog',
-  scrollStart: 0.71,
-  scrollEnd: 0.79,
+  scrollStart: 0.66,
+  scrollEnd: 0.74,
   type: 'space',
-  spaceIndex: 6
+  spaceIndex: 6,
+  panelSide: 'right'
 }, {
   id: 'contact',
-  scrollStart: 0.81,
-  scrollEnd: 0.89,
+  scrollStart: 0.76,
+  scrollEnd: 0.84,
   type: 'space',
-  spaceIndex: 7
+  spaceIndex: 7,
+  panelSide: 'left'
 }, {
   id: 'faq',
-  scrollStart: 0.91,
-  scrollEnd: 0.95,
+  scrollStart: 0.86,
+  scrollEnd: 0.92,
   type: 'faq'
 }, {
   id: 'cta',
-  scrollStart: 0.97,
+  scrollStart: 0.94,
   scrollEnd: 1.0,
   type: 'cta'
 }];
@@ -3505,8 +3515,8 @@ export const VynSpaceLanding: React.FC = () => {
         {!activePage && <HeroOverlay visible={activeSection?.type === 'hero'} />}
 
         {activeSpaceSection && activeSpaceSection.spaceIndex !== undefined && <>
-          <SectionPanel key={`${activeSpaceSection.id}-panel`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right'} />
-          <DetailDeck key={`${activeSpaceSection.id}-details`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.spaceIndex % 2 === 0 ? 'right' : 'left'} />
+          <SectionPanel key={`${activeSpaceSection.id}-panel`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={activeSpaceSection.panelSide ?? (activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right')} />
+          <DetailDeck key={`${activeSpaceSection.id}-details`} visible space={SPACES[activeSpaceSection.spaceIndex]} side={(activeSpaceSection.panelSide ?? (activeSpaceSection.spaceIndex % 2 === 0 ? 'left' : 'right')) === 'left' ? 'right' : 'left'} />
         </>}
 
         {!activePage && <RegisterOverlay visible={activeSection?.type === 'register'} />}
