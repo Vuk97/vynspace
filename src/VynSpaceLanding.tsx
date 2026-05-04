@@ -115,7 +115,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⬢',
-  zPos: -45
+  zPos: -80
 }, {
   id: 'apt',
   code: 'SPC-01',
@@ -134,7 +134,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌂',
-  zPos: -84
+  zPos: -112
 }, {
   id: 'jobs',
   code: 'SPC-02',
@@ -153,7 +153,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '◈',
-  zPos: -123
+  zPos: -144
 }, {
   id: 'finance',
   code: 'SPC-03',
@@ -172,7 +172,7 @@ const SPACES: SpaceItem[] = [{
   color: C.violet,
   colorHex: C.violetHex,
   icon: '◉',
-  zPos: -162
+  zPos: -176
 }, {
   id: 'register',
   code: 'SPC-04',
@@ -191,7 +191,7 @@ const SPACES: SpaceItem[] = [{
   color: C.coral,
   colorHex: C.coralHex,
   icon: '◎',
-  zPos: -201
+  zPos: -208
 }, {
   id: 'about',
   code: 'SYS-05',
@@ -223,7 +223,7 @@ const SPACES: SpaceItem[] = [{
   color: C.amber,
   colorHex: C.amberHex,
   icon: '▤',
-  zPos: -279
+  zPos: -272
 }, {
   id: 'contact',
   code: 'SYS-07',
@@ -239,7 +239,7 @@ const SPACES: SpaceItem[] = [{
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌁',
-  zPos: -318
+  zPos: -304
 }];
 type VerifyStep = {
   num: string;
@@ -1824,7 +1824,22 @@ const VynMark: React.FC<{
   </span>;
 
 // ─── SCROLL PROGRESS INDICATOR ─────────────────────────────────────────────────
-const SECTION_LABELS = ['ORIGIN', 'SPACES', 'APT', 'JOBS', 'FINANCE', 'VERIFY', 'ABOUT', 'BLOG', 'CONTACT', 'FAQ', 'ACCESS'];
+// Each label's prog is the *center* of its matching scroll band so the active
+// rail dot lights up exactly when the panel does. Positions derived from the
+// SECTIONS table below: hero ~0.11, then card centers at (zPos-card_zero)/390.
+const SECTION_LABELS: Array<{ label: string; prog: number }> = [
+  { label: 'ORIGIN', prog: 0.11 },
+  { label: 'SPACES', prog: 0.267 },
+  { label: 'APT', prog: 0.349 },
+  { label: 'JOBS', prog: 0.431 },
+  { label: 'FINANCE', prog: 0.513 },
+  { label: 'VERIFY', prog: 0.595 },
+  { label: 'ABOUT', prog: 0.677 },
+  { label: 'BLOG', prog: 0.759 },
+  { label: 'CONTACT', prog: 0.841 },
+  { label: 'FAQ', prog: 0.915 },
+  { label: 'ACCESS', prog: 0.975 }
+];
 const ScrollIndicator: React.FC<{
   progress: number;
 }> = ({
@@ -1839,10 +1854,9 @@ const ScrollIndicator: React.FC<{
   gap: 7,
   zIndex: 300
 }}>
-    {SECTION_LABELS.map((label, i) => {
-    const sp = i / (SECTION_LABELS.length - 1);
-    const active = Math.abs(progress - sp) < 0.07;
-    const passed = progress > sp + 0.05;
+    {SECTION_LABELS.map(({ label, prog: sp }) => {
+    const active = Math.abs(progress - sp) < 0.045;
+    const passed = progress > sp + 0.045;
     return <div key={label} style={{
       display: 'flex',
       alignItems: 'center',
@@ -3330,77 +3344,80 @@ type SectionDef = {
   spaceIndex?: number;
   panelSide?: 'left' | 'right';
 };
-// Each space band is centered on the prog where the camera is *approaching* the
-// card (~30 units behind it). With cards spread every ~40 z-units, that puts
-// each popup at i × 0.10. Bands are ±0.04 wide so the panel slides in fully
-// before the camera reaches the card and slides out as it passes.
+// Cards are uniformly 32 units apart starting at z=-80, giving a long hero
+// approach (0 -> 0.225) before the first popup. Each band covers the camera-
+// near-card zone: camera_z within ±16 of card_z. With camera path 24 -> -366
+// (390 units) and 32-unit spacing, each band is exactly 0.082 of total prog.
+// prog = (24 - camera_z) / 390, so band start = (8 - card_zPos) / 390 and
+// band end = (40 - card_zPos) / 390. Bands touch at boundaries so transitions
+// are continuous.
 const SECTIONS: SectionDef[] = [{
   id: 'hero',
   scrollStart: 0,
-  scrollEnd: 0.05,
+  scrollEnd: 0.225,
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.06,
-  scrollEnd: 0.14,
+  scrollStart: 0.226,
+  scrollEnd: 0.308,
   type: 'space',
   spaceIndex: 0,
   panelSide: 'left'
 }, {
   id: 'apt',
-  scrollStart: 0.16,
-  scrollEnd: 0.24,
+  scrollStart: 0.308,
+  scrollEnd: 0.390,
   type: 'space',
   spaceIndex: 1,
   panelSide: 'right'
 }, {
   id: 'jobs',
-  scrollStart: 0.26,
-  scrollEnd: 0.34,
+  scrollStart: 0.390,
+  scrollEnd: 0.472,
   type: 'space',
   spaceIndex: 2,
   panelSide: 'left'
 }, {
   id: 'finance',
-  scrollStart: 0.36,
-  scrollEnd: 0.44,
+  scrollStart: 0.472,
+  scrollEnd: 0.554,
   type: 'space',
   spaceIndex: 3,
   panelSide: 'right'
 }, {
   id: 'register',
-  scrollStart: 0.46,
-  scrollEnd: 0.54,
+  scrollStart: 0.554,
+  scrollEnd: 0.636,
   type: 'register'
 }, {
   id: 'about',
-  scrollStart: 0.56,
-  scrollEnd: 0.64,
+  scrollStart: 0.636,
+  scrollEnd: 0.718,
   type: 'space',
   spaceIndex: 5,
   panelSide: 'left'
 }, {
   id: 'blog',
-  scrollStart: 0.66,
-  scrollEnd: 0.74,
+  scrollStart: 0.718,
+  scrollEnd: 0.800,
   type: 'space',
   spaceIndex: 6,
   panelSide: 'right'
 }, {
   id: 'contact',
-  scrollStart: 0.76,
-  scrollEnd: 0.84,
+  scrollStart: 0.800,
+  scrollEnd: 0.882,
   type: 'space',
   spaceIndex: 7,
   panelSide: 'left'
 }, {
   id: 'faq',
-  scrollStart: 0.86,
-  scrollEnd: 0.92,
+  scrollStart: 0.89,
+  scrollEnd: 0.94,
   type: 'faq'
 }, {
   id: 'cta',
-  scrollStart: 0.94,
+  scrollStart: 0.95,
   scrollEnd: 1.0,
   type: 'cta'
 }];
