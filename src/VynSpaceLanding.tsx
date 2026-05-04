@@ -5,27 +5,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 
 // ─── BRAND TOKENS ──────────────────────────────────────────────────────────────
+// Pastel palette on a soft midnight bg. Lower saturation, higher lightness, lifted
+// muted/dim values so pastels still pop on the dark canvas with bloom on.
 const C = {
-  bg: '#03060D',
-  bgVec: new THREE.Color('#03060D'),
-  navy: '#0A0F1C',
-  cyan: '#5BC0EB',
-  cyanHex: 0x5bc0eb,
-  cyanDim: '#0D5D76',
-  green: '#00FFB2',
-  greenHex: 0x00ffb2,
-  violet: '#7A5CFF',
-  violetHex: 0x7a5cff,
-  coral: '#FF6B5F',
-  coralHex: 0xff6b5f,
-  amber: '#FFCF5A',
-  amberHex: 0xffcf5a,
-  gold: '#FFB800',
-  goldHex: 0xffb800,
-  text: '#E8F4FF',
-  muted: '#6B8099',
-  dim: '#1C2D40',
-  border: 'rgba(91,192,235,0.14)'
+  bg: '#0A1322',
+  bgVec: new THREE.Color('#0A1322'),
+  navy: '#141C30',
+  cyan: '#B5DFEF',
+  cyanHex: 0xb5dfef,
+  cyanDim: '#7BB3CC',
+  green: '#B8EFD3',
+  greenHex: 0xb8efd3,
+  violet: '#C9BBF0',
+  violetHex: 0xc9bbf0,
+  coral: '#F8C0B6',
+  coralHex: 0xf8c0b6,
+  amber: '#F5E2A6',
+  amberHex: 0xf5e2a6,
+  gold: '#ECD89E',
+  goldHex: 0xecd89e,
+  text: '#F2F6FF',
+  muted: '#A0AEC4',
+  dim: '#3A485F',
+  border: 'rgba(181,223,239,0.18)'
 } as const;
 const LOGO_URL = `${import.meta.env.BASE_URL}vynspace-mark-clean.webp`;
 const APT_IMAGES = {
@@ -51,9 +53,6 @@ const NAV_ITEMS = [{
   label: 'SPACES',
   href: '#/spaces'
 }, {
-  label: 'CAMPUS',
-  href: '#/campus'
-}, {
   label: 'APT',
   href: '#/apt'
 }, {
@@ -76,8 +75,6 @@ const NAV_ITEMS = [{
   href: '#/faq'
 }];
 const ROUTE_ALIASES: Record<string, string> = {
-  meta: 'metaverse',
-  'meta-space': 'metaverse',
   faqs: 'faq',
   appointments: 'contact',
   'appointments-4': 'contact',
@@ -107,225 +104,141 @@ const SPACES: SpaceItem[] = [{
   code: 'HUB-00',
   label: 'Spaces',
   tagline: 'Preview hub',
-  desc: 'The public map of Campus, APT, Jobs, and Finance. Full access unlocks only after registration, verification, and login.',
-  detail: 'Spaces is the bridge between the public website and the protected member area. It explains the platform clearly before users register and verify their identity.',
-  bullets: ['Campus, APT, Jobs, Finance preview', 'Protected app after verification', 'Subdomain-ready architecture'],
+  desc: 'A public map of APT, Jobs, and Finance. Full access opens after verification.',
+  detail: 'Spaces bridges the public site and the verified member area.',
+  bullets: ['APT, Jobs, Finance preview', 'Protected app after verification', 'One verified profile, every service'],
   contentBlocks: [{
     title: 'Access model',
-    items: ['Public website previews the ecosystem', 'Protected service access after registration, verification, and login', 'Future deployment can support www.vyn-space.io/spaces and spaces.vyn-space.io']
-  }, {
-    title: 'Access model',
-    items: ['One verified profile works across Campus, APT, Jobs, and Finance', 'Public previews explain each service before registration', 'The protected member area opens after identity and document verification']
+    items: ['Public previews explain each service', 'Verified login unlocks the protected app', 'One profile travels across every space']
   }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⬢',
   zPos: -55
 }, {
-  id: 'campus',
-  code: 'SPC-01',
-  label: 'Campus',
-  tagline: 'Digital city hall',
-  desc: 'Documents, appointments, courses, community, rewards, university integrations, and institutional processes in one civic command center.',
-  detail: 'Campus is the retention layer: visa tasks, address changes, government links, document storage, courses, certifications, tutorials, podcasts, clubs, rewards, university data, and LinkedIn-like community features.',
-  bullets: ['Visa, registration, address changes', 'Document vault and submissions', 'Courses, certifications, podcasts, clubs', 'Universities, authorities, organizations'],
-  contentBlocks: [{
-    title: 'Digital city hall',
-    items: ['Useful websites, phone numbers, and appointment systems', 'Visa applications, registrations, address changes', 'Document storage, submission, and reuse']
-  }, {
-    title: 'Learning and community',
-    items: ['Courses, certifications, tutorials, podcasts, and video series via Skool', 'Clubs, sports, leisure activities, and community groups', 'Referral rewards and partner/company proof submissions']
-  }, {
-    title: 'Institution integrations',
-    items: ['Third-country national registration workflows', 'University schedules, lectures, grades, exams, certificates, and degrees', 'Data sharing with authorities, universities, and refugee organizations with consent']
-  }],
-  color: C.green,
-  colorHex: C.greenHex,
-  icon: '⬡',
-  zPos: -95
-}, {
   id: 'apt',
-  code: 'SPC-02',
+  code: 'SPC-01',
   label: 'APT',
   tagline: 'Housing access',
-  desc: 'Verified users view homes, check eligibility, request viewings, and generate rental contracts when all criteria are met.',
-  detail: 'APT displays apartments with city, size, layout, room count, furnishing, extras, energy, WiFi, price category, availability, and application status.',
-  bullets: ['City, size, layout, rooms', 'Furnished, garden, balcony, energy, WiFi', 'Job or institution, income, residence visa', 'Viewing request and automated contract'],
+  desc: 'See homes, check eligibility, request viewings, sign a contract.',
+  detail: 'Listings show city, size, layout, price, and availability for verified applicants.',
+  bullets: ['Verified listings only', 'Eligibility check', 'Automated rental contract'],
   contentBlocks: [{
     title: 'Listing data',
-    items: ['City, size, layout, number of rooms', 'Furnished yes/no, garden, balcony, extras', 'Energy supply, WiFi, price category, availability date']
+    items: ['City, size, layout, rooms', 'Furnished, energy, WiFi, price', 'Availability and status']
   }, {
     title: 'Eligibility',
-    items: ['Stable job, university, or institution', 'Sufficient income and proof documents', 'Residence visa and verified identity']
-  }, {
-    title: 'Actions',
-    items: ['Apply or request a viewing when criteria are met', 'Unavailable apartments marked as taken', 'Automated rental contract generated for signing']
+    items: ['Stable job, study, or institution', 'Income proof', 'Residence and verified identity']
   }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌂',
-  zPos: -135
+  zPos: -110
 }, {
   id: 'jobs',
-  code: 'SPC-03',
+  code: 'SPC-02',
   label: 'Jobs',
   tagline: 'Work & training',
-  desc: 'Skill assessment, employer matching, job listings, training opportunities, indirect outreach, and placement workflows.',
-  detail: 'Companies can list roles, view categorized verified profiles, and reach candidates through VYN Space. Filled jobs are removed and placement contracts can be created in-house.',
-  bullets: ['Job and training listings', 'Assessment for fit, strengths, weaknesses', 'Three financial readiness groups', 'Commission-style staffing model'],
+  desc: 'Listings, assessment, employer matching, placement.',
+  detail: 'Companies see verified profiles. VYN Space earns commission on placements.',
+  bullets: ['Jobs, internships, training', 'Skill and fit assessment', 'Indirect employer outreach'],
   contentBlocks: [{
-    title: 'User side',
-    items: ['Job and training opportunities', 'Assessment test for suitable roles and training routes', 'Strengths, weaknesses, and financial readiness grouping']
+    title: 'For candidates',
+    items: ['Curated job and training listings', 'Assessment for fit and growth', 'Profile signals to employers']
   }, {
-    title: 'Company side',
-    items: ['Companies list job offers and training programs', 'Companies view verified profiles and reach out indirectly', 'Filled jobs are removed from listings']
-  }, {
-    title: 'Business model',
-    items: ['VYN Space earns placement commission like a staffing agency', 'In-house contracts can be created when VYN Space places workers']
+    title: 'For employers',
+    items: ['Verified candidate profiles', 'Indirect outreach', 'Placement commission model']
   }],
   color: C.amber,
   colorHex: C.amberHex,
   icon: '◈',
-  zPos: -175
+  zPos: -165
 }, {
   id: 'finance',
-  code: 'SPC-04',
+  code: 'SPC-03',
   label: 'Finance',
   tagline: 'Banking layer',
-  desc: 'White-label banking access, account creation, balances, transactions, transfers, insights, insurance, and future products.',
-  detail: 'Finance starts outsourced with a provider such as Solaris, reuses completed verification, and can evolve toward proprietary banking, loans, investments, insurance, and carefully reviewed USDT-only wallet features.',
-  bullets: ['Solaris white-label path', 'Balance, transfers, income, expenses', 'Loans, insurance, investments later', 'Security, custody, and liquidity review'],
+  desc: 'White-label banking, balances, transfers, future loans and insurance.',
+  detail: 'Starts with a Solaris-style provider, reuses verification, and grows from there.',
+  bullets: ['Solaris white-label path', 'Balances, transfers, insights', 'Loans and insurance, later'],
   contentBlocks: [{
     title: 'Initial rollout',
-    items: ['Solaris white-label integration', 'Account creation after verification', 'Balance, transactions, transfers, income, and expenses']
+    items: ['White-label account creation', 'Balance, transactions, transfers', 'Income and expense view']
   }, {
-    title: 'Future products',
-    items: ['Loans, insurance, and investment paths', 'NFTs, real estate, bonds, and other products only after compliance review', 'Goal: build a proprietary bank']
-  }, {
-    title: 'Crypto and security',
-    items: ['Wallets require strict key and custody decisions', 'Liquidity pool legality must be reviewed', 'Use USDT only if digital assets launch']
+    title: 'Roadmap',
+    items: ['Loans, insurance, investments', 'Compliance review for any new product', 'Long-term: proprietary bank']
   }],
   color: C.violet,
   colorHex: C.violetHex,
   icon: '◉',
-  zPos: -215
+  zPos: -220
 }, {
   id: 'register',
-  code: 'SPC-05',
+  code: 'SPC-04',
   label: 'Register',
   tagline: 'Verified onboarding',
-  desc: 'Personal data, document upload, consent, and ID provider verification before service access is unlocked.',
-  detail: 'The access gate is prepared for providers such as IDnow so the authenticity of people and documents can be checked quickly and efficiently.',
-  bullets: ['Personal data and user group', 'Passport, visa, residence, proof files', 'Consent and audit status', 'Magic link first, stronger auth later'],
+  desc: 'Personal data, documents, consent, ID check. Then access opens.',
+  detail: 'IDnow-style verification confirms identity and documents quickly.',
+  bullets: ['Personal data and proofs', 'IDnow-style ID check', 'Magic link, then step-up auth'],
   contentBlocks: [{
-    title: 'Required data',
-    items: ['Personal data, email, city, user group, and main goal', 'Passport, visa, residence permit, income, student, or employment proof', 'Consent capture and audit status']
+    title: 'What we collect',
+    items: ['Identity and contact', 'Passport, visa, residence proof', 'Income or institution proof']
   }, {
-    title: 'Verification provider',
-    items: ['IDnow-style document and liveness check', 'Authenticity of person and documents confirmed', 'Spaces unlock only after approval']
-  }, {
-    title: 'Authentication',
-    items: ['Magic link initially', 'Later step-up authentication and session risk checks', 'Security designed for finance and document workflows']
+    title: 'How it unlocks',
+    items: ['ID and document check', 'Spaces unlock after approval', 'Stronger auth for finance flows']
   }],
   color: C.coral,
   colorHex: C.coralHex,
   icon: '◎',
-  zPos: -255
+  zPos: -270
 }, {
   id: 'about',
-  code: 'SYS-06',
+  code: 'SYS-05',
   label: 'About',
   tagline: 'Vision & mission',
-  desc: 'The company story, founder vision, mission, and trust principles behind VYN Space.',
-  detail: 'VYN Space is positioned as a digital onboarding operating system for life in Germany: structured like an institution, smooth like a modern product, and designed for people under real pressure.',
-  bullets: ['History and founders', 'Mission and long-term bank goal', 'Trust layer for Germany integration'],
+  desc: 'A trust layer for life in Germany — built like an institution, used like a product.',
+  detail: 'A digital onboarding system designed for refugees, students, and skilled workers.',
+  bullets: ['Founders and team', 'Mission and long-term direction', 'Trust over fragmentation'],
   contentBlocks: [{
     title: 'Story',
-    items: ['History, founders, vision, and mission of VYN Space', 'Designed for refugees, students, and skilled workers', 'Built to reduce fragmented bureaucracy and relocation stress']
-  }, {
-    title: 'Team',
-    items: ['Founder and CEO profile', 'Operations and institution partnership roles', 'Linked team profiles for credibility']
+    items: ['Why VYN Space exists', 'Who it is built for', 'How it reduces relocation stress']
   }],
   color: C.green,
   colorHex: C.greenHex,
   icon: '◇',
-  zPos: -295
+  zPos: -315
 }, {
   id: 'blog',
-  code: 'SYS-07',
+  code: 'SYS-06',
   label: 'Blog',
   tagline: 'Stories & updates',
-  desc: 'Current posts from VYN Space, users, partners, and the integration ecosystem.',
-  detail: 'The blog should publish platform updates, housing guidance, campus explainers, finance notes, partner news, and user stories from the relocation journey.',
-  bullets: ['Housing, campus, finance, jobs', 'User voices and partner updates', 'Trust-focused editorial feed'],
+  desc: 'Product updates, user voices, and integration explainers.',
+  detail: 'The publication layer for platform news and partner stories.',
+  bullets: ['Product updates', 'User stories', 'Partner and institution notes'],
   contentBlocks: [{
-    title: 'Editorial lanes',
-    items: ['VYN Space updates and product news', 'User stories from refugees, students, and skilled workers', 'Partner and institution explainers']
-  }, {
-    title: 'Content pillars',
-    items: ['Housing guidance for verified applicants', 'Campus explainers for appointments and documents', 'Finance notes about safe banking access and compliance']
+    title: 'Lanes',
+    items: ['Updates from VYN Space', 'Voices from users and partners', 'Housing, jobs, and finance guides']
   }],
   color: C.amber,
   colorHex: C.amberHex,
   icon: '▤',
-  zPos: -335
+  zPos: -355
 }, {
   id: 'contact',
-  code: 'SYS-08',
+  code: 'SYS-07',
   label: 'Contact',
   tagline: 'Appointments',
-  desc: 'Calendly for CEO business meetings plus a contact form for users, institutions, employers, and partners.',
-  detail: 'Business inquiries can book directly with the CEO. Other channels should support housing partners, employers, universities, authorities, NGOs, and user support.',
-  bullets: ['CEO Calendly for business inquiries', 'Partner and institution contact', 'User support contact form'],
+  desc: 'CEO Calendly for business, contact form for everyone else.',
+  detail: 'Business, partner, and user channels into VYN Space.',
+  bullets: ['CEO Calendly', 'Partner and institution contact', 'User support form'],
   contentBlocks: [{
-    title: 'Appointment paths',
-    items: ['Calendly link for CEO business inquiries', 'Housing partner contact', 'Employer, university, authority, and NGO contact']
-  }, {
-    title: 'Contact form topics',
-    items: ['Business inquiry', 'Housing partnership', 'Employer partnership', 'User support']
+    title: 'Channels',
+    items: ['Business inquiries', 'Housing and employer partners', 'User support']
   }],
   color: C.cyan,
   colorHex: C.cyanHex,
   icon: '⌁',
-  zPos: -375
-}, {
-  id: 'donation',
-  code: 'SYS-09',
-  label: 'Donation',
-  tagline: 'Support access',
-  desc: 'PayPal and crypto donation paths presented with compliance-first messaging and clear impact.',
-  detail: 'Donation flows should support the integration mission without making the platform feel speculative. Crypto should begin cautiously, with USDT-only review if used.',
-  bullets: ['PayPal donation path', 'Crypto with compliance review', 'Impact messaging and transparency'],
-  contentBlocks: [{
-    title: 'Donation options',
-    items: ['PayPal for traditional donations', 'Crypto donation path only after compliance review', 'USDT-only direction if crypto is enabled']
-  }, {
-    title: 'Impact',
-    items: ['Support onboarding resources', 'Support housing and campus access', 'Support community and partner programs']
-  }],
-  color: C.gold,
-  colorHex: C.goldHex,
-  icon: '◍',
-  zPos: -415
-}, {
-  id: 'metaverse',
-  code: 'SYS-10',
-  label: 'Metaverse',
-  tagline: 'Immersive future',
-  desc: 'A future immersive environment for registered users, events, community, support, and avatar-led navigation.',
-  detail: 'The metaverse is a future member experience for rooms, events, live podcasts, games, community, and avatar-guided orientation.',
-  bullets: ['Registered-user events', 'Virtual rooms and podcasts', 'Avatar and chatbot future'],
-  contentBlocks: [{
-    title: 'Future experience',
-    items: ['Registered users enter immersive events', 'Avatar or chatbot guidance for services', 'Community and partner spaces']
-  }, {
-    title: 'Experience direction',
-    items: ['Immersive rooms for registered users', 'Events, podcasts, games, and partner spaces', 'Simple access from the verified member area']
-  }],
-  color: C.violet,
-  colorHex: C.violetHex,
-  icon: '✦',
-  zPos: -455
+  zPos: -395
 }];
 type VerifyStep = {
   num: string;
@@ -360,25 +273,19 @@ type FaqItem = {
 };
 const FAQ: FaqItem[] = [{
   q: 'Who is VYN Space for?',
-  a: 'Refugees, international students, and skilled workers who need structured access to housing, finance, jobs, education, bureaucracy, and community in Germany.'
+  a: 'Refugees, international students, and skilled workers building a life in Germany.'
 }, {
   q: 'Is verification mandatory?',
-  a: 'Yes. Full Campus, APT, Jobs, and Finance access should unlock only after registration, document submission, consent, and identity verification through a provider such as IDnow.'
+  a: 'Yes. APT, Jobs, and Finance unlock only after ID and document checks via a provider such as IDnow.'
 }, {
   q: 'How do housing listings work?',
-  a: 'APT listings show city, size, layout, rooms, furnished status, extras, energy, WiFi, price category, availability, and eligibility criteria before application or viewing.'
+  a: 'APT shows city, size, layout, price, and availability. Eligibility is checked before viewings.'
 }, {
-  q: 'What does Campus include?',
-  a: 'Campus works like a digital city hall: documents, government links, appointments, visa and registration tasks, courses, podcasts, clubs, rewards, university integrations, and community features.'
-}, {
-  q: 'How should Finance launch?',
-  a: 'Finance should start through a regulated white-label provider such as Solaris, reuse completed verification, and grow cautiously toward accounts, transfers, insurance, loans, investments, and reviewed USDT-only wallet features.'
-}, {
-  q: 'What is the metaverse layer?',
-  a: 'A future immersive space for registered users, avatar support, events, community, and guided onboarding inside VYN Space.'
+  q: 'How does Finance launch?',
+  a: 'A Solaris-style white-label first. Verified once, reused everywhere. Loans and insurance follow later.'
 }];
 const CTA_STATS = [{
-  val: '4',
+  val: '3',
   label: 'CORE SPACES',
   color: C.cyan
 }, {
@@ -551,7 +458,7 @@ const JOB_LISTINGS: JobListing[] = [{
 }, {
   title: 'Software Support Intern',
   image: JOB_IMAGES.software,
-  company: 'Campus technology partner',
+  company: 'Education technology partner',
   city: 'Cologne / Remote',
   type: 'Internship',
   salary: 'EUR 900-1,200 stipend',
@@ -591,51 +498,24 @@ const PAGE_DATA: Record<string, PageData> = {
     key: 'spaces',
     eyebrow: 'Public Preview Hub',
     title: 'Our Spaces',
-    intro: 'VYN Space brings Campus, Jobs, Finance, and APT into one verified ecosystem. Each space is previewed publicly, then unlocked after registration, document verification, and login.',
+    intro: 'APT, Jobs, and Finance, unified by one verified profile. Public previews now, full access after verification.',
     color: C.cyan,
     progress: 0.1,
-    stats: [{ value: '4', label: 'Core spaces' }, { value: '1', label: 'Verified profile' }, { value: 'IDnow', label: 'Verification path' }],
+    stats: [{ value: '3', label: 'Core spaces' }, { value: '1', label: 'Verified profile' }, { value: 'IDnow', label: 'Verification path' }],
     blocks: [{
-      title: 'VYN Campus',
-      body: 'Education is the key to unlocking potential. Campus turns online learning, administration, community, and German bureaucracy into one guided city-hall dashboard.',
-      items: ['Courses, certifications, tutorials, podcasts, and video series', 'Visa registration, address changes, insurance, appointment links, and document storage', 'University integrations for schedules, lectures, grades, exams, certificates, and degrees']
+      title: 'VYN APT',
+      body: 'Housing access for verified users: see homes, check eligibility, request viewings, sign contracts.',
+      items: ['Listings by city, size, layout, rooms, price', 'Eligibility: stable job or study, income, residence', 'Automated rental contract on approval']
     }, {
       title: 'VYN Jobs',
-      body: 'VYN Jobs helps people gain valuable experience, hone their skills, and move toward their dream careers through jobs, internships, training, and placement support.',
-      items: ['Company listings and indirect profile outreach', 'Assessment for suitable jobs, training paths, strengths, and weaknesses', 'Commission-style placement model with in-house contracts']
+      body: 'Career entry through jobs, internships, training, and placement support.',
+      items: ['Listings and indirect profile outreach', 'Assessment for fit, strengths, and growth', 'Commission-style placement model']
     }, {
       title: 'VYN Finance',
-      body: 'The finance space gives verified users tools to manage money, access banking products, build credit, and later explore compliant investment and insurance products.',
-      items: ['Solaris-style white-label banking rollout', 'Accounts, balances, transactions, transfers, income, and expenses', 'Future loans, insurance, investments, USDT-only wallet review, and proprietary bank ambition']
-    }, {
-      title: 'VYN APT',
-      body: 'APT brings housing access into the verified ecosystem: rent, buy, invest, request viewings, and generate contracts when eligibility criteria are met.',
-      items: ['Listings by city, size, layout, rooms, furnishing, WiFi, extras, energy, and price category', 'Criteria: stable job or institution, sufficient income, residence visa, verified identity', 'Taken apartments are marked clearly with availability dates where relevant']
+      body: 'White-label banking access plus the tools to manage money, with insurance and loans on the roadmap.',
+      items: ['Solaris-style white-label rollout', 'Accounts, transfers, income, expenses', 'Loans, insurance, investments — later, after review']
     }],
     cta: { label: 'Start verified access', href: '#/register' }
-  },
-  campus: {
-    key: 'campus',
-    eyebrow: 'Digital City Hall',
-    title: 'VYN Campus',
-    intro: 'Campus combines learning, bureaucracy, documents, community, and institutional integrations so users can understand what to do next and keep every process visible.',
-    color: C.green,
-    progress: 0.17,
-    stats: [{ value: '1', label: 'Dashboard' }, { value: 'Many', label: 'Institutions' }, { value: 'Skool', label: 'Learning layer' }],
-    blocks: [{
-      title: 'Learning and self development',
-      items: ['Online courses, certifications, tutorials, podcasts, and video series', 'Self-development spaces and community learning programs', 'Clubs, sports, leisure activities, and partner events']
-    }, {
-      title: 'Administration',
-      items: ['Visa applications, registrations, address changes, and insurance steps', 'Links to useful websites, phone numbers, and appointment systems', 'Document vault for storage, submission, and reuse']
-    }, {
-      title: 'University and authority integrations',
-      items: ['Partner universities can provide student data with consent', 'Schedules, lectures, grades, exams, certificates, degrees, and exchange student data', 'Data sharing with refugee organizations, authorities, and universities where legally approved']
-    }, {
-      title: 'Community and rewards',
-      items: ['Invite new users with referral links', 'Bring partners or companies with proof submission', 'LinkedIn-like profile, network, and community layer']
-    }],
-    cta: { label: 'Preview Spaces', href: '#/spaces' }
   },
   apt: {
     key: 'apt',
@@ -702,50 +582,6 @@ const PAGE_DATA: Record<string, PageData> = {
     }],
     cta: { label: 'Verify before finance', href: '#/register' }
   },
-  community: {
-    key: 'community',
-    eyebrow: 'Partners and Social Impact',
-    title: 'Be part of the community',
-    intro: 'The VYN Space community connects partners around ethical values, social impact, student growth, workplace opportunity, accommodation, and introductory calls.',
-    color: C.green,
-    progress: 0.52,
-    stats: [{ value: 'Impact', label: 'Partner filter' }, { value: 'Call', label: 'Intro process' }, { value: 'Proof', label: 'Partner submission' }],
-    blocks: [{
-      title: 'Partner standard',
-      body: 'Joining the community means being part of a movement that prioritizes social impact, ethical values, and growth.',
-      items: ['Supportive and empowering workplaces', 'Opportunities for learning or accommodations', 'Creativity, innovation, personal development, and ethical cooperation']
-    }, {
-      title: 'Cooperation process',
-      items: ['Potential partners schedule an introductory video call', 'VYN Space reviews fit, proof, and collaboration model', 'Organizations, companies, universities, and study programs can join the ecosystem']
-    }, {
-      title: 'Values',
-      items: ['Freedom as a universal value', 'Sustainable energy and human rights as business responsibilities', 'Ethics, cooperation, empathy, and shared responsibility']
-    }],
-    cta: { label: 'Book partner call', href: '#/contact' }
-  },
-  metaverse: {
-    key: 'metaverse',
-    eyebrow: 'Immersive Future Layer',
-    title: 'VYN Metaverse',
-    intro: 'The VYN Metaverse gives members a way to enter virtual rooms for events, games, podcasts, support, community, and avatar-guided orientation.',
-    color: C.violet,
-    progress: 0.83,
-    stats: [{ value: 'Gather', label: 'Original partner idea' }, { value: 'Rooms', label: 'Virtual spaces' }, { value: '3D', label: 'Future avatar layer' }],
-    blocks: [{
-      title: 'How to enter',
-      items: ['Sign up with the virtual space partner', 'Log in after registration to discover rooms, games, live podcasts, and events', 'Discover freely while respecting the community rules']
-    }, {
-      title: 'Community rules',
-      items: ['Everybody is welcome', 'Respect and integrity are values to share', 'Love over fear, empathy means the will for understanding, seek discomfort']
-    }, {
-      title: 'Opportunities',
-      items: ['Art and design showcases', 'Health, wellness, mindfulness, and virtual support', 'Career development, virtual internships, and professional networking']
-    }, {
-      title: 'Future experience direction',
-      items: ['Immersive VYN rooms for registered users', 'Avatar guidance for orientation and service discovery', 'Events, podcasts, games, and partner spaces connected to the member area']
-    }],
-    cta: { label: 'Register for events', href: '#/register' }
-  },
   about: {
     key: 'about',
     eyebrow: 'Founded in Düsseldorf',
@@ -761,7 +597,7 @@ const PAGE_DATA: Record<string, PageData> = {
       body: 'Knowledge is power and networking is the key. VYN Space and partners offer their network and experience to students, employees, refugees, skilled workers, and everybody who wants to explore the full potential of global networking.'
     }, {
       title: 'New product vision',
-      items: ['A digital onboarding operating system for life in Germany', 'Structured like an institution, smooth like a modern product', 'Built around housing, finance, jobs, learning, bureaucracy, and community']
+      items: ['A digital onboarding operating system for life in Germany', 'Structured like an institution, smooth like a modern product', 'Built around housing, finance, and jobs']
     }],
     cta: { label: 'Meet the team', href: '#/team' }
   },
@@ -823,7 +659,7 @@ const PAGE_DATA: Record<string, PageData> = {
     key: 'register',
     eyebrow: 'Verified Onboarding',
     title: 'Register once. Verify once.',
-    intro: 'Access to Campus, APT, Jobs, and Finance should unlock only after required personal data, documents, consent, and verification through a provider such as IDnow.',
+    intro: 'Access to APT, Jobs, and Finance unlocks only after personal data, documents, consent, and ID verification (e.g. IDnow).',
     color: C.coral,
     progress: 0.45,
     blocks: [{
@@ -847,29 +683,13 @@ const PAGE_DATA: Record<string, PageData> = {
     progress: 0.62,
     blocks: [{
       title: 'Editorial lanes',
-      items: ['VYN Space product updates', 'User stories from refugees, students, and skilled workers', 'Housing, finance, jobs, campus, and bureaucracy explainers']
+      items: ['VYN Space product updates', 'User stories from refugees, students, and skilled workers', 'Housing, finance, and jobs explainers']
     }, {
       title: 'Content pillars',
-      items: ['Verified onboarding and document readiness', 'Housing, employment, banking, and campus guidance', 'Ethical partner workplaces and community cooperation']
+      items: ['Verified onboarding and document readiness', 'Housing, employment, and banking guidance', 'Ethical partner workplaces']
     }],
     cta: { label: 'Share a story', href: '#/contact' }
   },
-  donation: {
-    key: 'donation',
-    eyebrow: 'Support Access',
-    title: 'Donation',
-    intro: 'Donations can support onboarding resources, housing access, campus content, community programs, and partnerships without making the platform feel speculative.',
-    color: C.gold,
-    progress: 0.75,
-    blocks: [{
-      title: 'Donation paths',
-      items: ['PayPal donation path', 'Crypto donations only after compliance review', 'USDT-only direction if digital assets are enabled']
-    }, {
-      title: 'Impact',
-      items: ['Support learning and integration resources', 'Support verified housing and campus access', 'Support community and partner programs']
-    }],
-    cta: { label: 'Contact about donations', href: '#/contact' }
-  }
 };
 const getRouteKey = () => {
   const raw = window.location.hash.replace(/^#\/?/, '') || '';
@@ -2003,7 +1823,7 @@ const VynMark: React.FC<{
   </span>;
 
 // ─── SCROLL PROGRESS INDICATOR ─────────────────────────────────────────────────
-const SECTION_LABELS = ['ORIGIN', 'SPACES', 'CAMPUS', 'APT', 'JOBS', 'FINANCE', 'VERIFY', 'ABOUT', 'BLOG', 'CONTACT', 'DONATE', 'META', 'FAQ', 'ACCESS'];
+const SECTION_LABELS = ['ORIGIN', 'SPACES', 'APT', 'JOBS', 'FINANCE', 'VERIFY', 'ABOUT', 'BLOG', 'CONTACT', 'FAQ', 'ACCESS'];
 const ScrollIndicator: React.FC<{
   progress: number;
 }> = ({
@@ -2403,7 +2223,7 @@ const HeroOverlay: React.FC<{
       margin: '0 auto 42px',
       fontFamily: 'Inter, sans-serif'
     }}>
-        A trust layer for arrival, housing, banking, work, education, and community — built around one verified identity instead of scattered paperwork.
+        Housing, banking, and work — unified by one verified identity.
       </motion.p>
 
       <motion.div initial={{
@@ -3325,32 +3145,28 @@ const PageView: React.FC<{
 // ─── FOOTER ────────────────────────────────────────────────────────────────────
 const FOOTER_COLS = [{
   title: 'Platform',
-  links: ['Spaces', 'Campus', 'APT', 'Jobs', 'Finance', 'Register', 'Metaverse']
+  links: ['Spaces', 'APT', 'Jobs', 'Finance', 'Register']
 }, {
   title: 'Company',
   links: ['About', 'Team', 'Blog', 'Appointments', 'Contact']
 }, {
   title: 'Trust',
-  links: ['Verification', 'FAQ', 'Donation', 'Community']
+  links: ['Verification', 'FAQ']
 }];
 const footerTarget = (label: string) => {
   const map: Record<string, string> = {
     Spaces: 'spaces',
-    Campus: 'campus',
     APT: 'apt',
     Jobs: 'jobs',
     Finance: 'finance',
     Register: 'register',
-    Metaverse: 'metaverse',
     About: 'about',
     Team: 'about',
     Blog: 'blog',
     Appointments: 'contact',
     Contact: 'contact',
     Verification: 'register',
-    FAQ: 'faq',
-    Donation: 'donation',
-    Community: 'community'
+    FAQ: 'faq'
   };
   return map[label] ?? 'hero';
 };
@@ -3519,77 +3335,59 @@ const SECTIONS: SectionDef[] = [{
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.08,
-  scrollEnd: 0.145,
+  scrollStart: 0.085,
+  scrollEnd: 0.16,
   type: 'space',
   spaceIndex: 0
 }, {
-  id: 'campus',
-  scrollStart: 0.155,
-  scrollEnd: 0.215,
+  id: 'apt',
+  scrollStart: 0.175,
+  scrollEnd: 0.25,
   type: 'space',
   spaceIndex: 1
 }, {
-  id: 'apt',
-  scrollStart: 0.225,
-  scrollEnd: 0.285,
+  id: 'jobs',
+  scrollStart: 0.265,
+  scrollEnd: 0.34,
   type: 'space',
   spaceIndex: 2
 }, {
-  id: 'jobs',
-  scrollStart: 0.295,
-  scrollEnd: 0.355,
+  id: 'finance',
+  scrollStart: 0.355,
+  scrollEnd: 0.43,
   type: 'space',
   spaceIndex: 3
 }, {
-  id: 'finance',
-  scrollStart: 0.365,
-  scrollEnd: 0.425,
-  type: 'space',
-  spaceIndex: 4
-}, {
   id: 'register',
-  scrollStart: 0.435,
-  scrollEnd: 0.51,
+  scrollStart: 0.445,
+  scrollEnd: 0.55,
   type: 'register'
 }, {
   id: 'about',
-  scrollStart: 0.52,
-  scrollEnd: 0.58,
+  scrollStart: 0.565,
+  scrollEnd: 0.64,
+  type: 'space',
+  spaceIndex: 5
+}, {
+  id: 'blog',
+  scrollStart: 0.655,
+  scrollEnd: 0.73,
   type: 'space',
   spaceIndex: 6
 }, {
-  id: 'blog',
-  scrollStart: 0.59,
-  scrollEnd: 0.65,
+  id: 'contact',
+  scrollStart: 0.745,
+  scrollEnd: 0.82,
   type: 'space',
   spaceIndex: 7
 }, {
-  id: 'contact',
-  scrollStart: 0.66,
-  scrollEnd: 0.72,
-  type: 'space',
-  spaceIndex: 8
-}, {
-  id: 'donation',
-  scrollStart: 0.73,
-  scrollEnd: 0.79,
-  type: 'space',
-  spaceIndex: 9
-}, {
-  id: 'metaverse',
-  scrollStart: 0.80,
-  scrollEnd: 0.86,
-  type: 'space',
-  spaceIndex: 10
-}, {
   id: 'faq',
-  scrollStart: 0.875,
-  scrollEnd: 0.93,
+  scrollStart: 0.84,
+  scrollEnd: 0.92,
   type: 'faq'
 }, {
   id: 'cta',
-  scrollStart: 0.945,
+  scrollStart: 0.94,
   scrollEnd: 0.98,
   type: 'cta'
 }];
@@ -3694,7 +3492,7 @@ export const VynSpaceLanding: React.FC = () => {
           <Suspense fallback={null}>
             <VynScene scrollProgress={sceneProgress} mouseX={mouseX} mouseY={mouseY} />
             <EffectComposer multisampling={0}>
-              <Bloom intensity={0.28} luminanceThreshold={0.22} luminanceSmoothing={0.78} mipmapBlur />
+              <Bloom intensity={0.42} luminanceThreshold={0.18} luminanceSmoothing={0.72} mipmapBlur />
               <Vignette offset={0.38} darkness={0.64} />
             </EffectComposer>
           </Suspense>
@@ -3808,14 +3606,14 @@ export const VynSpaceLanding: React.FC = () => {
 
       {/* Scroll spacer and hash anchors for the immersive homepage */}
       {!activePage && <div style={{
-      height: '1120vh',
+      height: '780vh',
       marginTop: '-100vh',
       position: 'relative',
       zIndex: 0
     }}>
         {SECTIONS.map(section => <div key={section.id} id={section.id} aria-hidden="true" style={{
         position: 'absolute',
-        top: `calc(${section.scrollStart * 1120}vh + 1px)`,
+        top: `calc(${section.scrollStart * 780}vh + 1px)`,
         width: 1,
         height: 1,
         pointerEvents: 'none'

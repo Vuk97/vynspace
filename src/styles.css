@@ -8,8 +8,8 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: #00060f;
-  color: #e8f4ff;
+  background: #0a1322;
+  color: #f2f6ff;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -107,11 +107,11 @@ summary {
   max-height: calc(100vh - 168px);
   overflow: auto;
   padding: 20px;
-  border: 1px solid rgba(91, 192, 235, 0.18);
+  border: 1px solid rgba(181, 223, 239, 0.18);
   border-radius: 8px;
   background:
     linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)),
-    rgba(3, 6, 13, 0.48);
+    rgba(10, 19, 34, 0.48);
   backdrop-filter: blur(24px);
 }
 
@@ -147,9 +147,9 @@ summary {
 
 .detail-card {
   padding: 16px 17px;
-  border: 1px solid rgba(91, 192, 235, 0.16);
+  border: 1px solid rgba(181, 223, 239, 0.16);
   border-radius: 8px;
-  background: rgba(10, 15, 28, 0.40);
+  background: rgba(20, 28, 48, 0.40);
 }
 
 .detail-card h3 {
@@ -197,7 +197,7 @@ summary {
   padding: 112px 28px 72px;
   background:
     radial-gradient(circle at 68% 12%, color-mix(in srgb, var(--page-color) 14%, transparent), transparent 32%),
-    linear-gradient(180deg, rgba(3, 6, 13, 0.62), rgba(3, 6, 13, 0.94) 42%, #03060d 100%);
+    linear-gradient(180deg, rgba(10, 19, 34, 0.62), rgba(10, 19, 34, 0.94) 42%, #0a1322 100%);
 }
 
 .page-hero,
@@ -225,9 +225,9 @@ summary {
 
 .page-back {
   margin-bottom: 34px;
-  border: 1px solid rgba(91, 192, 235, 0.18);
+  border: 1px solid rgba(181, 223, 239, 0.18);
   color: #a0a7b8;
-  background: rgba(3, 6, 13, 0.42);
+  background: rgba(10, 19, 34, 0.42);
 }
 
 .page-kicker {
@@ -252,7 +252,7 @@ summary {
 .page-hero h1 {
   max-width: 900px;
   margin: 0;
-  color: #e8f4ff;
+  color: #f2f6ff;
   font-family: Comfortaa, Inter, sans-serif;
   font-size: var(--page-title-size, 74px);
   line-height: 1.04;
@@ -268,8 +268,8 @@ summary {
 }
 
 .page-cta {
-  color: #03060d;
-  background: linear-gradient(135deg, var(--page-color), #5bc0eb);
+  color: #0a1322;
+  background: linear-gradient(135deg, var(--page-color), #b5dfef);
   box-shadow: 0 0 26px color-mix(in srgb, var(--page-color) 28%, transparent);
 }
 
@@ -283,9 +283,9 @@ summary {
 .page-stats article,
 .page-card,
 .page-form {
-  border: 1px solid rgba(91, 192, 235, 0.16);
+  border: 1px solid rgba(181, 223, 239, 0.16);
   border-radius: 8px;
-  background: rgba(3, 6, 13, 0.64);
+  background: rgba(10, 19, 34, 0.64);
   backdrop-filter: blur(22px);
 }
 
@@ -381,10 +381,10 @@ summary {
 .page-form input,
 .page-form textarea {
   width: 100%;
-  border: 1px solid rgba(91, 192, 235, 0.18);
+  border: 1px solid rgba(181, 223, 239, 0.18);
   border-radius: 5px;
-  background: rgba(0, 6, 15, 0.72);
-  color: #e8f4ff;
+  background: rgba(10, 19, 34, 0.72);
+  color: #f2f6ff;
   padding: 13px 14px;
   outline: none;
 }
@@ -417,7 +417,7 @@ summary {
 
 .listing-heading h2 {
   margin: 0;
-  color: #e8f4ff;
+  color: #f2f6ff;
   font-family: Comfortaa, Inter, sans-serif;
   font-size: 32px;
   line-height: 1.18;
@@ -445,12 +445,12 @@ summary {
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  border: 1px solid rgba(91, 192, 235, 0.16);
+  border: 1px solid rgba(181, 223, 239, 0.16);
   border-radius: 8px;
   overflow: hidden;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--page-color) 8%, transparent), transparent 42%),
-    rgba(3, 6, 13, 0.68);
+    rgba(10, 19, 34, 0.68);
   backdrop-filter: blur(22px);
 }
 
@@ -465,10 +465,10 @@ summary {
   content: "";
   position: absolute;
   inset: 0;
-  border-bottom: 1px solid rgba(91, 192, 235, 0.16);
+  border-bottom: 1px solid rgba(181, 223, 239, 0.16);
   background:
     radial-gradient(circle at 24% 82%, color-mix(in srgb, var(--page-color) 24%, transparent), transparent 34%),
-    linear-gradient(180deg, transparent 32%, rgba(3, 6, 13, 0.86));
+    linear-gradient(180deg, transparent 32%, rgba(10, 19, 34, 0.86));
   pointer-events: none;
 }
 
@@ -481,11 +481,11 @@ summary {
   align-items: center;
   min-height: 28px;
   padding: 0 10px;
-  border: 1px solid rgba(91, 192, 235, 0.18);
+  border: 1px solid rgba(181, 223, 239, 0.18);
   border-radius: 5px;
-  background: rgba(3, 6, 13, 0.62);
+  background: rgba(10, 19, 34, 0.62);
   backdrop-filter: blur(12px);
-  color: #e8f4ff;
+  color: #f2f6ff;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 9px;
   font-weight: 800;
@@ -495,7 +495,7 @@ summary {
 
 .listing-pill {
   left: 14px;
-  color: #03060d;
+  color: #0a1322;
   background: var(--page-color);
 }
 
@@ -540,7 +540,7 @@ summary {
 
 .listing-ad h3 {
   margin: 0;
-  color: #e8f4ff;
+  color: #f2f6ff;
   font-family: Comfortaa, Inter, sans-serif;
   font-size: 22px;
   line-height: 1.24;
@@ -558,9 +558,9 @@ summary {
   gap: 4px;
   margin: 0 0 16px;
   padding: 14px;
-  border: 1px solid rgba(91, 192, 235, 0.14);
+  border: 1px solid rgba(181, 223, 239, 0.14);
   border-radius: 8px;
-  background: rgba(0, 6, 15, 0.34);
+  background: rgba(10, 19, 34, 0.34);
 }
 
 .listing-price strong {
@@ -594,13 +594,13 @@ summary {
   gap: 4px;
   min-width: 0;
   padding: 10px;
-  border: 1px solid rgba(91, 192, 235, 0.12);
+  border: 1px solid rgba(181, 223, 239, 0.12);
   border-radius: 5px;
-  background: rgba(0, 6, 15, 0.26);
+  background: rgba(10, 19, 34, 0.26);
 }
 
 .listing-facts strong {
-  color: #e8f4ff;
+  color: #f2f6ff;
   font-size: 13px;
   line-height: 1.2;
   overflow-wrap: anywhere;
@@ -623,10 +623,10 @@ summary {
 
 .listing-tags span {
   padding: 7px 9px;
-  border: 1px solid rgba(91, 192, 235, 0.14);
+  border: 1px solid rgba(181, 223, 239, 0.14);
   border-radius: 5px;
   color: #a0a7b8;
-  background: rgba(0, 6, 15, 0.36);
+  background: rgba(10, 19, 34, 0.36);
 }
 
 .listing-requirements {
@@ -676,8 +676,8 @@ summary {
   min-height: 38px;
   padding: 0 14px;
   border-radius: 5px;
-  background: linear-gradient(135deg, var(--page-color), #5bc0eb);
-  color: #03060d;
+  background: linear-gradient(135deg, var(--page-color), #b5dfef);
+  color: #0a1322;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size: 9px;
   font-weight: 800;
