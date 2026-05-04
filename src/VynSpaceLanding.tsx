@@ -1825,11 +1825,12 @@ const VynMark: React.FC<{
 
 // ─── SCROLL PROGRESS INDICATOR ─────────────────────────────────────────────────
 // Each label's prog is the *center* of its matching scroll band so the active
-// rail dot lights up exactly when the panel does. Positions derived from the
-// SECTIONS table below: hero ~0.11, then card centers at (zPos-card_zero)/390.
-const SECTION_LABELS: Array<{ label: string; prog: number }> = [
-  { label: 'ORIGIN', prog: 0.11 },
-  { label: 'SPACES', prog: 0.267 },
+// rail dot lights up exactly when the panel does. halfWidth defaults to 0.045
+// (matches the 0.082 narrow bands); SPACES uses 0.105 because its band is
+// 2.5x wider, and ORIGIN uses 0.05 to match the short hero band.
+const SECTION_LABELS: Array<{ label: string; prog: number; halfWidth?: number }> = [
+  { label: 'ORIGIN', prog: 0.05, halfWidth: 0.05 },
+  { label: 'SPACES', prog: 0.204, halfWidth: 0.105 },
   { label: 'APT', prog: 0.349 },
   { label: 'JOBS', prog: 0.431 },
   { label: 'FINANCE', prog: 0.513 },
@@ -1837,8 +1838,8 @@ const SECTION_LABELS: Array<{ label: string; prog: number }> = [
   { label: 'ABOUT', prog: 0.677 },
   { label: 'BLOG', prog: 0.759 },
   { label: 'CONTACT', prog: 0.841 },
-  { label: 'FAQ', prog: 0.915 },
-  { label: 'ACCESS', prog: 0.975 }
+  { label: 'FAQ', prog: 0.915, halfWidth: 0.025 },
+  { label: 'ACCESS', prog: 0.975, halfWidth: 0.025 }
 ];
 const ScrollIndicator: React.FC<{
   progress: number;
@@ -1854,9 +1855,9 @@ const ScrollIndicator: React.FC<{
   gap: 7,
   zIndex: 300
 }}>
-    {SECTION_LABELS.map(({ label, prog: sp }) => {
-    const active = Math.abs(progress - sp) < 0.045;
-    const passed = progress > sp + 0.045;
+    {SECTION_LABELS.map(({ label, prog: sp, halfWidth = 0.045 }) => {
+    const active = Math.abs(progress - sp) < halfWidth;
+    const passed = progress > sp + halfWidth;
     return <div key={label} style={{
       display: 'flex',
       alignItems: 'center',
@@ -2362,7 +2363,7 @@ const SectionPanel: React.FC<{
     opacity: 0,
     x: side === 'left' ? -70 : 70
   }} transition={{
-    duration: 0.75,
+    duration: 0.35,
     ease: [0.16, 1, 0.3, 1]
   }} style={{
     position: 'absolute',
@@ -2577,7 +2578,7 @@ const DetailDeck: React.FC<{
     y: 28,
     filter: 'blur(8px)'
   }} transition={{
-    duration: 0.8,
+    duration: 0.4,
     ease: [0.16, 1, 0.3, 1]
   }} style={{
     borderColor: `${space.color}24`,
@@ -3344,21 +3345,20 @@ type SectionDef = {
   spaceIndex?: number;
   panelSide?: 'left' | 'right';
 };
-// Cards are uniformly 32 units apart starting at z=-80, giving a long hero
-// approach (0 -> 0.225) before the first popup. Each band covers the camera-
-// near-card zone: camera_z within ±16 of card_z. With camera path 24 -> -366
-// (390 units) and 32-unit spacing, each band is exactly 0.082 of total prog.
-// prog = (24 - camera_z) / 390, so band start = (8 - card_zPos) / 390 and
-// band end = (40 - card_zPos) / 390. Bands touch at boundaries so transitions
-// are continuous.
+// Each card's band runs until the camera reaches the *midpoint* with the next
+// card -- that's exactly when the next card becomes the closest one in front,
+// and the popup naturally hands off. With cards uniformly 32 apart, midpoints
+// land every 0.082 of prog (32/390). Hero gets a short opening, then SPACES
+// gets a wide ~2.5x band (hero-end -> spaces/apt midpoint), so it has plenty
+// of time to land before the first 3D card transitions.
 const SECTIONS: SectionDef[] = [{
   id: 'hero',
   scrollStart: 0,
-  scrollEnd: 0.225,
+  scrollEnd: 0.10,
   type: 'hero'
 }, {
   id: 'spaces',
-  scrollStart: 0.226,
+  scrollStart: 0.10,
   scrollEnd: 0.308,
   type: 'space',
   spaceIndex: 0,
