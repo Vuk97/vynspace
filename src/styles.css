@@ -104,6 +104,8 @@ summary {
   top: 104px;
   z-index: 9;
   width: min(500px, calc(50vw - 80px));
+  max-height: calc(100vh - 168px);
+  overflow: auto;
   padding: 20px;
   border: 1px solid rgba(191, 226, 236, 0.18);
   border-radius: 8px;
@@ -111,8 +113,6 @@ summary {
     linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008)),
     rgba(14, 22, 38, 0.48);
   backdrop-filter: blur(24px);
-  /* No max-height + overflow here -- it would trap wheel scroll inside
-     the deck. Content is short enough to fit on a normal viewport. */
 }
 
 .detail-deck-left {
