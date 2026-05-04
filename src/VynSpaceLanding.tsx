@@ -1693,11 +1693,17 @@ const CameraController: React.FC<{
   const vel = useRef(new THREE.Vector3());
   useFrame(() => {
     const prog = scrollProgress;
-    const totalZ = -600 * prog;
+    // Camera path is 390 units (24 -> -366) to match the SECTIONS band math
+    // and the SPACES.zPos distribution (-80 .. -304). With the previous -600
+    // path the camera flew way past every card before its band activated.
+    const totalZ = -390 * prog;
     const waveX = Math.sin(prog * Math.PI * 4.2) * 4.2 + mouseX * 1.8;
     const waveY = 2.7 + prog * 2.4 + Math.cos(prog * Math.PI * 2.5) * 1.2 + mouseY * 0.9;
     const desired = new THREE.Vector3(waveX, waveY, 24 + totalZ);
-    vel.current.subVectors(desired, pos.current).multiplyScalar(0.038);
+    // Tighter lerp (0.10 vs 0.038) so camera tracks scroll closely; previous
+    // value lagged badly during fast scrolling, putting visible 3D cards out
+    // of sync with the popup band that is keyed off raw scroll progress.
+    vel.current.subVectors(desired, pos.current).multiplyScalar(0.10);
     pos.current.add(vel.current);
     camera.position.copy(pos.current);
     tgt.current.set(waveX * 0.4, waveY - 2.2, pos.current.z - 32);
